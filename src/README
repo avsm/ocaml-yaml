@@ -1,0 +1,3 @@
+To regenerate the certificate:
+
+openssl req -new -x509 -days 3652 -key do_not_use_in_production.key -out cert.crt

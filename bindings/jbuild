@@ -1,0 +1,15 @@
+(rule
+ ((targets (yaml-ccopt.sexp
+            yaml-cclib.sexp
+            yaml-ccopt
+            yaml-cclib))
+  (deps    (config/discover.exe))
+  (action  (run ${<} -ocamlc ${OCAMLC}))))
+
+(library
+ ((name yaml_bindings)
+  (public_name yaml.bindings)
+  (libraries (ctypes.stubs ctypes))
+  (preprocess (pps (ppx_jane ppx_driver.runner)))))
+
+(jbuild_version 1)
