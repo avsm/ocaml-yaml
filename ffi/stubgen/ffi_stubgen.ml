@@ -1,6 +1,6 @@
-module Ffi_bindings = Yaml_bindings.Ffi_bindings
-
 let prefix = "yaml_stub"
+
+module B = Yaml_bindings.M(Yaml_types.T.Token_type)
 
 let prologue = "
 #include <yaml.h>
@@ -19,7 +19,7 @@ let () =
   | true, true ->
     failwith "Exactly one of -ml and -c must be specified"
   | true, false ->
-    Cstubs.write_ml Format.std_formatter ~prefix (module Ffi_bindings.Bindings)
+    Cstubs.write_ml Format.std_formatter ~prefix (module B)
   | false, true ->
     print_endline prologue;
-    Cstubs.write_c Format.std_formatter ~prefix (module Ffi_bindings.Bindings)
+    Cstubs.write_c Format.std_formatter ~prefix (module B)

@@ -1,9 +1,11 @@
-(executables
- ((names (ffi_stubgen ffi_types_stubgen))
-  (libraries (yaml_bindings
+(jbuild_version 1)
+
+(executable
+ ((name ffi_types_stubgen)
+  (modules (ffi_types_stubgen))
+  (libraries (yaml.bindings.types
               ctypes.stubs
-              ctypes))
-  (preprocess (pps (ppx_jane ppx_driver.runner)))))
+              ctypes))))
 
 (rule
  ((targets (ffi_ml_types_stubgen.c))
@@ -14,12 +16,10 @@
 (rule
  ((targets (ffi_ml_types_stubgen.exe))
   (deps    (./ffi_ml_types_stubgen.c
-            ../bindings/yaml-ccopt
-            ../bindings/yaml-cclib))
+            ../../config/yaml-ccopt
+            ../../config/yaml-cclib))
   (action (bash "\
-${CC} ${<} $(< ../bindings/yaml-ccopt) $(< ../bindings/yaml-cclib) \
+${CC} ${<} $(< ../../config/yaml-ccopt) $(< ../../config/yaml-cclib) \
   -I `dirname ${findlib:ctypes:ctypes_cstubs_internals.h}` \
   -I ${ocaml_where} -o ${@}")
    )))
-
-(jbuild_version 1)

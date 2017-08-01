@@ -1,34 +1,7 @@
-(rule
- ((targets (ffi_generated.ml))
-  (deps (../stubgen/ffi_stubgen.exe))
-  (action (bash "${<} -ml > ffi_generated.ml"))))
-
-(rule
- ((targets (ffi_generated_stubs.c))
-  (deps (../stubgen/ffi_stubgen.exe))
-  (action (bash "${<} -c > ffi_generated_stubs.c"))))
-
-(rule
- ((targets (ffi_generated_types.ml))
-  (deps (../stubgen/ffi_ml_types_stubgen.exe))
-  (action (bash "${<} > ffi_generated_types.ml"))))
-
 (library
  ((name yaml)
   (public_name yaml)
-  (modules (yaml
-            ffi_generated_types
-            ffi_generated
-            ))
-  (c_names (ffi_generated_stubs))
-  (flags (:standard -w -9-27-32-34))
-  (c_flags ((:standard \ -Werror -pedantic -Wall -Wunused) -w
-            (:include ../bindings/yaml-ccopt.sexp)))
-  (c_library_flags (:standard (:include ../bindings/yaml-cclib.sexp)))
-  (libraries (yaml_bindings
-              ctypes.stubs
-              ctypes))
-  (preprocess (pps (ppx_jane ppx_driver.runner)))
+  (libraries (yaml.ffi))
 ))
 
 (jbuild_version 1)

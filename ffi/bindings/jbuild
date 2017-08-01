@@ -1,0 +1,7 @@
+(jbuild_version 1)
+
+(library
+ ((name yaml_bindings)
+  (synopsis "Ctypes bindings that describe the libyaml FFI")
+  (public_name yaml.bindings)
+  (libraries (yaml.types ctypes.stubs ctypes))))

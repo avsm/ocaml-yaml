@@ -1,5 +1,4 @@
-module Types = Yaml_bindings.Ffi_bindings.Types(Ffi_generated_types)
-module B = Yaml_bindings.Ffi_bindings.Bindings(Ffi_generated)
+module B = Yaml_ffi.M
 
 let version = B.version
 let get_version () =
