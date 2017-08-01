@@ -1,6 +1,6 @@
 let prefix = "yaml_stub"
 
-module B = Yaml_bindings.M(Yaml_types.T.Token_type)
+module B = Yaml_bindings.M(Yaml_types.M)
 
 let prologue = "
 #include <yaml.h>

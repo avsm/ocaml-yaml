@@ -1,4 +1,4 @@
-module M(X: sig val t : Yaml_types.T.Token_type.t Ctypes.typ end)(F: Cstubs.FOREIGN) =
+module M(T:module type of Yaml_types.M)(F: Cstubs.FOREIGN) =
 struct
   let foreign = F.foreign
   type 'a typ = 'a Ctypes.structure Ctypes.typ
@@ -41,7 +41,7 @@ struct
   module Token = struct
     type t
     let t : t typ = C.structure "yaml_token_t"
-    let _type = C.(field t "type" X.t)
+    let _type = C.(field t "type" T.token_type)
     let () = C.seal t
   end
 
