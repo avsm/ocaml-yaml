@@ -1,0 +1,59 @@
+kernel:
+  image: linuxkit/kernel:4.9.40
+  cmdline: "console=tty0 console=ttyS0"
+init:
+  - linuxkit/init:906e174b3f2e07f97d6fd693a2e8518e98dafa58
+  - linuxkit/runc:90e45f13e1d0a0983f36ef854621e3eac91cf541
+  - linuxkit/containerd:7c986fb7df33bea73b5c8097b46989e46f49d875
+  - linuxkit/ca-certificates:e44b0a66df5a102c0e220f0066b0d904710dcb10
+onboot:
+  - name: sysctl
+    image: linuxkit/sysctl:184c914d23a017062d7b53d7fc1dfaf47764bef6
+  - name: dhcpcd
+    image: linuxkit/dhcpcd:f3f5413abb78fae9020e35bd4788fa93df4530b7
+    command: ["/sbin/dhcpcd", "--nobackground", "-f", "/dhcpcd.conf", "-1"]
+onshutdown:
+  - name: shutdown
+    image: busybox:latest
+    command: ["/bin/echo", "so long and thanks for all the fish"]
+services:
+  - name: getty
+    image: linuxkit/getty:2c841cdc34396e3fa8f25b62d112808f63f16df6
+    env:
+     - INSECURE=true
+  - name: rngd
+    image: linuxkit/rngd:b2f4bdcb55aa88a25c86733e294628614504f383
+  - name: nginx
+    image: nginx:alpine
+    capabilities:
+     - CAP_NET_BIND_SERVICE
+     - CAP_CHOWN
+     - CAP_SETUID
+     - CAP_SETGID
+     - CAP_DAC_OVERRIDE
+files:
+  - path: etc/containerd/config.toml
+    contents: |
+      state = "/run/containerd"
+      root = "/var/lib/containerd"
+      snapshotter = "io.containerd.snapshotter.v1.overlayfs"
+      differ = "io.containerd.differ.v1.base-diff"
+      subreaper = false
+
+      [grpc]
+      address = "/run/containerd/containerd.sock"
+      uid = 0
+      gid = 0
+
+      [debug]
+      address = "/run/containerd/debug.sock"
+      level = "info"
+
+      [metrics]
+      address = ":13337"
+  - path: etc/linuxkit-config
+    metadata: yaml
+trust:
+  org:
+    - linuxkit
+    - library
