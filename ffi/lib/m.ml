@@ -1,1 +1,1 @@
-include Yaml_bindings.M(Yaml_types.M)(G)
+include Yaml_bindings.M(G)

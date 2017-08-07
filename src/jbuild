@@ -1,7 +1,8 @@
 (library
  ((name yaml)
   (public_name yaml)
-  (libraries (yaml.ffi))
+  (libraries (yaml.ffi rresult))
+  (preprocess (pps (ppx_sexp_conv)))
 ))
 
 (jbuild_version 1)

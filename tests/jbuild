@@ -1,10 +1,14 @@
 (executables
- ((names (test))
-  (libraries (yaml))
+ ((names (test parse))
+  (libraries (yaml bos))
 ))
 
 (alias
  ((name    runtest)
   (deps    (test.exe))
-  (action  (run ${<} -runner sequential))))
+  (action  (run ${<}))))
 
+(alias
+ ((name    runtest)
+  (deps    (parse.exe linuxkit.yml bomb.yml))
+  (action  (run ${<}))))

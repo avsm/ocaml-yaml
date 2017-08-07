@@ -16,7 +16,7 @@
   (modules (g m))
   (c_names (yaml_stubs))
   (flags (:standard -w -9-27-32-34))
-  (c_flags ((:standard \ -Werror -pedantic -Wall -Wunused) -w
+  (c_flags ((:standard \ -Werror -pedantic -Wall -Wunused)
             (:include ../../config/yaml-ccopt.sexp)))
   (c_library_flags (:standard (:include ../../config/yaml-cclib.sexp)))
   (libraries (yaml.bindings yaml.types ctypes.stubs ctypes))))

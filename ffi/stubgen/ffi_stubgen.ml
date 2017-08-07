@@ -1,7 +1,5 @@
 let prefix = "yaml_stub"
 
-module B = Yaml_bindings.M(Yaml_types.M)
-
 let prologue = "
 #include <yaml.h>
 "
@@ -19,7 +17,7 @@ let () =
   | true, true ->
     failwith "Exactly one of -ml and -c must be specified"
   | true, false ->
-    Cstubs.write_ml Format.std_formatter ~prefix (module B)
+    Cstubs.write_ml Format.std_formatter ~prefix (module Yaml_bindings.M)
   | false, true ->
     print_endline prologue;
-    Cstubs.write_c Format.std_formatter ~prefix (module B)
+    Cstubs.write_c Format.std_formatter ~prefix (module Yaml_bindings.M)
