@@ -13,8 +13,12 @@ depends: [
   "ctypes" {>="0.12.0"}
   "ppx_sexp_conv" {build & >="v0.9.0"}
   "rresult"
+  "bos" {test}
 ]
 build: [
   ["jbuilder" "subst" "-p" name "--name" name] {pinned}
   ["jbuilder" "build" "-p" name "-j" jobs]
+]
+build-test: [
+  ["jbuilder" "runtest"]
 ]
