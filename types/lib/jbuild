@@ -3,7 +3,7 @@
 (rule
  ((targets (g.ml))
   (deps (../stubgen/ffi_ml_types_stubgen.exe))
-  (action (bash "${<} > ${@}"))))
+  (action (with-stdout-to ${@} (run ${<})))))
 
 (library
  ((name yaml_types)

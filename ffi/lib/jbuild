@@ -3,12 +3,12 @@
 (rule
  ((targets (g.ml))
   (deps (../stubgen/ffi_stubgen.exe))
-  (action (bash "${<} -ml > ${@}"))))
+  (action (with-stdout-to ${@} (run ${<} -ml)))))
 
 (rule
  ((targets (yaml_stubs.c))
   (deps (../stubgen/ffi_stubgen.exe))
-  (action (bash "${<} -c > ${@}"))))
+  (action (with-stdout-to ${@} (run ${<} -c)))))
 
 (library
  ((name yaml_ffi)
