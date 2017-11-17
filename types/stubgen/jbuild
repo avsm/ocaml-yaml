@@ -15,11 +15,9 @@
 ;; It would be lovely if jenga had rules to build from C.
 (rule
  ((targets (ffi_ml_types_stubgen.exe))
-  (deps    (./ffi_ml_types_stubgen.c
-            ../../config/yaml-ccopt
-            ../../config/yaml-cclib))
+  (deps    (./ffi_ml_types_stubgen.c ../../vendor/yaml.a))
   (action (bash "\
-${CC} ${<} $(< ../../config/yaml-ccopt) $(< ../../config/yaml-cclib) \
+${CC} ${<} -I../../vendor \
   -I `dirname ${findlib:ctypes:ctypes_cstubs_internals.h}` \
   -I ${ocaml_where} -o ${@}")
    )))

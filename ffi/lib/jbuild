@@ -7,7 +7,7 @@
 
 (rule
  ((targets (yaml_stubs.c))
-  (deps (../stubgen/ffi_stubgen.exe))
+  (deps (../stubgen/ffi_stubgen.exe ../../vendor/yaml.a))
   (action (with-stdout-to ${@} (run ${<} -c)))))
 
 (library
@@ -16,8 +16,7 @@
   (modules (g m))
   (c_names (yaml_stubs))
   (flags (:standard -w -9-27-32-34))
-  (c_flags ((:standard \ -Werror -pedantic -Wall -Wunused)
-            (:include ../../config/yaml-ccopt.sexp)))
-  (c_library_flags (:standard (:include ../../config/yaml-cclib.sexp)))
+  (c_flags ((:standard \ -Werror -pedantic -Wall -Wunused) -I../../vendor))
+  (c_library_flags vendor/yaml.a)
   (libraries (yaml.bindings yaml.types ctypes.stubs ctypes))))
 
