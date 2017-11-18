@@ -10,6 +10,7 @@ debian-*) sudo apt -y install m4 pkg-config ;;
 ubuntu-*) sudo apt -install m4 pkg-config ;;
 esac
 
+sudo chown -R opam /home/opam/src
 cd /home/opam/src
 export OPAMYES=1
 export OPAMJOBS=3

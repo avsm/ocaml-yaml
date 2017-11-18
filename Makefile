@@ -15,6 +15,9 @@ uninstall:
 clean:
 	jbuilder clean
 
+test-all:
+	sh ./.docker-run.sh
+
 REPO=../../mirage/opam-repository
 PACKAGES=$(REPO)/packages
 # until we have https://github.com/ocaml/opam-publish/issues/38

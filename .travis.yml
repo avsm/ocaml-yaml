@@ -2,7 +2,7 @@ sudo: required
 services:
   - docker
 language: c
-script: bash -ex ./.travis.sh
+script: bash -ex ./.docker-run.sh
 env:
   global:
   - OCAML_VERSIONS="4.04.2 4.05.0 4.06.0"
