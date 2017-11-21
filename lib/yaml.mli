@@ -43,6 +43,9 @@ type scalar_style =
   | Folded
   [@@deriving sexp]
 
+val library_version : unit -> int * int * int
+(** [library_version ()] returns the major, minor and patch version of the underlying libYAML implementation. *)
+
 (** Low-level event streaming interface for parsing and emitting YAML files. *)
 module Stream : sig
   (** Position information for an event *)
