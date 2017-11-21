@@ -1,6 +1,6 @@
 let test_version () =
-  let _s = Yaml.version () in
-  let _v = Yaml.get_version () in
+  let _s = Yaml.Stream.version () in
+  let _v = Yaml.Stream.get_version () in
   ()
 
 let () =
