@@ -37,28 +37,21 @@ let error_to_msg e =
 
 let scalar_style_of_ffi s : scalar_style =
   match s with
-  | `Any -> Any
-  | `Plain -> Plain
-  | `Single_quoted -> Single_quoted
-  | `Double_quoted -> Double_quoted
-  | `Literal -> Literal
-  | `Folded -> Folded
+  | `Any -> `Any
+  | `Plain -> `Plain
+  | `Single_quoted -> `Single_quoted
+  | `Double_quoted -> `Double_quoted
+  | `Literal -> `Literal
+  | `Folded -> `Folded
   | `E err -> raise (Invalid_argument ("invalid scalar style"^(Int64.to_string err)))
 
 let encoding_of_ffi e : encoding =
   match e with
-  | `Any -> Any
-  | `Utf16be -> Utf16be
-  | `Utf16le -> Utf16le
-  | `Utf8 -> Utf8
+  | `Any -> `Any
+  | `Utf16be -> `Utf16be
+  | `Utf16le -> `Utf16le
+  | `Utf8 -> `Utf8
   | `E err -> raise (Invalid_argument ("invalid encoding "^(Int64.to_string err)))
-
-let encoding_to_ffi (e:Types.encoding) =
-  match e with
-  | Any -> `Any
-  | Utf16be -> `Utf16be
-  | Utf16le -> `Utf16le
-  | Utf8 -> `Utf8
 
 let tag_directive_of_ffi e =
   let open Ctypes in
@@ -76,8 +69,8 @@ let list_of_tag_directives tds =
  
 let version_of_directive ~major ~minor =
   match major, minor with
-  | 1,0 -> V1_0
-  | 1,1 -> V1_1
+  | 1,0 -> `V1_0
+  | 1,1 -> `V1_1
   | _ -> raise (Invalid_argument (Printf.sprintf "Unsupported Yaml version %d.%d" major minor))
 
 module Mark = struct
@@ -235,13 +228,32 @@ let set_output_string {e;_} s =
   let len = String.length s |> Unsigned.Size_t.of_int in
   B.emitter_set_output_string e s len
 
-let check fn a =
-  match fn a with
+let check a =
+  match a with
   | 0 -> R.error_msg "function failed"
   | 1 -> R.ok ()
   | _ -> R.error_msg "unexpected return value"
 
 let stream_start {e;event} encoding =
-  encoding_to_ffi encoding |> fun encoding->
-  check (B.stream_start_event_init event) encoding >>= fun () ->
-  check (B.emitter_emit e) event
+  check @@ B.stream_start_event_init event encoding >>= fun () ->
+  check @@ B.emitter_emit e event
+
+let stream_end {e;event} =
+  check @@ B.stream_end_event_init event >>= fun () ->
+  check @@ B.emitter_emit e event
+
+let document_start {e;event} implicit =
+  let open Ctypes in
+  let ver = from_voidp T.Version_directive.t null in
+  let tag = from_voidp T.Tag_directive.t null in
+  check @@ B.document_start_event_init event ver tag tag implicit >>= fun () ->
+  check @@ B.emitter_emit e event
+
+let document_end {e;event} implicit =
+  check @@ B.document_end_event_init event implicit >>= fun () ->
+  check @@ B.emitter_emit e event
+
+let scalar ?(plain_implicit=false) ?(quoted_implicit=false) ?anchor ?tag {e;event} value style =
+  let open Ctypes in
+  check @@ B.scalar_event_init event anchor tag value (String.length value) plain_implicit quoted_implicit style >>= fun () ->
+  check @@ B.emitter_emit e event

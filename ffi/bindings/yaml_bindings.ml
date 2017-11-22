@@ -93,7 +93,7 @@ struct
      foreign "yaml_alias_event_initialize" C.(ptr T.Event.t @-> string @-> returning int)
 
   let scalar_event_init =
-     foreign "yaml_scalar_event_initialize" C.(ptr T.Event.t @-> string @-> string @-> string @-> int @-> int @-> int @-> T.scalar_style_t @-> returning int)
+     foreign "yaml_scalar_event_initialize" C.(ptr T.Event.t @-> string_opt @-> string_opt @-> string @-> int @-> bool @-> bool @-> T.scalar_style_t @-> returning int)
 
   let sequence_start_event_init =
      foreign "yaml_sequence_start_event_initialize" C.(ptr T.Event.t @-> string @-> string @-> int @-> T.sequence_style_t @-> returning int)

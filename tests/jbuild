@@ -1,5 +1,5 @@
 (executables
- ((names (test parse))
+ ((names (test parse emit))
   (libraries (yaml bos))
 ))
 
@@ -11,4 +11,9 @@
 (alias
  ((name    runtest)
   (deps    (parse.exe linuxkit.yml bomb.yml))
+  (action  (run ${<}))))
+
+(alias
+ ((name    runtest)
+  (deps    (emit.exe))
   (action  (run ${<}))))

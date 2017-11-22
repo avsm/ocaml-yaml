@@ -28,19 +28,19 @@
  *)
 
 (** Version of the YAML spec of a document. *)
-type version = V1_0 | V1_1 [@@deriving sexp]
+type version = [ `V1_0 | `V1_1 ] [@@deriving sexp]
 
 (** Document encoding. *)
-type encoding = Any | Utf16be | Utf16le | Utf8 [@@deriving sexp]
+type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
 
 (** *)
-type scalar_style =
-  | Any
-  | Plain
-  | Single_quoted
-  | Double_quoted
-  | Literal
-  | Folded
+type scalar_style = [
+  | `Any
+  | `Plain
+  | `Single_quoted
+  | `Double_quoted
+  | `Literal
+  | `Folded ]
   [@@deriving sexp]
 
 val library_version : unit -> int * int * int
@@ -116,4 +116,11 @@ module Stream : sig
   val do_parse : parser -> (Event.t, [> Rresult.R.msg]) Result.result
   (** [do_parse parser] will generate the next parsing event from an
       initialised parser.  *)
+
+  type emitter
+
+  val emitter : unit -> (emitter, [> Rresult.R.msg]) Result.result
+
+
+
 end

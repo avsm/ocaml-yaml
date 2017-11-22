@@ -14,20 +14,23 @@
 
 open Sexplib.Conv
 
-type version =
-  | V1_0
-  | V1_1 [@@deriving sexp]
+type version = [
+ | `V1_0
+ | `V1_1 
+] [@@deriving sexp]
 
-type encoding =
-  | Any
-  | Utf16be
-  | Utf16le
-  | Utf8 [@@deriving sexp]
+type encoding = [
+ | `Any
+ | `Utf16be
+ | `Utf16le
+ | `Utf8  ]
+[@@deriving sexp]
 
-type scalar_style =
-  | Any
-  | Plain
-  | Single_quoted
-  | Double_quoted
-  | Literal
-  | Folded [@@deriving sexp]
+type scalar_style = [
+ | `Any
+ | `Plain
+ | `Single_quoted
+ | `Double_quoted
+ | `Literal
+ | `Folded ]
+[@@deriving sexp]
