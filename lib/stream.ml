@@ -19,7 +19,6 @@ open Types
 module B = Yaml_ffi.M
 module T = Yaml_types.M
 
-
 type tag_directive = {
   handle: string;
   prefix: string;
@@ -53,6 +52,13 @@ let encoding_of_ffi e : encoding =
   | `Utf16le -> Utf16le
   | `Utf8 -> Utf8
   | `E err -> raise (Invalid_argument ("invalid encoding "^(Int64.to_string err)))
+
+let encoding_to_ffi (e:Types.encoding) =
+  match e with
+  | Any -> `Any
+  | Utf16be -> `Utf16be
+  | Utf16le -> `Utf16le
+  | Utf8 -> `Utf8
 
 let tag_directive_of_ffi e =
   let open Ctypes in
@@ -190,24 +196,52 @@ let get_version () =
 
 type parser = {
   p: T.Parser.t Ctypes.structure Ctypes.ptr;
-  e: T.Event.t Ctypes.structure Ctypes.ptr;
+  event: T.Event.t Ctypes.structure Ctypes.ptr;
 }
 
 let parser () =
   let p = Ctypes.(allocate_n T.Parser.t ~count:1) in
-  let e = Ctypes.(allocate_n T.Event.t ~count:1) in
+  let event = Ctypes.(allocate_n T.Event.t ~count:1) in
   let r = B.parser_init p in
   match r with
-  | 1 -> R.ok {p;e}
+  | 1 -> R.ok {p;event}
   | _ -> R.error_msg "error initialising parser"
 
 let set_input_string {p;_} s =
   let len = String.length s |> Unsigned.Size_t.of_int in
   B.parser_set_input_string p s len
 
-let do_parse {p;e} =
+let do_parse {p;event} =
   let open Ctypes in
-  let r = B.parser_parse p e in
+  let r = B.parser_parse p event in
   match r with
-  | 1 -> Event.of_ffi (!@ e) |> R.ok
+  | 1 -> Event.of_ffi (!@ event) |> R.ok
   | _ -> R.error_msg "error calling parser"
+
+type emitter = {
+  e: T.Emitter.t Ctypes.structure Ctypes.ptr;
+  event: T.Event.t Ctypes.structure Ctypes.ptr;
+}
+
+let emitter () =
+  let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
+  let event = Ctypes.(allocate_n T.Event.t ~count:1) in
+  let r = B.emitter_init e in
+  match r with
+  | 1 -> R.ok {e;event}
+  | _ -> R.error_msg "error initialising emitter"
+
+let set_output_string {e;_} s =
+  let len = String.length s |> Unsigned.Size_t.of_int in
+  B.emitter_set_output_string e s len
+
+let check fn a =
+  match fn a with
+  | 0 -> R.error_msg "function failed"
+  | 1 -> R.ok ()
+  | _ -> R.error_msg "unexpected return value"
+
+let stream_start {e;event} encoding =
+  encoding_to_ffi encoding |> fun encoding->
+  check (B.stream_start_event_init event) encoding >>= fun () ->
+  check (B.emitter_emit e) event

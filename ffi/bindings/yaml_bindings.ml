@@ -44,4 +44,61 @@ struct
 
   let parser_parse =
     foreign "yaml_parser_parse" C.(ptr T.Parser.t @-> ptr T.Event.t @-> returning int)
+
+  let emitter_init =
+    foreign "yaml_emitter_initialize" C.(ptr T.Emitter.t @-> returning int)
+
+  let emitter_delete =
+    foreign "yaml_emitter_delete" C.(ptr T.Emitter.t @-> returning void)
+
+  let emitter_set_output_string =
+    foreign "yaml_emitter_set_output_string" C.(ptr T.Emitter.t @-> string @-> size_t @-> ptr size_t @-> returning void)
+
+  let emitter_set_encoding =
+    foreign "yaml_emitter_set_encoding" C.(ptr T.Emitter.t @-> T.encoding_t @-> returning void)
+
+  let emitter_set_canonical =
+    foreign "yaml_emitter_set_canonical" C.(ptr T.Emitter.t @-> bool @-> returning void)
+
+  let emitter_set_indent =
+    foreign "yaml_emitter_set_indent" C.(ptr T.Emitter.t @-> int @-> returning void)
+
+  let emitter_set_width =
+    foreign "yaml_emitter_set_width" C.(ptr T.Emitter.t @-> int @-> returning void)
+
+  let emitter_set_unicode =
+    foreign "yaml_emitter_set_unicode" C.(ptr T.Emitter.t @-> bool @-> returning void)
+
+(* TODO bind break_t
+  let emitter_set_break =
+    foreign "yaml_emitter_set_break" C.(ptr T.Emitter.t @-> T.break_t @-> returning void) 
+*)
+
+  let emitter_emit =
+     foreign "yaml_emitter_emit" C.(ptr T.Emitter.t @-> ptr T.Event.t @-> returning int)
+
+  let stream_start_event_init =
+     foreign "yaml_stream_start_event_initialize" C.(ptr T.Event.t @-> T.encoding_t @-> returning int)
+
+  let stream_end_event_init =
+     foreign "yaml_stream_end_event_initialize" C.(ptr T.Event.t @-> returning int)
+  
+  let document_start_event_init =
+     foreign "yaml_document_start_event_initialize" C.(ptr T.Event.t @-> ptr T.Version_directive.t @-> ptr T.Tag_directive.t @-> ptr T.Tag_directive.t @-> int @-> returning int)
+
+  let document_end_event_init =
+     foreign "yaml_document_end_event_initialize" C.(ptr T.Event.t @-> int @-> returning int)
+
+  let alias_event_init =
+     foreign "yaml_alias_event_initialize" C.(ptr T.Event.t @-> string @-> returning int)
+
+  let scalar_event_init =
+     foreign "yaml_scalar_event_initialize" C.(ptr T.Event.t @-> string @-> string @-> string @-> int @-> int @-> int @-> T.scalar_style_t @-> returning int)
+
+  let sequence_start_event_init =
+     foreign "yaml_sequence_start_event_initialize" C.(ptr T.Event.t @-> string @-> string @-> int @-> T.sequence_style_t @-> returning int)
+
+  let sequence_end_event_init =
+     foreign "yaml_sequence_end_event_initialize" C.(ptr T.Event.t @-> returning int)
+
 end

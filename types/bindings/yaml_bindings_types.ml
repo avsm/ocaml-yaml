@@ -284,4 +284,11 @@ struct
     let error = F.(field t "error" error_t)
     let () = F.seal t
   end
+
+  module Emitter = struct
+    type t
+    let t : t typ = F.structure "yaml_emitter_s"
+    (* TODO *)
+    let () = F.seal t
+  end
 end

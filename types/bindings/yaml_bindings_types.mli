@@ -194,4 +194,9 @@ module M(F : Cstubs.Types.TYPE) : sig
     type t
     val t : t typ
   end
+
+  module Emitter : sig
+    type t
+    val t : t typ
+  end
 end
