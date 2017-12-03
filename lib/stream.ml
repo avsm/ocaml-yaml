@@ -238,36 +238,37 @@ let check l a =
   | 1 -> R.ok ()
   | _ -> R.error_msg "unexpected return value"
 
-let stream_start {e;event} encoding =
-  check "stream_start" @@ B.stream_start_event_init event (encoding :> T.Encoding.t) >>= fun () ->
-  check "emitter_emit" @@ B.emitter_emit e event
+let check_emit l {e;event} a =
+  check l a >>= fun () ->
+  check l @@ B.emitter_emit e event
 
-let stream_end {e;event} =
-  check "stream_end" @@ B.stream_end_event_init event >>= fun () ->
-  check "emitter_emit" @@ B.emitter_emit e event >>= fun () ->
-  check "emitter_flush" @@ B.emitter_flush e
+let stream_start t encoding =
+  check_emit "stream_start" t @@
+  B.stream_start_event_init t.event (encoding :> T.Encoding.t)
 
-let document_start {e;event} implicit =
+let stream_end t =
+  check_emit "stream_end" t @@ B.stream_end_event_init t.event
+
+let document_start ?(implicit=true) t  =
   let open Ctypes in
   let ver = from_voidp T.Version_directive.t null in
   let tag = from_voidp T.Tag_directive.t null in
-  check "doc_start" @@ B.document_start_event_init event ver tag tag implicit >>= fun () ->
-  check "emitter_emit" @@ B.emitter_emit e event
+  check_emit "doc_start" t @@ B.document_start_event_init t.event ver tag tag implicit
 
-let document_end {e;event} implicit =
-  check "doc_end" @@ B.document_end_event_init event implicit >>= fun () ->
-  check "emitter_emit" @@ B.emitter_emit e event
+let document_end ?(implicit=true) t =
+  check_emit "doc_end" t @@ B.document_end_event_init t.event implicit 
 
-let scalar ?(plain_implicit=false) ?(quoted_implicit=false) ?anchor ?tag {e;event} value (style:Types.scalar_style) =
-  let open Ctypes in
-  check "scalar" @@ B.scalar_event_init event anchor tag value (String.length value) plain_implicit quoted_implicit (style :> T.Scalar_style.t) >>= fun () ->
-  check "emitter_emit" @@ B.emitter_emit e event
+let scalar ?(plain_implicit=false) ?(quoted_implicit=false) ?anchor ?tag ?(style=`Any) t value =
+  check_emit "scalar" t @@ B.scalar_event_init t.event anchor tag value (String.length value) plain_implicit quoted_implicit (style :> T.Scalar_style.t)
 
-let sequence_start ?anchor ?tag {e;event} implicit style =
-  check "seq_start" @@ B.sequence_start_event_init event anchor tag implicit style >>= fun () ->
-  check "emitter_emit" @@ B.emitter_emit e event
+let sequence_start ?anchor ?tag ?(implicit=true) ?(style=`Any) t =
+  check_emit "seq_start" t @@ B.sequence_start_event_init t.event anchor tag implicit (style :> T.Sequence_style.t)
 
-let sequence_end {e;event} =
-  check "seq_end" @@ B.sequence_end_event_init event >>= fun () ->
-  check "emitter_emit" @@ B.emitter_emit e event
+let sequence_end t =
+  check_emit "seq_end" t @@ B.sequence_end_event_init t.event
 
+let mapping_start ?anchor ?tag ?(implicit=true) ?(style=`Any) t =
+  check_emit "mapping_start" t @@ B.mapping_start_event_init t.event anchor tag implicit (style :> T.Mapping_style.t)
+
+let mapping_end t =
+  check_emit "mapping_end" t @@ B.mapping_end_event_init t.event

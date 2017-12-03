@@ -92,12 +92,12 @@ struct
 
   let stream_end_event_init =
      foreign "yaml_stream_end_event_initialize" C.(ptr T.Event.t @-> returning int)
-  
+ 
   let document_start_event_init =
-     foreign "yaml_document_start_event_initialize" C.(ptr T.Event.t @-> ptr T.Version_directive.t @-> ptr T.Tag_directive.t @-> ptr T.Tag_directive.t @-> int @-> returning int)
+     foreign "yaml_document_start_event_initialize" C.(ptr T.Event.t @-> ptr T.Version_directive.t @-> ptr T.Tag_directive.t @-> ptr T.Tag_directive.t @-> bool @-> returning int)
 
   let document_end_event_init =
-     foreign "yaml_document_end_event_initialize" C.(ptr T.Event.t @-> int @-> returning int)
+     foreign "yaml_document_end_event_initialize" C.(ptr T.Event.t @-> bool @-> returning int)
 
   let alias_event_init =
      foreign "yaml_alias_event_initialize" C.(ptr T.Event.t @-> string @-> returning int)
@@ -106,9 +106,14 @@ struct
      foreign "yaml_scalar_event_initialize" C.(ptr T.Event.t @-> string_opt @-> string_opt @-> string @-> int @-> bool @-> bool @-> T.scalar_style_t @-> returning int)
 
   let sequence_start_event_init =
-     foreign "yaml_sequence_start_event_initialize" C.(ptr T.Event.t @-> string_opt @-> string_opt @-> int @-> T.sequence_style_t @-> returning int)
+     foreign "yaml_sequence_start_event_initialize" C.(ptr T.Event.t @-> string_opt @-> string_opt @-> bool @-> T.sequence_style_t @-> returning int)
 
   let sequence_end_event_init =
      foreign "yaml_sequence_end_event_initialize" C.(ptr T.Event.t @-> returning int)
 
+  let mapping_start_event_init =
+     foreign "yaml_mapping_start_event_initialize" C.(ptr T.Event.t @-> string_opt @-> string_opt @-> bool @-> T.mapping_style_t @-> returning int)
+
+  let mapping_end_event_init =
+     foreign "yaml_mapping_end_event_initialize" C.(ptr T.Event.t @-> returning int)
 end

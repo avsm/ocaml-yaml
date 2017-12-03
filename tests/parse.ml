@@ -2,7 +2,8 @@ module T = Yaml_types.M
 open Rresult
 
 let pp_event e =
-  print_endline (Sexplib.Sexp.to_string_hum (Yaml.Stream.Event.sexp_of_t e))
+  (* print_endline (Sexplib.Sexp.to_string_hum (Yaml.Stream.Event.sexp_of_t e)) *)
+  ()
 
 let test () =
   let open R.Infix in

@@ -43,6 +43,22 @@ type scalar_style = [
   | `Folded ]
   [@@deriving sexp]
 
+(** *)
+type sequence_style = [
+  | `Any
+  | `Block
+  | `Flow
+] [@@deriving sexp]
+
+(** *)
+type mapping_style = [
+  | `Any
+  | `Block
+  | `Flow
+] [@@deriving sexp]
+
+type 'a res = ('a, Rresult.R.msg) Result.result
+
 val library_version : unit -> int * int * int
 (** [library_version ()] returns the major, minor and patch version of the underlying libYAML implementation. *)
 
@@ -119,25 +135,26 @@ module Stream : sig
 
   type emitter
 
-  val emitter : unit -> (emitter, [> Rresult.R.msg]) Result.result
+  val emitter : unit -> emitter res
 
   val set_output_string : emitter -> bytes -> unit
 
-  val document_start : emitter -> int -> (unit, [> Rresult.R.msg]) Result.result
-  val document_end : emitter -> int -> (unit, [> Rresult.R.msg]) Result.result
+  val document_start : ?implicit:bool -> emitter -> unit res
+  val document_end : ?implicit:bool -> emitter -> unit res
 
   val scalar : ?plain_implicit:bool -> ?quoted_implicit:bool -> ?anchor:string ->
-    ?tag:string -> emitter -> string -> Types.scalar_style ->
-           (unit, [> Rresult.R.msg ]) Result.result
+    ?tag:string -> ?style:scalar_style -> emitter -> string -> unit res
  
-  val stream_start : emitter -> Types.encoding -> (unit, [> Rresult.R.msg ]) Result.result
-  val stream_end : emitter -> (unit, [> Rresult.R.msg ]) Result.result
+  val stream_start : emitter -> encoding -> unit res
+  val stream_end : emitter -> unit res
 
-  (* TODO bind sequence_style type *)
-  val sequence_start : ?anchor:string -> ?tag:string -> emitter -> int -> Yaml_bindings_types.Sequence_style.t ->
-           (unit, [> Rresult.R.msg ]) Result.result
+  val sequence_start : ?anchor:string -> ?tag:string -> ?implicit:bool -> ?style:sequence_style -> emitter -> unit res
 
-  val sequence_end : emitter -> (unit, [>Rresult.R.msg]) Result.result 
+  val sequence_end : emitter -> unit res
+
+  val mapping_start : ?anchor:string -> ?tag:string -> ?implicit:bool -> ?style:mapping_style -> emitter -> unit res
+
+  val mapping_end : emitter -> unit res
 
   val emitter_written : emitter -> int
 end

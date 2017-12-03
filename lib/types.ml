@@ -34,3 +34,17 @@ type scalar_style = [
  | `Literal
  | `Folded ]
 [@@deriving sexp]
+
+type sequence_style = [
+  | `Any
+  | `Block
+  | `Flow
+] [@@deriving sexp]
+
+type mapping_style = [
+  | `Any
+  | `Block
+  | `Flow
+] [@@deriving sexp]
+
+type 'a res = ('a, Rresult.R.msg) Result.result
