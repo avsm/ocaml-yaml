@@ -235,7 +235,7 @@ let set_output_string {e;written;_} s =
 let check l a =
   match a with
   | 0 -> R.error_msg (l ^ " failed")
-  | 1 -> print_endline (l ^ " ok"); R.ok ()
+  | 1 -> R.ok ()
   | _ -> R.error_msg "unexpected return value"
 
 let stream_start {e;event} encoding =
