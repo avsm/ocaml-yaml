@@ -52,7 +52,14 @@ struct
     foreign "yaml_emitter_delete" C.(ptr T.Emitter.t @-> returning void)
 
   let emitter_set_output_string =
-    foreign "yaml_emitter_set_output_string" C.(ptr T.Emitter.t @-> string @-> size_t @-> ptr size_t @-> returning void)
+    foreign "yaml_emitter_set_output_string" C.(ptr T.Emitter.t @-> ocaml_bytes @-> size_t @-> ptr size_t @-> returning void)
+
+(* TODO static funptr 
+  let write_handler = C.(ptr void @-> ptr uchar @-> size_t @-> returning int)
+
+  let emitter_set_output =
+    foreign "yaml_emitter_set_output" C.(ptr T.Emitter.t @-> (static_funptr write_handler) @-> ptr void @-> returning void)
+*)
 
   let emitter_set_encoding =
     foreign "yaml_emitter_set_encoding" C.(ptr T.Emitter.t @-> T.encoding_t @-> returning void)
@@ -68,6 +75,9 @@ struct
 
   let emitter_set_unicode =
     foreign "yaml_emitter_set_unicode" C.(ptr T.Emitter.t @-> bool @-> returning void)
+
+  let emitter_flush =
+    foreign "yaml_emitter_flush" C.(ptr T.Emitter.t @-> returning int)
 
 (* TODO bind break_t
   let emitter_set_break =
@@ -96,7 +106,7 @@ struct
      foreign "yaml_scalar_event_initialize" C.(ptr T.Event.t @-> string_opt @-> string_opt @-> string @-> int @-> bool @-> bool @-> T.scalar_style_t @-> returning int)
 
   let sequence_start_event_init =
-     foreign "yaml_sequence_start_event_initialize" C.(ptr T.Event.t @-> string @-> string @-> int @-> T.sequence_style_t @-> returning int)
+     foreign "yaml_sequence_start_event_initialize" C.(ptr T.Event.t @-> string_opt @-> string_opt @-> int @-> T.sequence_style_t @-> returning int)
 
   let sequence_end_event_init =
      foreign "yaml_sequence_end_event_initialize" C.(ptr T.Event.t @-> returning int)

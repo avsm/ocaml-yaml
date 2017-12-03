@@ -214,46 +214,60 @@ let do_parse {p;event} =
 type emitter = {
   e: T.Emitter.t Ctypes.structure Ctypes.ptr;
   event: T.Event.t Ctypes.structure Ctypes.ptr;
+  written: Unsigned.size_t Ctypes.ptr;
 }
+
+let emitter_written {written;_} = Ctypes.(!@ written) |> Unsigned.Size_t.to_int
 
 let emitter () =
   let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
   let event = Ctypes.(allocate_n T.Event.t ~count:1) in
+  let written = Ctypes.allocate_n Ctypes.size_t ~count:1 in
   let r = B.emitter_init e in
   match r with
-  | 1 -> R.ok {e;event}
+  | 1 -> R.ok {e;event;written}
   | _ -> R.error_msg "error initialising emitter"
 
-let set_output_string {e;_} s =
-  let len = String.length s |> Unsigned.Size_t.of_int in
-  B.emitter_set_output_string e s len
+let set_output_string {e;written;_} s =
+  let len = Bytes.length s |> Unsigned.Size_t.of_int in
+  B.emitter_set_output_string e (Ctypes.ocaml_bytes_start s) len written
 
-let check a =
+let check l a =
   match a with
-  | 0 -> R.error_msg "function failed"
-  | 1 -> R.ok ()
+  | 0 -> R.error_msg (l ^ " failed")
+  | 1 -> print_endline (l ^ " ok"); R.ok ()
   | _ -> R.error_msg "unexpected return value"
 
 let stream_start {e;event} encoding =
-  check @@ B.stream_start_event_init event encoding >>= fun () ->
-  check @@ B.emitter_emit e event
+  check "stream_start" @@ B.stream_start_event_init event (encoding :> T.Encoding.t) >>= fun () ->
+  check "emitter_emit" @@ B.emitter_emit e event
 
 let stream_end {e;event} =
-  check @@ B.stream_end_event_init event >>= fun () ->
-  check @@ B.emitter_emit e event
+  check "stream_end" @@ B.stream_end_event_init event >>= fun () ->
+  check "emitter_emit" @@ B.emitter_emit e event >>= fun () ->
+  check "emitter_flush" @@ B.emitter_flush e
 
 let document_start {e;event} implicit =
   let open Ctypes in
   let ver = from_voidp T.Version_directive.t null in
   let tag = from_voidp T.Tag_directive.t null in
-  check @@ B.document_start_event_init event ver tag tag implicit >>= fun () ->
-  check @@ B.emitter_emit e event
+  check "doc_start" @@ B.document_start_event_init event ver tag tag implicit >>= fun () ->
+  check "emitter_emit" @@ B.emitter_emit e event
 
 let document_end {e;event} implicit =
-  check @@ B.document_end_event_init event implicit >>= fun () ->
-  check @@ B.emitter_emit e event
+  check "doc_end" @@ B.document_end_event_init event implicit >>= fun () ->
+  check "emitter_emit" @@ B.emitter_emit e event
 
-let scalar ?(plain_implicit=false) ?(quoted_implicit=false) ?anchor ?tag {e;event} value style =
+let scalar ?(plain_implicit=false) ?(quoted_implicit=false) ?anchor ?tag {e;event} value (style:Types.scalar_style) =
   let open Ctypes in
-  check @@ B.scalar_event_init event anchor tag value (String.length value) plain_implicit quoted_implicit style >>= fun () ->
-  check @@ B.emitter_emit e event
+  check "scalar" @@ B.scalar_event_init event anchor tag value (String.length value) plain_implicit quoted_implicit (style :> T.Scalar_style.t) >>= fun () ->
+  check "emitter_emit" @@ B.emitter_emit e event
+
+let sequence_start ?anchor ?tag {e;event} implicit style =
+  check "seq_start" @@ B.sequence_start_event_init event anchor tag implicit style >>= fun () ->
+  check "emitter_emit" @@ B.emitter_emit e event
+
+let sequence_end {e;event} =
+  check "seq_end" @@ B.sequence_end_event_init event >>= fun () ->
+  check "emitter_emit" @@ B.emitter_emit e event
+

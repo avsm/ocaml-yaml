@@ -121,6 +121,23 @@ module Stream : sig
 
   val emitter : unit -> (emitter, [> Rresult.R.msg]) Result.result
 
+  val set_output_string : emitter -> bytes -> unit
 
+  val document_start : emitter -> int -> (unit, [> Rresult.R.msg]) Result.result
+  val document_end : emitter -> int -> (unit, [> Rresult.R.msg]) Result.result
 
+  val scalar : ?plain_implicit:bool -> ?quoted_implicit:bool -> ?anchor:string ->
+    ?tag:string -> emitter -> string -> Types.scalar_style ->
+           (unit, [> Rresult.R.msg ]) Result.result
+ 
+  val stream_start : emitter -> Types.encoding -> (unit, [> Rresult.R.msg ]) Result.result
+  val stream_end : emitter -> (unit, [> Rresult.R.msg ]) Result.result
+
+  (* TODO bind sequence_style type *)
+  val sequence_start : ?anchor:string -> ?tag:string -> emitter -> int -> Yaml_bindings_types.Sequence_style.t ->
+           (unit, [> Rresult.R.msg ]) Result.result
+
+  val sequence_end : emitter -> (unit, [>Rresult.R.msg]) Result.result 
+
+  val emitter_written : emitter -> int
 end
