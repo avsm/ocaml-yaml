@@ -45,6 +45,20 @@ let scalar_style_of_ffi s : scalar_style =
   | `Folded -> `Folded
   | `E err -> raise (Invalid_argument ("invalid scalar style"^(Int64.to_string err)))
 
+let mapping_style_of_ffi s : mapping_style =
+  match s with
+  | `Any -> `Any
+  | `Block -> `Block
+  | `Flow -> `Flow
+  | `E err -> raise (Invalid_argument ("invalid mapping style"^(Int64.to_string err)))
+
+let sequence_style_of_ffi s : mapping_style =
+  match s with
+  | `Any -> `Any
+  | `Block -> `Block
+  | `Flow -> `Flow
+  | `E err -> raise (Invalid_argument ("invalid sequence style"^(Int64.to_string err)))
+
 let encoding_of_ffi e : encoding =
   match e with
   | `Any -> `Any
@@ -99,11 +113,11 @@ module Event = struct
    | Stream_start of { encoding: encoding }
    | Document_start of { version: version option; implicit: bool }
    | Document_end of { implicit: bool }
-   | Mapping_start of { anchor: string option; tag: string option; implicit: bool; style: scalar_style }
+   | Mapping_start of { anchor: string option; tag: string option; implicit: bool; style: mapping_style }
    | Mapping_end
    | Stream_end 
    | Scalar of { anchor: string option; tag: string option; value: string; plain_implicit: bool; quoted_implicit: bool; style: scalar_style }
-   | Sequence_start of { anchor: string option; tag: string option; implicit: bool; style: scalar_style }
+   | Sequence_start of { anchor: string option; tag: string option; implicit: bool; style: sequence_style }
    | Sequence_end
    | Alias of { anchor: string }
    | Nothing 
@@ -139,7 +153,7 @@ module Event = struct
       let anchor = getf ms Mapping_start.anchor in
       let tag = getf ms Mapping_start.tag in
       let implicit = getf ms Mapping_start.implicit <> 0 in
-      let style = getf ms Mapping_start.style |> scalar_style_of_ffi in
+      let style = getf ms Mapping_start.style |> mapping_style_of_ffi in
       Mapping_start { anchor; tag; implicit; style }
     |`Scalar ->
       let s = getf data Data.scalar in
@@ -159,7 +173,7 @@ module Event = struct
       let anchor = getf ss Sequence_start.anchor in
       let tag = getf ss Sequence_start.tag in
       let implicit = getf ss Sequence_start.implicit <> 0 in
-      let style = getf ss Sequence_start.style |> scalar_style_of_ffi in
+      let style = getf ss Sequence_start.style |> sequence_style_of_ffi in
       Sequence_start {anchor; tag; implicit; style}
     |`Sequence_end -> Sequence_end 
     |`Mapping_end -> Mapping_end 
@@ -273,3 +287,19 @@ let mapping_start ?anchor ?tag ?(implicit=true) ?(style=`Any) t =
 
 let mapping_end t =
   check_emit "mapping_end" t @@ B.mapping_end_event_init t.event
+
+let emit t =
+  let open Event in
+  function
+  | Stream_start { encoding } -> stream_start t encoding
+  | Document_start { version; implicit } -> document_start ~implicit t
+  | Document_end { implicit } -> document_end ~implicit t
+  | Mapping_start { anchor; tag; implicit; style } -> mapping_start ?anchor ?tag ~implicit ~style t
+  | Mapping_end -> mapping_end t
+  | Stream_end -> stream_end t
+  | Scalar { anchor; tag; value; plain_implicit; quoted_implicit; style } -> scalar ?anchor ?tag ~plain_implicit ~quoted_implicit ~style t value
+  | Sequence_start { anchor; tag; implicit; style } -> sequence_start ?anchor ?tag ~implicit ~style t
+  | Sequence_end -> sequence_end t
+  | Alias { anchor } -> failwith "todo"
+  | Nothing -> Ok ()
+ 

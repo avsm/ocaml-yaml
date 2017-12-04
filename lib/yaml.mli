@@ -95,7 +95,7 @@ module Stream : sig
           { anchor: string option
           ; tag: string option
           ; implicit: bool
-          ; style: scalar_style }
+          ; style: mapping_style }
       | Mapping_end 
       | Stream_end
       | Scalar of
@@ -109,7 +109,7 @@ module Stream : sig
           { anchor: string option
           ; tag: string option
           ; implicit: bool
-          ; style: scalar_style }
+          ; style: sequence_style }
       | Sequence_end
       | Alias of { anchor: string}
       | Nothing
@@ -133,6 +133,8 @@ module Stream : sig
   type emitter
 
   val emitter : unit -> emitter res
+
+  val emit : emitter -> Event.t -> unit res
 
   val set_output_string : emitter -> bytes -> unit
 

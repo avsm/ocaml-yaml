@@ -1,5 +1,5 @@
 (executables
- ((names (test parse emit))
+ ((names (test parse emit reflect))
   (libraries (yaml bos))
 ))
 
@@ -16,4 +16,9 @@
 (alias
  ((name    runtest)
   (deps    (emit.exe))
+  (action  (run ${<}))))
+
+(alias
+ ((name    runtest)
+  (deps    (reflect.exe cohttp.yml))
   (action  (run ${<}))))
