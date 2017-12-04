@@ -129,7 +129,7 @@ module M(F : Cstubs.Types.TYPE) : sig
        val anchor : (t, string option) field
        val tag : (t, string option) field
        val implicit : (t, int) field
-       val style : (t, Scalar_style.t) field
+       val style : (t, Mapping_style.t) field
     end
     module Scalar : sig
       type t
@@ -165,7 +165,7 @@ module M(F : Cstubs.Types.TYPE) : sig
       val anchor : (t, string option) field
       val tag : (t, string option) field
       val implicit : (t, int) field
-      val style : (t, Scalar_style.t) field
+      val style : (t, Sequence_style.t) field
     end
     module Alias : sig
       type t

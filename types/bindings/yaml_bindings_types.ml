@@ -243,7 +243,7 @@ struct
       let anchor = F.(field t "anchor" string_opt)
       let tag = F.(field t "tag" string_opt)
       let implicit = F.(field t "implicit" int)
-      let style = F.(field t "style" scalar_style_t)
+      let style = F.(field t "style" sequence_style_t)
       let () = F.seal t
     end
     module Mapping_start = struct
@@ -252,7 +252,7 @@ struct
       let anchor = F.(field t "anchor" string_opt)
       let tag = F.(field t "tag" string_opt)
       let implicit = F.(field t "implicit" int)
-      let style = F.(field t "style" scalar_style_t)
+      let style = F.(field t "style" mapping_style_t)
       let () = F.seal t
     end
     module Data = struct (* Union *)
