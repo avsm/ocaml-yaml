@@ -288,6 +288,9 @@ let mapping_start ?anchor ?tag ?(implicit=true) ?(style=`Any) t =
 let mapping_end t =
   check_emit "mapping_end" t @@ B.mapping_end_event_init t.event
 
+let alias t value =
+  check_emit "alias" t @@ B.alias_event_init t.event value
+
 let emit t =
   let open Event in
   function
@@ -300,6 +303,6 @@ let emit t =
   | Scalar { anchor; tag; value; plain_implicit; quoted_implicit; style } -> scalar ?anchor ?tag ~plain_implicit ~quoted_implicit ~style t value
   | Sequence_start { anchor; tag; implicit; style } -> sequence_start ?anchor ?tag ~implicit ~style t
   | Sequence_end -> sequence_end t
-  | Alias { anchor } -> failwith "todo"
+  | Alias { anchor } -> alias t anchor
   | Nothing -> Ok ()
  

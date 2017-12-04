@@ -139,12 +139,16 @@ module Stream : sig
   val set_output_string : emitter -> bytes -> unit
 
   val document_start : ?implicit:bool -> emitter -> unit res
+
   val document_end : ?implicit:bool -> emitter -> unit res
 
   val scalar : ?plain_implicit:bool -> ?quoted_implicit:bool -> ?anchor:string ->
     ?tag:string -> ?style:scalar_style -> emitter -> string -> unit res
+
+  val alias : emitter -> string -> unit res
  
   val stream_start : emitter -> encoding -> unit res
+
   val stream_end : emitter -> unit res
 
   val sequence_start : ?anchor:string -> ?tag:string -> ?implicit:bool -> ?style:sequence_style -> emitter -> unit res
