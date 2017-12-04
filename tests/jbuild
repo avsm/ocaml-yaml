@@ -10,7 +10,7 @@
 
 (alias
  ((name    runtest)
-  (deps    (parse.exe linuxkit.yml bomb.yml))
+  (deps    (parse.exe linuxkit.yml bomb.yml cohttp.yml))
   (action  (run ${<}))))
 
 (alias

@@ -1,0 +1,23 @@
+language: c
+sudo: false
+services:
+  - docker
+install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/master/.travis-docker.sh
+script: bash -ex ./.travis-docker.sh
+env:
+  global:
+  - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
+  - PINS="cohttp-top:. cohttp-async:. cohttp-lwt-unix:. cohttp-lwt-jsoo:. cohttp-lwt:. cohttp-mirage:. cohttp:."
+  matrix:
+  - PACKAGE="cohttp" DISTRO="alpine-3.5" OCAML_VERSION="4.06.0"
+  - PACKAGE="cohttp-async" DISTRO="alpine" OCAML_VERSION="4.06.0"
+  - PACKAGE="cohttp-lwt" DISTRO="debian-unstable" OCAML_VERSION="4.03.0"
+  - PACKAGE="cohttp-mirage" DISTRO="debian-unstable" OCAML_VERSION="4.03.0"
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/6ee5059c7420709f4ad1
+    on_success: change
+    on_failure: always
+    on_start: false
+

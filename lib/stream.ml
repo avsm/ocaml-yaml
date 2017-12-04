@@ -96,20 +96,20 @@ module Event = struct
   } [@@deriving sexp]
 
   type t =
-   | Stream_start of { pos: pos; encoding: encoding }
-   | Document_start of { pos: pos; version: version option; implicit: bool }
-   | Document_end of { pos: pos; implicit: bool }
-   | Mapping_start of { pos: pos; anchor: string option; tag: string option; implicit: bool; style: scalar_style }
-   | Mapping_end of { pos: pos }
-   | Stream_end of { pos: pos }
-   | Scalar of { pos: pos; anchor: string option; tag: string option; value: string; plain_implicit: bool; quoted_implicit: bool; style: scalar_style }
-   | Sequence_start of { pos: pos; anchor: string option; tag: string option; implicit: bool; style: scalar_style }
-   | Sequence_end of { pos:pos }
-   | Alias of { pos: pos; anchor: string }
-   | Nothing of { pos: pos }
+   | Stream_start of { encoding: encoding }
+   | Document_start of { version: version option; implicit: bool }
+   | Document_end of { implicit: bool }
+   | Mapping_start of { anchor: string option; tag: string option; implicit: bool; style: scalar_style }
+   | Mapping_end
+   | Stream_end 
+   | Scalar of { anchor: string option; tag: string option; value: string; plain_implicit: bool; quoted_implicit: bool; style: scalar_style }
+   | Sequence_start of { anchor: string option; tag: string option; implicit: bool; style: scalar_style }
+   | Sequence_end
+   | Alias of { anchor: string }
+   | Nothing 
    [@@deriving sexp]
 
-  let of_ffi e : t =
+  let of_ffi e : t * pos =
     let open T.Event in
     let open Ctypes in
     let ty = getf e _type in
@@ -117,11 +117,11 @@ module Event = struct
     let start_mark = getf e start_mark |> Mark.of_ffi in
     let end_mark = getf e end_mark |> Mark.of_ffi in
     let pos = { start_mark; end_mark } in
-    match ty with
+    let r = match ty with
     |`Stream_start ->
        let start = getf data Data.stream_start in
        let encoding = getf start Stream_start.encoding |> encoding_of_ffi in
-       Stream_start { pos; encoding }
+       Stream_start { encoding }
     |`Document_start ->
        let ds = getf data Data.document_start in
        let version =
@@ -133,14 +133,14 @@ module Event = struct
            let minor = getf vd T.Version_directive.minor in
            Some (version_of_directive ~major ~minor) in
        let implicit = getf ds Document_start.implicit <> 0 in
-       Document_start { pos; version; implicit}
+       Document_start { version; implicit}
     |`Mapping_start ->
       let ms = getf data Data.mapping_start in
       let anchor = getf ms Mapping_start.anchor in
       let tag = getf ms Mapping_start.tag in
       let implicit = getf ms Mapping_start.implicit <> 0 in
       let style = getf ms Mapping_start.style |> scalar_style_of_ffi in
-      Mapping_start { pos; anchor; tag; implicit; style }
+      Mapping_start { anchor; tag; implicit; style }
     |`Scalar ->
       let s = getf data Data.scalar in
       let anchor = getf s Scalar.anchor in
@@ -149,30 +149,31 @@ module Event = struct
       let plain_implicit = getf s Scalar.plain_implicit <> 0 in
       let quoted_implicit = getf s Scalar.quoted_implicit <> 0 in
       let style = getf s Scalar.style |> scalar_style_of_ffi in
-      Scalar { pos; anchor; tag; value; plain_implicit; quoted_implicit; style }
+      Scalar { anchor; tag; value; plain_implicit; quoted_implicit; style }
     |`Document_end ->
       let de = getf data Data.document_end in
       let implicit = getf de Document_end.implicit <> 0 in
-      Document_end { pos; implicit }
+      Document_end { implicit }
     |`Sequence_start ->
       let ss = getf data Data.sequence_start in
       let anchor = getf ss Sequence_start.anchor in
       let tag = getf ss Sequence_start.tag in
       let implicit = getf ss Sequence_start.implicit <> 0 in
       let style = getf ss Sequence_start.style |> scalar_style_of_ffi in
-      Sequence_start {pos; anchor; tag; implicit; style}
-    |`Sequence_end -> Sequence_end {pos}
-    |`Mapping_end -> Mapping_end {pos}
-    |`Stream_end -> Stream_end {pos}
+      Sequence_start {anchor; tag; implicit; style}
+    |`Sequence_end -> Sequence_end 
+    |`Mapping_end -> Mapping_end 
+    |`Stream_end -> Stream_end
     |`Alias ->
       let a = getf data Data.alias in
       let anchor = 
         match getf a Alias.anchor with
         | None -> raise (Invalid_argument "empty anchor alias")
         | Some a -> a in
-      Alias { pos; anchor }
-    |`None -> Nothing {pos}
+      Alias { anchor }
+    |`None -> Nothing
     |`E i -> raise (Invalid_argument ("Unexpected event, internal library error "^(Int64.to_string i)))
+    in r, pos
     
 end
 

@@ -88,34 +88,31 @@ module Stream : sig
     - [sequence ::= SEQUENCE-START node* SEQUENCE-END]
     - [mapping ::= MAPPING-START (node node)* MAPPING-END] *)
     type t =
-      | Stream_start of {pos: pos; encoding: encoding}
-      | Document_start of {pos: pos; version: version option; implicit: bool}
-      | Document_end of {pos: pos; implicit: bool}
+      | Stream_start of { encoding: encoding}
+      | Document_start of { version: version option; implicit: bool}
+      | Document_end of { implicit: bool}
       | Mapping_start of
-          { pos: pos
-          ; anchor: string option
+          { anchor: string option
           ; tag: string option
           ; implicit: bool
           ; style: scalar_style }
-      | Mapping_end of {pos: pos}
-      | Stream_end of {pos: pos}
+      | Mapping_end 
+      | Stream_end
       | Scalar of
-          { pos: pos
-          ; anchor: string option
+          { anchor: string option
           ; tag: string option
           ; value: string
           ; plain_implicit: bool
           ; quoted_implicit: bool
           ; style: scalar_style }
       | Sequence_start of
-          { pos: pos
-          ; anchor: string option
+          { anchor: string option
           ; tag: string option
           ; implicit: bool
           ; style: scalar_style }
-      | Sequence_end of {pos: pos}
-      | Alias of {pos: pos; anchor: string}
-      | Nothing of {pos: pos}
+      | Sequence_end
+      | Alias of { anchor: string}
+      | Nothing
       [@@deriving sexp]
   end
 
@@ -129,7 +126,7 @@ module Stream : sig
   (** [set_input_string parser buf] will initialise a {!parser} to use the
       [buf] value and start processing it. *)
 
-  val do_parse : parser -> (Event.t, [> Rresult.R.msg]) Result.result
+  val do_parse : parser -> (Event.t * Event.pos) res
   (** [do_parse parser] will generate the next parsing event from an
       initialised parser.  *)
 
