@@ -28,7 +28,7 @@ let test () =
   S.stream_end t >>= fun () ->
   Printf.printf "written: %d\n%!" (S.emitter_written t);
   let r = Bytes.sub buf 0 (S.emitter_written t) in
-  print_endline r;
+  print_endline (Bytes.to_string r);
   Ok ()
   
 let _ =

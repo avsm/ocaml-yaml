@@ -19,8 +19,8 @@ let test () =
   Yaml.Stream.set_input_string t buf;
   iter_until_done (reflect e) >>= fun () ->
   let r = Bytes.sub obuf 0 (Yaml.Stream.emitter_written e) in
-  print_endline buf;
-  print_endline r; 
+  print_endline (Bytes.to_string buf);
+  print_endline (Bytes.to_string r); 
   Ok ()
 
 let _ =
