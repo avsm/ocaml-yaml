@@ -13,6 +13,9 @@ depends: [
   "ctypes" {>="0.12.0"}
   "ppx_sexp_conv" {build & >="v0.9.0"}
   "rresult"
+  "fmt"
+  "logs"
+  "ezjsonm" {test}
   "bos" {test}
 ]
 build: [

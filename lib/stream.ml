@@ -306,3 +306,57 @@ let emit t =
   | Alias { anchor } -> alias t anchor
   | Nothing -> Ok ()
  
+let of_string s =
+  let open Event in
+  parser () >>= fun t ->
+  set_input_string t s;
+  let next () =
+   do_parse t >>= fun (e, pos) ->
+   Logs.debug (fun l -> l "event %s\n%!" (sexp_of_t e |> Sexplib.Sexp.to_string_hum));
+   Ok (e,pos) in
+  next () >>= fun (e,pos) ->
+  match e with
+  | Stream_start _ -> begin
+    next () >>= fun (e,pos) ->
+    match e with
+    | Document_start _ -> begin
+       let rec parse_v (e,pos) =
+         match e with
+         | Sequence_start _ ->
+            next () >>=
+            parse_seq [] >>= fun s ->
+            Ok (`A s)
+         | Scalar {value} -> Ok (`String value)
+         | Mapping_start _ ->
+            next () >>=
+            parse_map [] >>= fun s ->
+            Ok (`O s)
+         | e -> R.error_msg (Fmt.strf "todo %s (%s)" (sexp_of_t e |> Sexplib.Sexp.to_string_hum) (sexp_of_pos pos |> Sexplib.Sexp.to_string_hum))
+       and parse_seq acc (e,pos) =
+          match e with
+          | Sequence_end -> Ok (List.rev acc)
+          | e ->
+             parse_v (e,pos) >>= fun v ->
+             next () >>=
+             parse_seq (v :: acc)
+       and parse_map acc (e,pos) =
+         match e with
+         | Mapping_end -> Ok (List.rev acc)
+         | e -> begin
+             parse_v (e,pos) >>= fun v ->
+             begin match v with
+             | `String k ->
+                next () >>= 
+                parse_v >>= fun v ->
+                next () >>=
+                parse_map ((k,v)::acc)
+             | _ -> R.error_msg (Fmt.strf "only string keys are supported (%s)" (sexp_of_pos pos |> Sexplib.Sexp.to_string_hum))
+             end
+         end
+       in
+       next () >>= 
+       parse_v
+    end
+    | _ -> R.error_msg "Not document start"
+  end
+  | _ -> R.error_msg "Not stream start"

@@ -47,4 +47,13 @@ type mapping_style = [
   | `Flow
 ] [@@deriving sexp]
 
+type value =
+  [ `Null
+  | `Bool of bool
+  | `Float of float
+  | `String of string
+  | `A of value list
+  | `O of (string * value) list
+] [@@deriving sexp]
+
 type 'a res = ('a, Rresult.R.msg) Result.result

@@ -59,6 +59,17 @@ type mapping_style = [
 
 type 'a res = ('a, Rresult.R.msg) Result.result
 
+type value =
+  [ `Null
+  | `Bool of bool
+  | `Float of float
+  | `String of string
+  | `A of value list
+  | `O of (string * value) list
+] [@@deriving sexp]
+
+val of_string : string -> value res
+
 val library_version : unit -> int * int * int
 (** [library_version ()] returns the major, minor and patch version of the underlying libYAML implementation. *)
 
@@ -123,8 +134,7 @@ module Stream : sig
   (** [parser ()] will allocate a fresh parser state. *)
 
   val set_input_string : parser -> string -> unit
-  (** [set_input_string parser buf] will initialise a {!parser} to use the
-      [buf] value and start processing it. *)
+  (** TODO Do not expose this -- associate with the abstract emitter type instead *)
 
   val do_parse : parser -> (Event.t * Event.pos) res
   (** [do_parse parser] will generate the next parsing event from an
@@ -137,6 +147,7 @@ module Stream : sig
   val emit : emitter -> Event.t -> unit res
 
   val set_output_string : emitter -> bytes -> unit
+  (** TODO Do not expose this -- associate with the abstract emitter type instead *)
 
   val document_start : ?implicit:bool -> emitter -> unit res
 
