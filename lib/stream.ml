@@ -273,16 +273,16 @@ let document_start ?(implicit=true) t  =
 let document_end ?(implicit=true) t =
   check_emit "doc_end" t @@ B.document_end_event_init t.event implicit 
 
-let scalar ?(plain_implicit=false) ?(quoted_implicit=false) ?anchor ?tag ?(style=`Any) t value =
+let scalar ?(plain_implicit=true) ?(quoted_implicit=false) ?anchor ?tag ?(style=`Plain) t value =
   check_emit "scalar" t @@ B.scalar_event_init t.event anchor tag value (String.length value) plain_implicit quoted_implicit (style :> T.Scalar_style.t)
 
-let sequence_start ?anchor ?tag ?(implicit=true) ?(style=`Any) t =
+let sequence_start ?anchor ?tag ?(implicit=true) ?(style=`Block) t =
   check_emit "seq_start" t @@ B.sequence_start_event_init t.event anchor tag implicit (style :> T.Sequence_style.t)
 
 let sequence_end t =
   check_emit "seq_end" t @@ B.sequence_end_event_init t.event
 
-let mapping_start ?anchor ?tag ?(implicit=true) ?(style=`Any) t =
+let mapping_start ?anchor ?tag ?(implicit=true) ?(style=`Block) t =
   check_emit "mapping_start" t @@ B.mapping_start_event_init t.event anchor tag implicit (style :> T.Mapping_style.t)
 
 let mapping_end t =
@@ -305,58 +305,4 @@ let emit t =
   | Sequence_end -> sequence_end t
   | Alias { anchor } -> alias t anchor
   | Nothing -> Ok ()
- 
-let of_string s =
-  let open Event in
-  parser () >>= fun t ->
-  set_input_string t s;
-  let next () =
-   do_parse t >>= fun (e, pos) ->
-   Logs.debug (fun l -> l "event %s\n%!" (sexp_of_t e |> Sexplib.Sexp.to_string_hum));
-   Ok (e,pos) in
-  next () >>= fun (e,pos) ->
-  match e with
-  | Stream_start _ -> begin
-    next () >>= fun (e,pos) ->
-    match e with
-    | Document_start _ -> begin
-       let rec parse_v (e,pos) =
-         match e with
-         | Sequence_start _ ->
-            next () >>=
-            parse_seq [] >>= fun s ->
-            Ok (`A s)
-         | Scalar {value} -> Ok (`String value)
-         | Mapping_start _ ->
-            next () >>=
-            parse_map [] >>= fun s ->
-            Ok (`O s)
-         | e -> R.error_msg (Fmt.strf "todo %s (%s)" (sexp_of_t e |> Sexplib.Sexp.to_string_hum) (sexp_of_pos pos |> Sexplib.Sexp.to_string_hum))
-       and parse_seq acc (e,pos) =
-          match e with
-          | Sequence_end -> Ok (List.rev acc)
-          | e ->
-             parse_v (e,pos) >>= fun v ->
-             next () >>=
-             parse_seq (v :: acc)
-       and parse_map acc (e,pos) =
-         match e with
-         | Mapping_end -> Ok (List.rev acc)
-         | e -> begin
-             parse_v (e,pos) >>= fun v ->
-             begin match v with
-             | `String k ->
-                next () >>= 
-                parse_v >>= fun v ->
-                next () >>=
-                parse_map ((k,v)::acc)
-             | _ -> R.error_msg (Fmt.strf "only string keys are supported (%s)" (sexp_of_pos pos |> Sexplib.Sexp.to_string_hum))
-             end
-         end
-       in
-       next () >>= 
-       parse_v
-    end
-    | _ -> R.error_msg "Not document start"
-  end
-  | _ -> R.error_msg "Not stream start"
+
