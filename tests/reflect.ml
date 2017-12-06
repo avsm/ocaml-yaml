@@ -6,7 +6,7 @@ let reflect e ev pos =
 
 let test () =
   let open R.Infix in
-  Bos.OS.File.read (Fpath.v "cohttp.yml") >>= fun buf ->
+  Bos.OS.File.read (Fpath.v "anchor.yml") >>= fun buf ->
   Yaml.Stream.parser () >>= fun t ->
   Yaml.Stream.emitter () >>= fun e ->
   let obuf = Bytes.create 4096 in

@@ -6,7 +6,7 @@ let pp_event e pos =
 
 let test () =
   let open R.Infix in
-  Bos.OS.File.read (Fpath.v "cohttp.yml") >>= fun buf ->
+  Bos.OS.File.read (Fpath.v "anchor.yml") >>= fun buf ->
   Yaml.Stream.parser () >>= fun t ->
   let rec iter_until_done fn =
     Yaml.Stream.do_parse t >>= fun (e, pos) ->
