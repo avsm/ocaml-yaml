@@ -49,7 +49,7 @@ let to_string ?scalar_style ?mapping_style ?sequence_style (v:value) =
   document_end t >>= fun () ->
   stream_end t >>= fun () ->
   let r = Bytes.sub buf 0 (emitter_written t) in
-  Ok r
+  Ok (Bytes.to_string r)
  
 let of_string s =
   let open Event in
