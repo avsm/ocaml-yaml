@@ -5,8 +5,6 @@ module S = Yaml.Stream
 
 let test () =
   S.emitter () >>= fun t ->
-  let buf = Bytes.create 200 in
-  S.set_output_string t buf;
   S.stream_start t `Utf8 >>= fun () ->
   S.document_start t >>= fun () ->
   S.sequence_start t >>= fun () ->
@@ -27,7 +25,7 @@ let test () =
   S.document_end t >>= fun () ->
   S.stream_end t >>= fun () ->
   Printf.printf "written: %d\n%!" (S.emitter_written t);
-  let r = Bytes.sub buf 0 (S.emitter_written t) in
+  let r = S.emitter_buf t in
   print_endline (Bytes.to_string r);
   Ok ()
   

@@ -205,19 +205,18 @@ let get_version () =
 type parser = {
   p: T.Parser.t Ctypes.structure Ctypes.ptr;
   event: T.Event.t Ctypes.structure Ctypes.ptr;
+  buf: string;
 }
 
-let parser () =
+let parser buf =
   let p = Ctypes.(allocate_n T.Parser.t ~count:1) in
   let event = Ctypes.(allocate_n T.Event.t ~count:1) in
   let r = B.parser_init p in
+  let len = String.length buf |> Unsigned.Size_t.of_int in
+  B.parser_set_input_string p buf len;
   match r with
-  | 1 -> R.ok {p;event}
+  | 1 -> R.ok {buf; p;event}
   | _ -> R.error_msg "error initialising parser"
-
-let set_input_string {p;_} s =
-  let len = String.length s |> Unsigned.Size_t.of_int in
-  B.parser_set_input_string p s len
 
 let do_parse {p;event} =
   let open Ctypes in
@@ -229,23 +228,27 @@ let do_parse {p;event} =
 type emitter = {
   e: T.Emitter.t Ctypes.structure Ctypes.ptr;
   event: T.Event.t Ctypes.structure Ctypes.ptr;
+  buf: Bytes.t;
   written: Unsigned.size_t Ctypes.ptr;
 }
 
 let emitter_written {written;_} = Ctypes.(!@ written) |> Unsigned.Size_t.to_int
 
-let emitter () =
+let emitter ?(len=16386) () =
   let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
   let event = Ctypes.(allocate_n T.Event.t ~count:1) in
   let written = Ctypes.allocate_n Ctypes.size_t ~count:1 in
   let r = B.emitter_init e in
+  let buf = Bytes.create len in
+  let len = Bytes.length buf |> Unsigned.Size_t.of_int in
+  B.emitter_set_output_string e (Ctypes.ocaml_bytes_start buf) len written;
   match r with
-  | 1 -> R.ok {e;event;written}
+  | 1 -> R.ok {e;event;written; buf}
   | _ -> R.error_msg "error initialising emitter"
 
-let set_output_string {e;written;_} s =
-  let len = Bytes.length s |> Unsigned.Size_t.of_int in
-  B.emitter_set_output_string e (Ctypes.ocaml_bytes_start s) len written
+let emitter_buf {buf; written} =
+  Ctypes.(!@ written) |> Unsigned.Size_t.to_int |>
+  Bytes.sub buf 0
 
 let check l a =
   match a with

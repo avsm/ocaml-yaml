@@ -7,13 +7,12 @@ let pp_event e pos =
 let test () =
   let open R.Infix in
   Bos.OS.File.read (Fpath.v "anchor.yml") >>= fun buf ->
-  Yaml.Stream.parser () >>= fun t ->
+  Yaml.Stream.parser buf >>= fun t ->
   let rec iter_until_done fn =
     Yaml.Stream.do_parse t >>= fun (e, pos) ->
     match e with 
     | Yaml.Stream.Event.Nothing -> R.ok ()
     | event -> fn event pos; iter_until_done fn in
-  Yaml.Stream.set_input_string t buf;
   iter_until_done pp_event
 
 let _ =

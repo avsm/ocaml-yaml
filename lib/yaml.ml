@@ -22,9 +22,7 @@ open Stream
 let library_version = get_version
 
 let to_string ?scalar_style ?mapping_style ?sequence_style (v:value) =
-  let buf = Bytes.create 16384 in
   emitter () >>= fun t ->
-  set_output_string t buf;
   stream_start t `Utf8 >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -48,13 +46,12 @@ let to_string ?scalar_style ?mapping_style ?sequence_style (v:value) =
   iter v >>= fun () ->
   document_end t >>= fun () ->
   stream_end t >>= fun () ->
-  let r = Bytes.sub buf 0 (emitter_written t) in
+  let r = Stream.emitter_buf t in
   Ok (Bytes.to_string r)
  
 let of_string s =
   let open Event in
-  parser () >>= fun t ->
-  set_input_string t s;
+  parser s >>= fun t ->
   let next () =
    do_parse t >>= fun (e, pos) ->
    Logs.debug (fun l -> l "event %s\n%!" (sexp_of_t e |> Sexplib.Sexp.to_string_hum));

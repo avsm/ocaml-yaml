@@ -131,11 +131,8 @@ module Stream : sig
   type parser
   (** [parser] tracks the state of generating {!Event.t} values. *)
 
-  val parser : unit -> (parser, [> Rresult.R.msg]) Result.result
+  val parser : string -> (parser, [> Rresult.R.msg]) Result.result
   (** [parser ()] will allocate a fresh parser state. *)
-
-  val set_input_string : parser -> string -> unit
-  (** TODO Do not expose this -- associate with the abstract emitter type instead *)
 
   val do_parse : parser -> (Event.t * Event.pos) res
   (** [do_parse parser] will generate the next parsing event from an
@@ -143,12 +140,11 @@ module Stream : sig
 
   type emitter
 
-  val emitter : unit -> emitter res
+  val emitter : ?len:int -> unit -> emitter res
+
+  val emitter_buf : emitter -> Bytes.t
 
   val emit : emitter -> Event.t -> unit res
-
-  val set_output_string : emitter -> bytes -> unit
-  (** TODO Do not expose this -- associate with the abstract emitter type instead *)
 
   val document_start : ?implicit:bool -> emitter -> unit res
 
