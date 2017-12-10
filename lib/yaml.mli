@@ -69,9 +69,9 @@ type value =
 ] [@@deriving sexp]
 
 val of_string : string -> value res
-val to_string : ?scalar_style:scalar_style -> ?mapping_style:mapping_style -> ?sequence_style:sequence_style -> value -> string res
+val to_string : ?encoding:encoding -> ?scalar_style:scalar_style -> ?mapping_style:mapping_style -> ?sequence_style:sequence_style -> value -> string res
 
-val library_version : unit -> int * int * int
+val version : unit -> int * int * int
 (** [library_version ()] returns the major, minor and patch version of the underlying libYAML implementation. *)
 
 (** Low-level event streaming interface for parsing and emitting YAML files. *)

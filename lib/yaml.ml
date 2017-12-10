@@ -19,11 +19,11 @@ open R.Infix
 module Stream = Stream
 open Stream
 
-let library_version = get_version
+let version = get_version
 
-let to_string ?scalar_style ?mapping_style ?sequence_style (v:value) =
+let to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_style (v:value) =
   emitter () >>= fun t ->
-  stream_start t `Utf8 >>= fun () ->
+  stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
      |`Null -> scalar t ""
