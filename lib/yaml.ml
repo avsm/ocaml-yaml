@@ -19,8 +19,6 @@ open R.Infix
 module Stream = Stream
 open Stream
 
-let version = get_version
-
 let to_json v =
   let rec fn = function
    | `String {value} -> `String value
@@ -44,8 +42,8 @@ let of_json (v:value) =
   | r -> Ok r
   | exception (Failure msg) -> R.error_msg msg
  
-let to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_style (v:value) =
-  emitter () >>= fun t ->
+let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
+  emitter ?len () >>= fun t ->
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -54,13 +52,13 @@ let to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_style (v:
      |`Float s -> string_of_float s |> scalar t
      |`Bool s -> string_of_bool s |> scalar t
      |`A l -> 
-        sequence_start ?style:sequence_style t >>= fun () ->
+        sequence_start ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> sequence_end t
           | hd::tl -> iter hd >>= fun () -> fn tl
         in fn l
      |`O l ->
-        mapping_start ?style:mapping_style t >>= fun () ->
+        mapping_start ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> mapping_end t 
           | (k,v)::tl -> iter (`String k) >>= fun () -> iter v >>= fun () -> fn tl
@@ -72,7 +70,7 @@ let to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_style (v:
   let r = Stream.emitter_buf t in
   Ok (Bytes.to_string r)
 
-let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_style v =
+let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?layout_style v =
   emitter () >>= fun t ->
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
@@ -80,13 +78,13 @@ let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_styl
     |`String {anchor;value} -> scalar ?anchor ?style:scalar_style t value
     |`Alias anchor -> alias t anchor
     |`A l -> 
-        sequence_start ?style:sequence_style t >>= fun () ->
+        sequence_start ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> sequence_end t
           | hd::tl -> iter hd >>= fun () -> fn tl
         in fn l
      |`O l ->
-        mapping_start ?style:mapping_style t >>= fun () ->
+        mapping_start ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> mapping_end t 
           | (k,v)::tl -> iter (`String k) >>= fun () -> iter v >>= fun () -> fn tl
@@ -98,7 +96,7 @@ let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_styl
   let r = Stream.emitter_buf t in
   Ok (Bytes.to_string r)
 
-let of_string s =
+let yaml_of_string s =
   let open Event in
   parser s >>= fun t ->
   let next () =
@@ -153,3 +151,4 @@ let of_string s =
   end
   | _ -> R.error_msg "Not stream start"
 
+let of_string s = yaml_of_string s >>= to_json

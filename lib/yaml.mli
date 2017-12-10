@@ -27,37 +27,7 @@
   sequence of events.
  *)
 
-(** Version of the YAML spec of a document. *)
-type version = [ `V1_0 | `V1_1 ] [@@deriving sexp]
-
-(** Document encoding. *)
-type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
-
-(** *)
-type scalar_style = [
-  | `Any
-  | `Plain
-  | `Single_quoted
-  | `Double_quoted
-  | `Literal
-  | `Folded ]
-  [@@deriving sexp]
-
-(** *)
-type sequence_style = [
-  | `Any
-  | `Block
-  | `Flow
-] [@@deriving sexp]
-
-(** *)
-type mapping_style = [
-  | `Any
-  | `Block
-  | `Flow
-] [@@deriving sexp]
-
-type 'a res = ('a, Rresult.R.msg) Result.result
+(** {1 Types} *)
 
 type value =
   [ `Null
@@ -67,28 +37,109 @@ type value =
   | `A of value list
   | `O of (string * value) list
 ] [@@deriving sexp]
-
-type anchor_string = {
-  anchor: string option;
-  value: string;
-} [@@deriving sexp]
+(** [value] is the subset of a Yaml document that is compatible
+  with JSON.  This type is the same as {!Ezjsonm.value}, and so
+  most simple uses of Yaml can be interchanged with JSON. *)
 
 type yaml =
   [ `String of anchor_string
   | `Alias of string
   | `A of yaml list
   | `O of (anchor_string * yaml) list
+]
+(** [yaml] is the representation of a Yaml document that
+  preserves alias information and other Yaml-specific metadata
+  that cannot be represented in JSON.  It is not recommended
+  to convert untrusted Yaml with aliases into JSON due to the
+  risk of denial-of-service via a
+  {{:https://en.wikipedia.org/wiki/Billion_laughs_attack}Billion Laughs attack}. *)
+and anchor_string = {
+  anchor: string option;
+  value: string;
+} [@@deriving sexp]
+(** [anchor_string] holds a possible Yaml anchor, and the string [value] *)
+
+type version = [ `V1_0 | `V1_1 ] [@@deriving sexp]
+(** Version of the YAML spec of a document.
+  Refer to the {{:http://www.yaml.org/spec/1.2/spec.html}Yaml specification}
+  for details of the differences between versions. *)
+
+type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
+(** Document encoding. The recommended format is [Utf8]. *)
+
+type scalar_style = [
+  | `Any
+  | `Plain
+  | `Single_quoted
+  | `Double_quoted
+  | `Literal
+  | `Folded ]
+  [@@deriving sexp]
+(** YAML provides three flow scalar styles: double-quoted, single-quoted
+  and plain (unquoted). Each provides a different trade-off between readability
+  and expressive power.
+  The {{:http://www.yaml.org/spec/1.2/spec.html#id2786942:}Yaml spec section 7.3}
+  has more details. *)
+
+type layout_style = [
+  | `Any
+  | `Block
+  | `Flow
 ] [@@deriving sexp]
+(** Mappings and sequences can be rendered in two different ways:
+  - [Flow] styles can be thought of as the natural extension of
+    JSON to cover folding long content lines for readability, tagging nodes
+    to control construction of native data structures, and using anchors and
+    aliases to reuse constructed object instances.
+  - [Block] styles employ indentation rather than indicators to denote structure.
+    This results in a more human readable (though less compact) notation.
+*)
+
+type 'a res = ('a, Rresult.R.msg) Result.result
+(** This library uses the {!Rresult.R.msg} conventions for returning
+   errors rather than raising exceptions. *)
+
+(** {1 Serialisers and deserialisers} *)
+
+(** {2 JSON-compatible functions} *)
+
+val of_string : string -> value res
+(** [of_string s] parses [s] into a JSON {!value} representation, discarding
+  any Yaml-specific information such as anchors or tags. *)
+
+val to_string : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
+  ?layout_style:layout_style -> value -> string res
+(** [to_string v] converts the JSON value to a Yaml string representation.
+   The [encoding], [scalar_style] and [layout_style] control the various
+   output parameters.
+   The current implementation uses a non-resizable internal string buffer of
+   16KB, which can be increased via [len].  *)
+
+(** {2 Yaml-specific functions} *)
+
+val yaml_of_string : string -> yaml res
+(** [yaml_of_string s] parses [s] into a Yaml {!yaml} representation,
+  preserving Yaml-specific information such as anchors. *)
+
+val yaml_to_string : ?encoding:encoding -> ?scalar_style:scalar_style ->
+  ?layout_style:layout_style -> yaml -> string res
+(** [yaml_to_string v] converts the Yaml value to a string representation.
+   The [encoding], [scalar_style] and [layout_style] control the various
+   output parameters.
+   The current implementation uses a non-resizable internal string buffer of
+   16KB, which can be increased via [len].  *)
+
+(** {2 JSON/Yaml conversion functions} *)
 
 val to_json : yaml -> value res
+(** [to_json yaml] will convert the Yaml document into a simpler
+  JSON representation, discarding any anchors or tags from the original.
+  Returns an error if any aliases are used within the body of the Yaml input. *)
+
 val of_json : value -> yaml res
+(** [of_json j] converts the JSON representation into a Yaml representation. *)
 
-val of_string : string -> yaml res
-val yaml_to_string : ?encoding:encoding -> ?scalar_style:scalar_style -> ?mapping_style:mapping_style -> ?sequence_style:sequence_style -> yaml -> string res
-val to_string : ?encoding:encoding -> ?scalar_style:scalar_style -> ?mapping_style:mapping_style -> ?sequence_style:sequence_style -> value -> string res
 
-val version : unit -> int * int * int
-(** [library_version ()] returns the major, minor and patch version of the underlying libYAML implementation. *)
 
 (** Low-level event streaming interface for parsing and emitting YAML files. *)
 module Stream : sig
@@ -123,7 +174,7 @@ module Stream : sig
           { anchor: string option
           ; tag: string option
           ; implicit: bool
-          ; style: mapping_style }
+          ; style: layout_style }
       | Mapping_end 
       | Stream_end
       | Scalar of
@@ -137,7 +188,7 @@ module Stream : sig
           { anchor: string option
           ; tag: string option
           ; implicit: bool
-          ; style: sequence_style }
+          ; style: layout_style }
       | Sequence_end
       | Alias of { anchor: string}
       | Nothing
@@ -175,13 +226,17 @@ module Stream : sig
 
   val stream_end : emitter -> unit res
 
-  val sequence_start : ?anchor:string -> ?tag:string -> ?implicit:bool -> ?style:sequence_style -> emitter -> unit res
+  val sequence_start : ?anchor:string -> ?tag:string -> ?implicit:bool -> ?style:layout_style -> emitter -> unit res
 
   val sequence_end : emitter -> unit res
 
-  val mapping_start : ?anchor:string -> ?tag:string -> ?implicit:bool -> ?style:mapping_style -> emitter -> unit res
+  val mapping_start : ?anchor:string -> ?tag:string -> ?implicit:bool -> ?style:layout_style -> emitter -> unit res
 
   val mapping_end : emitter -> unit res
 
   val emitter_written : emitter -> int
+
+  val get_version : unit -> int * int * int
+  (** [library_version ()] returns the major, minor and patch version of the underlying libYAML implementation. *)
+
 end

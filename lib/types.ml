@@ -35,13 +35,7 @@ type scalar_style = [
  | `Folded ]
 [@@deriving sexp]
 
-type sequence_style = [
-  | `Any
-  | `Block
-  | `Flow
-] [@@deriving sexp]
-
-type mapping_style = [
+type layout_style = [
   | `Any
   | `Block
   | `Flow
