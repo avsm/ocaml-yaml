@@ -14,17 +14,11 @@
 
 (** An OCaml library for parsing and emitting YAML.
 
-    It is based on a binding to {{:http://pyyaml.org/wiki/LibYAML:}libyaml}
-    which covers the generation and parsing processes.
-    The {!Stream} module binds the low-level event interface which has a:
-    - {!Stream.parser}, which takes an input stream of bytes and produces a sequence of parsing events.
-    - Emitter, which takes a sequence of events and produces a stream of bytes.
+  It is based on a binding to {{:http://pyyaml.org/wiki/LibYAML:}libyaml}
+  which covers the generation and parsing processes.
 
-  The processes of parsing and presenting are inverse to each other. Any sequence of events
-  produced by parsing a well-formed YAML document should be acceptable by the Emitter,
-  which should produce an equivalent document.  Similarly, any document produced by emitting a
-  sequence of events should be acceptable for the Parser, which should produce an equivalent
-  sequence of events.
+  Most simple use cases can simply use the {!of_string} and {!to_string}
+  functions, which are compatible with the {!Ezjsom} types.
  *)
 
 (** {1 Types} *)
@@ -99,7 +93,10 @@ type 'a res = ('a, Rresult.R.msg) Result.result
 (** This library uses the {!Rresult.R.msg} conventions for returning
    errors rather than raising exceptions. *)
 
-(** {1 Serialisers and deserialisers} *)
+(** {1 Serialisers and deserialisers}
+  Most simple uses of Yaml can use the JSON-compatible subset.
+  If you really need Yaml-specific features such as aliases, then
+  they are also available. *)
 
 (** {2 JSON-compatible functions} *)
 
@@ -140,8 +137,17 @@ val of_json : value -> yaml res
 (** [of_json j] converts the JSON representation into a Yaml representation. *)
 
 
+(** Low-level event streaming interface for parsing and emitting YAML files.
 
-(** Low-level event streaming interface for parsing and emitting YAML files. *)
+   This module has a:
+    - {!Stream.parser}, which takes an input stream of bytes and produces a sequence of parsing events.
+    - {!Stream.emitter}, which takes a sequence of events and produces a stream of bytes.
+
+  The processes of parsing and presenting are inverse to each other. Any sequence of events
+  produced by parsing a well-formed YAML document should be acceptable by the Emitter,
+  which should produce an equivalent document.  Similarly, any document produced by emitting a
+  sequence of events should be acceptable for the Parser, which should produce an equivalent
+  sequence of events. *)
 module Stream : sig
   (** Position information for an event *)
   module Mark : sig
@@ -195,6 +201,8 @@ module Stream : sig
       [@@deriving sexp]
   end
 
+  (** {3 Parsing functions} *)
+
   type parser
   (** [parser] tracks the state of generating {!Event.t} values. *)
 
@@ -204,6 +212,8 @@ module Stream : sig
   val do_parse : parser -> (Event.t * Event.pos) res
   (** [do_parse parser] will generate the next parsing event from an
       initialised parser.  *)
+
+  (** {3 Serialisation functions} *)
 
   type emitter
 
