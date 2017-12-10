@@ -16,7 +16,7 @@ let test () =
     | event -> fn event pos; iter_until_done fn in
   iter_until_done (reflect e) >>= fun () ->
   let r = Yaml.Stream.emitter_buf e in
-  print_endline (Bytes.to_string buf);
+  print_endline buf;
   print_endline (Bytes.to_string r); 
   Ok ()
 
