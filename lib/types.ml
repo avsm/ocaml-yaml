@@ -56,4 +56,16 @@ type value =
   | `O of (string * value) list
 ] [@@deriving sexp]
 
+type anchor_string = {
+  anchor: string option;
+  value: string;
+} [@@deriving sexp]
+
+type yaml =
+  [ `String of anchor_string
+  | `Alias of string
+  | `A of yaml list
+  | `O of (anchor_string * yaml) list
+] [@@deriving sexp]
+
 type 'a res = ('a, Rresult.R.msg) Result.result

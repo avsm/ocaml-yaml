@@ -21,6 +21,29 @@ open Stream
 
 let version = get_version
 
+let to_json v =
+  let rec fn = function
+   | `String {value} -> `String value
+   | `Alias _ -> failwith "Anchors are not supported when serialising to JSON"
+   | `A l -> `A (List.map fn l)
+   | `O l -> `O (List.map (fun ({anchor;value},v) -> value, (fn v)) l)
+  in
+  match fn v with
+  | r -> Ok r
+  | exception (Failure msg) -> R.error_msg msg
+
+let of_json (v:value) =
+  let rec fn = function
+  | `Null -> `String {anchor=None;value=""}
+  | `Bool b -> `String {anchor=None;value=string_of_bool b}
+  | `Float f -> `String {anchor=None;value=string_of_float f}
+  | `String value -> `String {anchor=None; value}
+  | `A l -> `A (List.map fn l)
+  | `O l -> `O (List.map (fun (k,v) -> {anchor=None;value=k}, (fn v)) l)
+  in match fn v with
+  | r -> Ok r
+  | exception (Failure msg) -> R.error_msg msg
+ 
 let to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_style (v:value) =
   emitter () >>= fun t ->
   stream_start t encoding >>= fun () ->
@@ -48,7 +71,33 @@ let to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_style (v:
   stream_end t >>= fun () ->
   let r = Stream.emitter_buf t in
   Ok (Bytes.to_string r)
- 
+
+let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?mapping_style ?sequence_style v =
+  emitter () >>= fun t ->
+  stream_start t encoding >>= fun () ->
+  document_start t >>= fun () ->
+  let rec iter = function
+    |`String {anchor;value} -> scalar ?anchor ?style:scalar_style t value
+    |`Alias anchor -> alias t anchor
+    |`A l -> 
+        sequence_start ?style:sequence_style t >>= fun () ->
+        let rec fn = function
+          | [] -> sequence_end t
+          | hd::tl -> iter hd >>= fun () -> fn tl
+        in fn l
+     |`O l ->
+        mapping_start ?style:mapping_style t >>= fun () ->
+        let rec fn = function
+          | [] -> mapping_end t 
+          | (k,v)::tl -> iter (`String k) >>= fun () -> iter v >>= fun () -> fn tl
+        in fn l
+  in
+  iter v >>= fun () ->
+  document_end t >>= fun () ->
+  stream_end t >>= fun () ->
+  let r = Stream.emitter_buf t in
+  Ok (Bytes.to_string r)
+
 let of_string s =
   let open Event in
   parser s >>= fun t ->
@@ -68,7 +117,8 @@ let of_string s =
             next () >>=
             parse_seq [] >>= fun s ->
             Ok (`A s)
-         | Scalar {value} -> Ok (`String value)
+         | Scalar {anchor;value} -> Ok (`String {anchor;value})
+         | Alias {anchor} -> Ok (`Alias anchor)
          | Mapping_start _ ->
             next () >>=
             parse_map [] >>= fun s ->

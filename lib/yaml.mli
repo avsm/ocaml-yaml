@@ -68,7 +68,23 @@ type value =
   | `O of (string * value) list
 ] [@@deriving sexp]
 
-val of_string : string -> value res
+type anchor_string = {
+  anchor: string option;
+  value: string;
+} [@@deriving sexp]
+
+type yaml =
+  [ `String of anchor_string
+  | `Alias of string
+  | `A of yaml list
+  | `O of (anchor_string * yaml) list
+] [@@deriving sexp]
+
+val to_json : yaml -> value res
+val of_json : value -> yaml res
+
+val of_string : string -> yaml res
+val yaml_to_string : ?encoding:encoding -> ?scalar_style:scalar_style -> ?mapping_style:mapping_style -> ?sequence_style:sequence_style -> yaml -> string res
 val to_string : ?encoding:encoding -> ?scalar_style:scalar_style -> ?mapping_style:mapping_style -> ?sequence_style:sequence_style -> value -> string res
 
 val version : unit -> int * int * int
