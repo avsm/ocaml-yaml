@@ -21,7 +21,7 @@
   functions, which are compatible with the {!Ezjsom} types.
  *)
 
-(** {1 Types} *)
+(** {2 Types} *)
 
 type value =
   [ `Null
@@ -93,12 +93,12 @@ type 'a res = ('a, Rresult.R.msg) Result.result
 (** This library uses the {!Rresult.R.msg} conventions for returning
    errors rather than raising exceptions. *)
 
-(** {1 Serialisers and deserialisers}
+(** {2 Serialisers and deserialisers}
   Most simple uses of Yaml can use the JSON-compatible subset.
   If you really need Yaml-specific features such as aliases, then
   they are also available. *)
 
-(** {2 JSON-compatible functions} *)
+(** {3 JSON-compatible functions} *)
 
 val of_string : string -> value res
 (** [of_string s] parses [s] into a JSON {!value} representation, discarding
@@ -112,7 +112,7 @@ val to_string : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
    The current implementation uses a non-resizable internal string buffer of
    16KB, which can be increased via [len].  *)
 
-(** {2 Yaml-specific functions} *)
+(** {3 Yaml-specific functions} *)
 
 val yaml_of_string : string -> yaml res
 (** [yaml_of_string s] parses [s] into a Yaml {!yaml} representation,
@@ -181,7 +181,7 @@ module Stream : sig
           ; tag: string option
           ; implicit: bool
           ; style: layout_style }
-      | Mapping_end 
+      | Mapping_end
       | Stream_end
       | Scalar of
           { anchor: string option
@@ -231,7 +231,7 @@ module Stream : sig
     ?tag:string -> ?style:scalar_style -> emitter -> string -> unit res
 
   val alias : emitter -> string -> unit res
- 
+
   val stream_start : emitter -> encoding -> unit res
 
   val stream_end : emitter -> unit res
