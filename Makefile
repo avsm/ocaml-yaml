@@ -15,6 +15,9 @@ uninstall:
 clean:
 	jbuilder clean
 
+doc:
+	jbuilder build @doc
+
 test-all:
 	sh ./.docker-run.sh
 
@@ -30,5 +33,4 @@ pkg-%:
 PKGS=$(basename $(wildcard *.opam))
 opam-pkg:
 	$(MAKE) $(PKGS:%=pkg-%)
-
 

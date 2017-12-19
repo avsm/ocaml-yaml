@@ -3,6 +3,6 @@
 )
 
 (alias
- ((name    runtest)
+ ((name    runfuzz)
   (deps    (fuzz.exe))
   (action  (run ${<}))))
