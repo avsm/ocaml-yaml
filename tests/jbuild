@@ -1,29 +1,9 @@
 (executables
- ((names (test parse emit reflect parse_high))
-  (libraries (yaml bos ezjsonm))
+ ((names (test))
+  (libraries (yaml bos ezjsonm alcotest))
 ))
 
 (alias
 ((name    runtest)
-  (deps    (test.exe))
-  (action  (run ${<}))))
-
-(alias
- ((name    runtest)
-  (deps    (parse.exe linuxkit.yml bomb.yml cohttp.yml anchor.yml))
-  (action  (run ${<}))))
-
-(alias
- ((name    runtest)
-  (deps    (emit.exe))
-  (action  (run ${<}))))
-
-(alias
- ((name    runtest)
-  (deps    (reflect.exe cohttp.yml))
-  (action  (run ${<}))))
-
-(alias
- ((name    runtest)
-  (deps    (parse_high.exe cohttp.yml))
+  (deps    (test.exe (files_recursively_in "yaml")))
   (action  (run ${<}))))

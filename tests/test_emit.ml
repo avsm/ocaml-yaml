@@ -3,7 +3,7 @@ open R.Infix
 
 module S = Yaml.Stream
 
-let test () =
+let v () =
   S.emitter () >>= fun t ->
   S.stream_start t `Utf8 >>= fun () ->
   S.document_start t >>= fun () ->
@@ -29,7 +29,3 @@ let test () =
   print_endline (Bytes.to_string r);
   Ok ()
   
-let _ =
-  match test () with
-  | Ok () -> print_endline "ok"
-  | Error (`Msg m) -> print_endline m; exit 1

@@ -15,6 +15,7 @@ depends: [
   "rresult"
   "fmt"
   "logs"
+  "alcotest" {test}
   "ezjsonm" {test}
   "bos" {test}
 ]
