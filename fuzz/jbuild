@@ -1,0 +1,8 @@
+(executables
+ ((names (fuzz)) (libraries (crowbar yaml)))
+)
+
+(alias
+ ((name    runtest)
+  (deps    (fuzz.exe))
+  (action  (run ${<}))))
