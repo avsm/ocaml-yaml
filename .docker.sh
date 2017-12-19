@@ -18,6 +18,7 @@ opam install --deps-only .
 rm -f jbuild-workspace.dev
 for v in $VERSIONS; do
   echo "(context ((switch $v)))" >> jbuild-workspace.dev
+  opam pin add crowbar https://github.com/stedolan/crowbar.git --switch $v
   opam install --deps-only -t --switch $v .
 done
 
