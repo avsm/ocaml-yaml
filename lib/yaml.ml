@@ -70,6 +70,12 @@ let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
   let r = Stream.emitter_buf t in
   Ok (Bytes.to_string r)
 
+let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
+  match to_string ?len ?encoding ?scalar_style ?layout_style s with
+  | Ok s -> s
+  | Error (`Msg m) -> raise (Invalid_argument m)
+
+
 let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?layout_style v =
   emitter () >>= fun t ->
   stream_start t encoding >>= fun () ->
@@ -147,8 +153,19 @@ let yaml_of_string s =
        next () >>= 
        parse_v
     end
-    | _ -> R.error_msg "Not document start"
+    | Stream_end -> Ok (`String {anchor=None;value=""})
+    | e -> R.error_msg (Fmt.strf "Not document start: %s" (sexp_of_t e |> Sexplib.Sexp.to_string_hum))
   end
   | _ -> R.error_msg "Not stream start"
 
 let of_string s = yaml_of_string s >>= to_json
+
+let of_string_exn s =
+  match of_string s with
+  | Ok s -> s
+  | Error (`Msg m) -> raise (Invalid_argument m)
+
+let pp ppf s =
+  match to_string s with
+  | Ok s -> Format.pp_print_string ppf s
+  | Error (`Msg m) -> Format.pp_print_string ppf (Printf.sprintf "(error (%s))" m)

@@ -12,13 +12,20 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-(** An OCaml library for parsing and emitting YAML.
+(** A library for parsing and emitting YAML.
 
   It is based on a binding to {{:http://pyyaml.org/wiki/LibYAML:}libyaml}
   which covers the generation and parsing processes.
-
+ 
   Most simple use cases can simply use the {!of_string} and {!to_string}
-  functions, which are compatible with the {!Ezjsom} types.
+  functions, which are compatible with the {!Ezjsonm} types.  This means
+  that you can convert between JSON and Yaml format easily.
+
+  If you use more advanced Yaml features such as aliases or anchors,
+  then the {!yaml} type and {!yaml_of_string} and {!yaml_to_string}
+  functions will be more useful.  The library does not yet support
+  expanding aliases into the JSON format from YAML, so that will
+  currently result in an error.
  *)
 
 (** {2 Types} *)
@@ -104,6 +111,10 @@ val of_string : string -> value res
 (** [of_string s] parses [s] into a JSON {!value} representation, discarding
   any Yaml-specific information such as anchors or tags. *)
 
+val of_string_exn : string -> value
+(** [of_string_exn s] acts as {!of_string}, but raises {!Invalid_argument}
+  if there is an error. *)
+
 val to_string : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
   ?layout_style:layout_style -> value -> string res
 (** [to_string v] converts the JSON value to a Yaml string representation.
@@ -111,6 +122,14 @@ val to_string : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
    output parameters.
    The current implementation uses a non-resizable internal string buffer of
    16KB, which can be increased via [len].  *)
+
+val to_string_exn : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
+  ?layout_style:layout_style -> value -> string
+(** [to_string_exn v] acts as {!to_string}, but raises {!Invalid_argument} in
+  if there is an error. *)
+
+val pp : Format.formatter -> value -> unit
+(** [pp ppf s] will output the Yaml value [s] to the formatter [ppf]. *)
 
 (** {3 Yaml-specific functions} *)
 
