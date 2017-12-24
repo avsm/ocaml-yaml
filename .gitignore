@@ -3,3 +3,5 @@ _build
 *.install
 .DS_Store
 .*.swp
+output/
+jbuild-workspace.dev
