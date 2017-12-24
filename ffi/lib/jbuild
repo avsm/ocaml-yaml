@@ -7,7 +7,7 @@
 
 (rule
  ((targets (yaml_stubs.c))
-  (deps (../stubgen/ffi_stubgen.exe ../../vendor/libyaml_c_stubs.a))
+  (deps (../stubgen/ffi_stubgen.exe ../../vendor/yaml.h ../../vendor/yaml_private.h))
   (action (with-stdout-to ${@} (run ${<} -c)))))
 
 (library
@@ -17,5 +17,5 @@
   (c_names (yaml_stubs))
   (flags (:standard -w -9-27-32-34))
   (c_flags ((:standard \ -fPIC -Werror -pedantic -Wall -Wunused) -I../../vendor))
-  (libraries (yaml.bindings yaml.types ctypes.stubs ctypes))))
+  (libraries (yaml.bindings yaml.types ctypes.stubs ctypes yaml.c))))
 

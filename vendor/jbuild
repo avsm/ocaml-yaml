@@ -18,7 +18,6 @@
   (deps   (api.o emitter.o loader.o parser.o reader.o scanner.o writer.o))
   (action (run cc -shared -o ${@} ${!^}))))
 
-
 (rule
  ((targets (api.o))
   (deps    (api.c yaml.h config.h yaml_private.h))
