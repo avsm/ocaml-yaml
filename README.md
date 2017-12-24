@@ -23,31 +23,66 @@ We use the following major OCaml tools and libraries:
 
 #### Library Architecture
 
-The following layers are present to make the high-level library work:
+The following layers are present to make the high-level library work, contained
+within the following directories in the repository:
 
 - [`vendor/`](vendor/) contains the C sources for libyaml, with some minor modifications
-  to the header files to make them easier to use with Ctypes
-- [`types/`](types/) has OCaml definitions for the C types defined in [`yaml.h`](vendor/yaml.h)
+  to the header files to make them easier to use with Ctypes.
+- [`types/`](types/) has OCaml definitions for the C types defined in [`yaml.h`](vendor/yaml.h).
 - [`ffi/`](ffi/) has OCaml definitions for the C functions defined in [`yaml.h`](vendor/yaml.h)
 - [`lib/`](lib/) contains the high-level OCaml interface for Yaml manipulation, using the FFI definitions above
 - [`tests/`](tests/) has unit tests and fuzz tests for the library functionality
 
-A copy of the libyaml C library is included into `vendor/` to eliminate the need
+**C library:** A copy of the libyaml C library is included into `vendor/` to eliminate the need
 for a third-party dependency.  The C code is built directly into a `yaml.a`
 static library, and linked in with the OCaml bindings.
 
-We then need to generate OCaml type definitions that correspond to the C header
+**Bindings to C types:** We then need to generate OCaml type definitions that correspond to the C header
 definitions in libyaml.  This is all done without writing a single line of C code,
 via the stub generation support in [ocaml-ctypes](https://github.com/ocamllabs/ocaml-ctypes).
 We define an OCaml library that describes the C enumerations or structs that we need a
-corresponding definition for (see [types/bindings/yaml_bindings_types.ml]).  This is
-then compiled into an executable (see [types/stubgen/ffi_types_stubgen.ml]) which takes
-care of calling the C compiler and generating a compatible OCaml module. The 
+corresponding definition for (see [yaml_bindings_types.ml](types/bindings/yaml_bindings_types.ml)).
+This code is also exported in the `yaml.bindings.types` ocamlfind library.
 
-Once we have the C type definitions that we need bound into OCaml, we then need to
-bind the C library functions that use them.  We do exactly the same approach as we 
+These binding descriptions are then then compiled into an executable (see [ffi_types_stubgen.ml](types/stubgen/ffi_types_stubgen.ml)).
+When run, this calls the C compiler and generating a compatible OCaml module with the results
+of probing the C library and statically determining values for (e.g.) struct offsets or macros.
+The resulting OCaml library is expored in the `yaml.types` ocamlfind library.
+
+**Bindings to C functions:** Once we have the C type definitions bound into OCaml, we then need to
+bind the corresponding C library functions that use them.  We do exactly the same approach as we 
 did for probing types earlier, but define an OCaml descriptions of the functions
-that we want to bind instead (see [ffi/bindings/yaml_bindings.ml]).
+that we want to bind instead (see [yaml_bindings.ml](ffi/bindings/yaml_bindings.ml)).
+The [ffi_stubgen](ffi/stubgen/ffi_stubgen.ml) executable then takes these descriptions and
+generates *two* source code files: an OCaml module containing the typed function calls,
+and the corresponding C bindings that link those typed function calls to the C library.
+Again, this is all done automatically via Ctypes functions, and we never had to write
+any manual C code.  As an additional layer of safety, mistakes when writing the Ctypes
+bindings will also result in a compile-time error, since the generated C code will fail
+to compile with the C header files for the yaml library.  The resulting OCaml functions
+are exported in the `yaml.ffi` ocamlfind library.
+
+**OCaml API:** Finally, we define the OCaml API that uses the low-level FFI to expose
+a well-typed OCaml interface. We adopt a convention of using the [Rresult](https://github.com/dbuenzli/rresult)
+library to return explicit errors instead of raising OCaml exceptions.  We also
+define some polymorphic variant types to represent various configuration options
+(such as the printing style of different Yaml values).
+
+Since the most common use of Yaml is for relatively simple key-value stores, the
+OCaml API by default exposes polymorphic variant types that are completely compatible
+with the Ezjsonm library, meaning that you can print JSON or Yaml back and forth
+very easily.  However, if you do need the advanced Yaml functions like anchors and
+aliases, then there are definitions that expose them too.
+
+### Further Information
+
+- **Discussion:** Post on <https://discuss.ocaml.org/> with the `yaml` tag under
+  the Ecosystem categoey.
+- **Bugs:** <https://github.com/avsm/ocaml-yaml/issues>
+- **Docs:** <http://anil-code.recoil.org/ocaml-yaml>
+
+Contributions are very welcome.  Please see the overall TODO list below, or
+please get in touch with any particular comments you might have.
 
 ### TODO 
 
