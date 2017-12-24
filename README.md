@@ -6,6 +6,23 @@ JSON handling library, if the simple common subset of Yaml
 is used.  Anchors and other advanced Yaml features are not
 implemented in the JSON compatibility layer.
 
+## Example of use
+
+Install the library via `opam install yaml`, and then execute a
+toplevel via `utop`.  You can also build and execute the toplevel
+locally:
+
+```
+$ jbuilder exec utop
+# #require "yaml";;
+# Yaml.of_string "foo";;
+- : Yaml.value Yaml.res = Result.Ok (`String "foo")
+# Yaml.of_string "- foo";;
+- : Yaml.value Yaml.res = Result.Ok (`A [`String "foo"])
+# Yaml.to_string (`O ["foo1", `String "bar1"; "foo2", `Float 1.0]);;
+- : string Yaml.res = Result.Ok "foo1: bar1\nfoo2: 1.\n"
+```
+
 ### Repository Structure
 
 ocaml-yaml is based around a binding to the C [libyaml](http://pyyaml.org/wiki/LibYAML)
