@@ -1,9 +1,23 @@
 (jbuild_version 1)
 
+(library
+ ((name        yaml_c)
+  (public_name yaml.c)
+  (preprocess no_preprocessing)
+  (flags (:standard -safe-string))
+  (c_library_flags (:standard -fPIC -O2 -Wall -DHAVE_CONFIG_H -I.))
+  (self_build_stubs_archive (yaml_c))))
+
 (rule
- ((targets (yaml.a))
+ ((targets (libyaml_c_stubs.a))
   (deps   (api.o emitter.o loader.o parser.o reader.o scanner.o writer.o))
   (action (run ar rcs ${@} ${!^}))))
+
+(rule
+ ((targets (dllyaml_c_stubs.so))
+  (deps   (api.o emitter.o loader.o parser.o reader.o scanner.o writer.o))
+  (action (run cc -shared -o ${@} ${!^}))))
+
 
 (rule
  ((targets (api.o))
