@@ -6,6 +6,8 @@ JSON handling library, if the simple common subset of Yaml
 is used.  Anchors and other advanced Yaml features are not
 implemented in the JSON compatibility layer.
 
+The [Yaml module docs](http://anil-code.recoil.org/ocaml-yaml/yaml/Yaml/index.html) are browseable online.
+
 ## Example of use
 
 Install the library via `opam install yaml`, and then execute a
