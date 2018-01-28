@@ -23,6 +23,13 @@ $ jbuilder exec utop
 - : Yaml.value Yaml.res = Result.Ok (`A [`String "foo"])
 # Yaml.to_string (`O ["foo1", `String "bar1"; "foo2", `Float 1.0]);;
 - : string Yaml.res = Result.Ok "foo1: bar1\nfoo2: 1.\n"
+# #require "yaml.unix" ;;
+# Yaml_unix.to_file Fpath.(v "my.yml") (`String "bar") ;;
+- : (unit, Rresult.R.msg) result = Result.Ok ()
+# Yaml_unix.of_file Fpath.(v "my.yml");;
+- : (Yaml.value, Rresult.R.msg) result = Result.Ok (`String "bar")
+# Yaml_unix.of_file_exn Fpath.(v "my.yml");;
+- : Yaml.value = `String "bar"
 ```
 
 ### Repository Structure
@@ -45,12 +52,14 @@ We use the following major OCaml tools and libraries:
 The following layers are present to make the high-level library work, contained
 within the following directories in the repository:
 
-- [`vendor/`](vendor/) contains the C sources for libyaml, with some minor modifications
+- [`vendor/`](vendor/) contains the C sources for libyaml, with some minor modifications.
   to the header files to make them easier to use with Ctypes.
 - [`types/`](types/) has OCaml definitions for the C types defined in [`yaml.h`](vendor/yaml.h).
-- [`ffi/`](ffi/) has OCaml definitions for the C functions defined in [`yaml.h`](vendor/yaml.h)
-- [`lib/`](lib/) contains the high-level OCaml interface for Yaml manipulation, using the FFI definitions above
-- [`tests/`](tests/) has unit tests and fuzz tests for the library functionality
+- [`ffi/`](ffi/) has OCaml definitions for the C functions defined in [`yaml.h`](vendor/yaml.h).
+- [`lib/`](lib/) contains the high-level OCaml interface for Yaml manipulation, using the FFI definitions above.
+- [`unix/`](unix/) contains OS-specific bindings with file-handling.
+- [`tests/`](tests/) has unit tests for the library functionality.
+- [`fuzz/`](fuzz/) contains exploratory fuzz testing that randomises inputs to find bugs.
 
 **C library:** A copy of the libyaml C library is included into `vendor/` to eliminate the need
 for a third-party dependency.  The C code is built directly into a `yaml.a`
