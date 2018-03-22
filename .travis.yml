@@ -5,7 +5,7 @@ language: c
 script: bash -ex ./.docker-run.sh
 env:
   global:
-  - EXTRA_REMOTES="https://github.com/ocaml/opam-repository.git"
+  - PRE_INSTALL_HOOK="cd /home/opam/opam-repository && git pull origin master && opam update -u -y"
   - OCAML_VERSIONS="4.04.2 4.05.0 4.06.0"
   matrix:
   - DISTRO="debian-9"
