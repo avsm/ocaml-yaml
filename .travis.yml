@@ -5,6 +5,7 @@ language: c
 script: bash -ex ./.docker-run.sh
 env:
   global:
+  - EXTRA_REMOTES="https://github.com/ocaml/opam-repository.git"
   - OCAML_VERSIONS="4.04.2 4.05.0 4.06.0"
   matrix:
   - DISTRO="debian-9"
