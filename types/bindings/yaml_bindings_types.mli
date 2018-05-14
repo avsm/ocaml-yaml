@@ -49,7 +49,7 @@ module Event_type : sig
            | `Sequence_end | `Mapping_start | `Mapping_end | `E of int64 ] [@@deriving sexp]
 end
  
-module M(F : Cstubs.Types.TYPE) : sig
+module M(F : Ctypes.TYPE) : sig
   val encoding_t : Encoding.t F.typ
   val error_t : Error.t F.typ
   val scalar_style_t : Scalar_style.t F.typ

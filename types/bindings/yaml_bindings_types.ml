@@ -51,7 +51,7 @@ module Event_type = struct
            | `Sequence_end | `Mapping_start | `Mapping_end | `E of int64 ] [@@deriving sexp]
 end
  
-module M(F : Cstubs.Types.TYPE) =
+module M(F : Ctypes.TYPE) =
 struct
 
   let yaml_char_t = F.uchar
