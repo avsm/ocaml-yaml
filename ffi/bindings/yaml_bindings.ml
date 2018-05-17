@@ -14,7 +14,7 @@
 
 module T = Yaml_types.M
 
-module M(F: Cstubs.FOREIGN) =
+module M(F: Ctypes.FOREIGN) =
 struct
   let foreign = F.foreign
 
