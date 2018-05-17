@@ -6,8 +6,8 @@ set -ex
 # TODO opam2 depext
 case $DISTRO in
 alpine-*) sudo apk add m4 ;;
-debian-*) sudo apt -y install m4 pkg-config ;;
-ubuntu-*) sudo apt -y install m4 pkg-config ;;
+debian-*) sudo apt update; sudo apt -y install m4 pkg-config ;;
+ubuntu-*) sudo apt update; sudo apt -y install m4 pkg-config ;;
 esac
 
 
