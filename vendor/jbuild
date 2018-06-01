@@ -5,7 +5,6 @@
   (public_name yaml.c)
   (preprocess no_preprocessing)
   (flags (:standard -safe-string))
-  (c_library_flags (:standard -fPIC -O2 -Wall -DHAVE_CONFIG_H -I.))
   (self_build_stubs_archive (yaml_c))))
 
 (rule
@@ -21,42 +20,42 @@
 (rule
  ((targets (api.o))
   (deps    (api.c yaml.h config.h yaml_private.h))
-  (action  (run ${CC} -fPIC -O2 -Wall -DHAVE_CONFIG_H -I. -c ${<})))
+  (action  (run ${CC} ${read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c ${<})))
  )
 
 (rule
  ((targets (emitter.o))
   (deps    (emitter.c yaml.h config.h yaml_private.h))
-  (action  (run ${CC} -fPIC -O2 -Wall -DHAVE_CONFIG_H -I. -c ${<})))
+  (action  (run ${CC}  ${read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c ${<})))
  )
 
 (rule
  ((targets (loader.o))
   (deps    (loader.c yaml.h config.h yaml_private.h))
-  (action  (run ${CC} -fPIC -O2 -Wall -DHAVE_CONFIG_H -I. -c ${<})))
+  (action  (run ${CC}  ${read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c ${<})))
  )
 
 (rule
  ((targets (parser.o))
   (deps    (parser.c yaml.h config.h yaml_private.h))
-  (action  (run ${CC} -fPIC -O2 -Wall -DHAVE_CONFIG_H -I. -c ${<})))
+  (action  (run ${CC} ${read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c ${<})))
  )
 
 (rule
  ((targets (reader.o))
   (deps    (reader.c yaml.h config.h yaml_private.h))
-  (action  (run ${CC} -fPIC -O2 -Wall -DHAVE_CONFIG_H -I. -c ${<})))
+  (action  (run ${CC} ${read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c ${<})))
  )
 
 (rule
  ((targets (scanner.o))
   (deps    (scanner.c yaml.h config.h yaml_private.h))
-  (action  (run ${CC} -fPIC -O2 -Wall -DHAVE_CONFIG_H -I. -c ${<})))
+  (action  (run ${CC} ${read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c ${<})))
  )
 
 (rule
  ((targets (writer.o))
   (deps    (writer.c yaml.h config.h yaml_private.h))
-  (action  (run ${CC} -fPIC -O2 -Wall -DHAVE_CONFIG_H -I. -c ${<})))
+  (action  (run ${CC} ${read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c ${<})))
  )
 

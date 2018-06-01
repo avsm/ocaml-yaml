@@ -60,6 +60,7 @@ within the following directories in the repository:
 - [`unix/`](unix/) contains OS-specific bindings with file-handling.
 - [`tests/`](tests/) has unit tests for the library functionality.
 - [`fuzz/`](fuzz/) contains exploratory fuzz testing that randomises inputs to find bugs.
+- [`config/`](config/) has configuration tests to set the C compilation flags.
 
 **C library:** A copy of the libyaml C library is included into `vendor/` to eliminate the need
 for a third-party dependency.  The C code is built directly into a `yaml.a`
@@ -130,4 +131,3 @@ please get in touch with any particular comments you might have.
 - The `pkg/pkg.ml` file can be removed once topkg has jbuilder autodetection.
   [dbuenzli/topkg#123](https://github.com/dbuenzli/topkg/issues/123)
 - Send upstream PR for forked header file (due to removal of anonymous structs).
-- Use Configurator for C build rules in vendor/ (e.g. no `-fPIC` on arm32?)

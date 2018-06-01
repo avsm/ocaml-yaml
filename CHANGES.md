@@ -1,3 +1,8 @@
+## v0.2.1
+
+* Repair build on ppc64le by using Configurator to query CFLAGS.
+  ppc64le needs an `mcmodel=small` due to a quick of the architecture.
+
 ## v0.2.0 (17/05/2018)
 
 * Explicitly depend on `sexplib` in jbuild description.
