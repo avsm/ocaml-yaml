@@ -1,4 +1,4 @@
-## v0.2.1
+## v0.2.1 (01/06/2018)
 
 * Repair build on ppc64le by using Configurator to query CFLAGS.
   ppc64le needs an `mcmodel=small` due to a quick of the architecture.
