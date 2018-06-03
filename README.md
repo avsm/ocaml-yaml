@@ -128,6 +128,4 @@ please get in touch with any particular comments you might have.
 
 - Warnings: handle the unsigned char `yaml_char_t` in the Ctypes bindings.
 - Warnings: const needs to be specified in the Ctypes binding.
-- The `pkg/pkg.ml` file can be removed once topkg has jbuilder autodetection.
-  [dbuenzli/topkg#123](https://github.com/dbuenzli/topkg/issues/123)
 - Send upstream PR for forked header file (due to removal of anonymous structs).

@@ -235,8 +235,13 @@ module Stream : sig
   (** {3 Serialisation functions} *)
 
   type emitter
+  (** [emitter] tracks the state of generating {!Event.t} values for YAML output. *)
 
   val emitter : ?len:int -> unit -> emitter res
+  (** [emitter ?len ()] will allocate a new emitter state. Due to a temporary
+      limitation in the implementation, [len] decides how large the fixed size
+      buffer that the output is written into is.  In the future, [len] will be
+      redundant as the buffer will be dynamically allocated. *)
 
   val emitter_buf : emitter -> Bytes.t
 

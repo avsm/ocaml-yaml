@@ -2,6 +2,8 @@
 
 * Repair build on ppc64le by using Configurator to query CFLAGS.
   ppc64le needs an `mcmodel=small` due to a quick of the architecture.
+* Minor improvements to ocamldoc documentation.
+* Remove `pkg/pkg.ml` as `dune-release` is used for release now.
 
 ## v0.2.0 (17/05/2018)
 
