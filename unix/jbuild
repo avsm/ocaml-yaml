@@ -1,7 +1,0 @@
-(library
- ((name yaml_unix)
-  (public_name yaml.unix)
-  (libraries (yaml rresult bos))
-))
-
-(jbuild_version 1)

@@ -1,8 +1,0 @@
-(executable
- ((name discover)
-  (libraries (configurator))))
-
-(rule
- ((targets (cflags))
-  (action (run ./discover.exe))))
-

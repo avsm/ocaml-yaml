@@ -1,8 +1,0 @@
-(executables
- ((names (fuzz)) (libraries (crowbar yaml)))
-)
-
-(alias
- ((name    runfuzz)
-  (deps    (fuzz.exe))
-  (action  (run ${<}))))
