@@ -1,8 +1,0 @@
-(library
- ((name yaml)
-  (public_name yaml)
-  (libraries (yaml.ffi rresult logs fmt sexplib))
-  (preprocess (pps (ppx_sexp_conv)))
-))
-
-(jbuild_version 1)

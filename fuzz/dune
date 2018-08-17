@@ -1,0 +1,6 @@
+(executables
+ (names fuzz) (libraries crowbar yaml))
+
+(alias
+ (name    runfuzz)
+ (action  (run ./fuzz.exe)))

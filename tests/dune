@@ -1,0 +1,4 @@
+(test
+ (name test)
+ (libraries yaml bos ezjsonm alcotest)
+ (deps (source_tree yaml)))

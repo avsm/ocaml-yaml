@@ -1,0 +1,10 @@
+(rule
+ (targets g.ml)
+ (deps ../stubgen/ffi_ml_types_stubgen.exe)
+ (action (with-stdout-to %{targets} (run %{deps}))))
+
+(library
+ (name yaml_types)
+ (public_name yaml.types)
+ (synopsis "Ctypes bindings that describe the libyaml FFI constants")
+ (libraries yaml.bindings.types ctypes.stubs ctypes))
