@@ -10,9 +10,17 @@ let () =
       |"power","ppc64le" -> cflags ^ " -mcmodel=small"
       |_ -> cflags in
     let fout = open_out "cflags" in
+    let within_spaces = ref false in
     String.iter (fun c ->
-      let c = if c = ' ' then '\n' else c in
-      output_char fout c
-    ) cflags;
+        if c = ' ' then begin
+          if not !within_spaces then begin
+            within_spaces := true;
+            output_char fout '\n'
+          end
+        end else begin
+          within_spaces := false;
+          output_char fout c
+        end
+      ) cflags;
     close_out fout
-  )
+    )
