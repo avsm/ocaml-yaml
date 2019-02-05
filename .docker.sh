@@ -18,7 +18,7 @@ opam repo set-url default https://github.com/ocaml/opam-repository.git
 opam install --deps-only .
 rm -f dune-workspace.dev
 for v in $VERSIONS; do
-  echo "(context ((switch $v)))" >> dune-workspace.dev
+  echo "(context (opam (switch $v)))" >> dune-workspace.dev
   opam pin add crowbar https://github.com/stedolan/crowbar.git --switch $v
   opam install --deps-only -t --switch $v .
 done
