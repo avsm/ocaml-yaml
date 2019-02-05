@@ -1,7 +1,9 @@
 module C = Configurator.V1
 
 let ocamlopt_lines c =
-  let cflags = C.ocaml_config_var_exn c "ocamlopt_cflags" in
+  let cflags =
+    try C.ocaml_config_var_exn c "ocamlopt_cflags"
+    with _ -> "-O2 -fno-strict-aliasing -fwrapv" in
   C.Flags.extract_blank_separated_words cflags
 
 let ppc64_lines c =
