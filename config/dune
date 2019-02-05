@@ -1,6 +1,6 @@
 (executable
  (name discover)
- (libraries configurator))
+ (libraries dune.configurator))
 
 (rule
  (targets cflags)
