@@ -16,7 +16,7 @@ export OPAMYES=1
 export OPAMJOBS=3
 opam repo set-url default https://github.com/ocaml/opam-repository.git
 opam install --deps-only .
-rm -f dune-workspace.dev
+echo "(lang dune 1.0)" > dune-workspace.dev
 for v in $VERSIONS; do
   echo "(context (opam (switch $v)))" >> dune-workspace.dev
   opam pin add crowbar https://github.com/stedolan/crowbar.git --switch $v
