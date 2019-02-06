@@ -27,7 +27,7 @@ let v file =
     Yaml.Stream.do_parse t >>= fun (e, pos) ->
     match e with 
     | Yaml.Stream.Event.Nothing -> R.ok ()
-    | event -> fn event pos; iter_until_done fn in
+    | event -> fn event pos >>= fun () -> iter_until_done fn in
   iter_until_done (reflect e) >>= fun () ->
   let r = Yaml.Stream.emitter_buf e in
   print_endline buf;
