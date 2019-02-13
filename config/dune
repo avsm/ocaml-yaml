@@ -3,6 +3,6 @@
  (libraries dune.configurator))
 
 (rule
- (targets cflags)
- (action (run ./discover.exe)))
+ (targets cflags ctypes-cflags)
+ (action (run ./discover.exe -cstubs %{lib:ctypes:ctypes_cstubs_internals.h})))
 

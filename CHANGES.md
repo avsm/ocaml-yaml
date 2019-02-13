@@ -6,6 +6,8 @@
 * Upgrade opam metadata to 2.0 format (@avsm)
 * Suppress some C warnings on build due to ctypes autogen
   until ctypes gains support for unsigned char types (@avsm)
+* Remove a bash action to improve Windows portability
+  (@avsm #11 ongoing)
 
 ## v0.2.1 (01/06/2018)
 
