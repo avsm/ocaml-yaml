@@ -16,6 +16,7 @@ depends: [
   "fmt"
   "logs"
   "bos"
+  "mdx" {with-test}
   "alcotest" {with-test}
   "ezjsonm" {with-test}
 ]

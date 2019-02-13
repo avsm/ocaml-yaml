@@ -12,11 +12,10 @@ The [Yaml module docs](http://anil-code.recoil.org/ocaml-yaml/yaml/Yaml/index.ht
 
 Install the library via `opam install yaml`, and then execute a
 toplevel via `utop`.  You can also build and execute the toplevel
-locally:
+locally by running `dune utop`.
 
-```
-$ jbuilder exec utop
-# #require "yaml";;
+```ocaml
+# #require "yaml" ;;
 # Yaml.of_string "foo";;
 - : Yaml.value Yaml.res = Result.Ok (`String "foo")
 # Yaml.of_string "- foo";;
@@ -30,6 +29,58 @@ $ jbuilder exec utop
 - : (Yaml.value, Rresult.R.msg) result = Result.Ok (`String "bar")
 # Yaml_unix.of_file_exn Fpath.(v "my.yml");;
 - : Yaml.value = `String "bar"
+```
+
+### Parsing Behaviour
+
+The library tries to conform to the YAML 1.1 spec and correctly interpret
+scalar string values into Yaml [null](http://yaml.org/type/null.html), 
+[bool](http://yaml.org/type/bool.html) or [float](https://yaml.org/type/float.html):
+values.
+
+Consider [null values](http://yaml.org/type/null.html):
+
+```ocaml
+# Yaml.of_string_exn "null"
+- : Yaml.value = `Null
+# Yaml.of_string_exn ""
+- : Yaml.value = `Null
+# Yaml.of_string_exn "~"
+- : Yaml.value = `Null
+```
+
+And [bool values](http://yaml.org/type/bool.html):
+
+```ocaml
+# Yaml.of_string_exn "true"
+- : Yaml.value = `Bool true
+# Yaml.of_string_exn "n"
+- : Yaml.value = `Bool false
+# Yaml.of_string_exn "yes"
+- : Yaml.value = `Bool true
+```
+
+and [float values](https://yaml.org/type/float.html):
+
+```ocaml
+# Yaml.of_string_exn "6.8523015e+5"
+- : Yaml.value = `Float 685230.15
+# Yaml.of_string_exn "685.230_15e+03"
+- : Yaml.value = `Float 685230.15
+# Yaml.of_string_exn "685_230.15"
+- : Yaml.value = `Float 685230.15
+# Yaml.of_string_exn "-.inf"
+- : Yaml.value = `Float (neg_infinity)
+# Yaml.of_string_exn "NaN"
+- : Yaml.value = `Float nan
+```
+
+Note that yaml base60 ('sexagesimal') parsing is not yet supported, so
+this will show up as a string for now:
+
+```ocaml
+# Yaml.of_string_exn "190:20:30.15"
+- : Yaml.value = `String "190:20:30.15"
 ```
 
 ### Repository Structure

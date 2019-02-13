@@ -19,9 +19,25 @@ open R.Infix
 module Stream = Stream
 open Stream
 
+let yaml_scalar_to_json t =
+  match t with
+  | "null" | "NULL" | "" | "Null" | "~" -> `Null
+  | "y"|"Y"|"yes"|"Yes"|"YES"
+  | "true"|"True"|"TRUE"
+  | "on"|"On"|"ON" -> `Bool true
+  | "n"|"N"|"no"|"No"|"NO"
+  | "false"|"False"|"FALSE"
+  | "off"|"Off"|"OFF" -> `Bool false
+  | "-.inf" -> `Float neg_infinity
+  | ".inf" -> `Float infinity
+  | ".nan"|".NaN"|".NAN" -> `Float nan
+  | s -> match Float.of_string_opt s with
+      | Some f -> `Float f
+      | None -> `String s
+
 let to_json v =
   let rec fn = function
-   | `String {value} -> `String value
+   | `String {value} -> yaml_scalar_to_json value
    | `Alias _ -> failwith "Anchors are not supported when serialising to JSON"
    | `A l -> `A (List.map fn l)
    | `O l -> `O (List.map (fun ({anchor;value},v) -> value, (fn v)) l)
@@ -121,7 +137,7 @@ let yaml_of_string s =
             next () >>=
             parse_seq [] >>= fun s ->
             Ok (`A s)
-         | Scalar {anchor;value} -> Ok (`String {anchor;value})
+         | Scalar {anchor; value} -> Ok (`String {anchor;value})
          | Alias {anchor} -> Ok (`Alias anchor)
          | Mapping_start _ ->
             next () >>=

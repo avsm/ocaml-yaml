@@ -1,4 +1,6 @@
-## v0.3.0 (13/02/2018)
+## v0.3.0 (13/02/2019)
+* Support parsing of canonical Yaml null, float and bool
+  values (@avsm, fixes #15 #16).
 * Port from jbuilder to dune (#2 @rgrinberg)
 * Use dune.configurator for config probing (#18 @emillon)
 * Upgrade opam metadata to 2.0 format (@avsm)
