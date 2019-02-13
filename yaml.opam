@@ -1,29 +1,37 @@
-opam-version: "1.2"
+opam-version: "2.0"
 maintainer: "Anil Madhavapeddy <anil@recoil.org>"
-authors: ["Anil Madhavapeddy <anil@recoil.org>"]
-homepage: "https://github.com/avsm/ocaml-yaml"
-doc: "http://anil-code.github.io/ocaml-yaml"
+authors: "Anil Madhavapeddy <anil@recoil.org>"
 license: "ISC"
-dev-repo: "https://github.com/avsm/ocaml-yaml.git"
-bug-reports: "https://github.com/avsm/ocaml-yaml/issues"
 tags: ["org:mirage" "org:ocamllabs"]
-available: [ ocaml-version >= "4.03.0"]
+homepage: "https://github.com/avsm/ocaml-yaml"
+doc: "http://anil-code.github.io/ocaml-yaml/"
+bug-reports: "https://github.com/avsm/ocaml-yaml/issues"
 depends: [
+  "ocaml" {>= "4.03.0"}
   "dune" {build}
-  "ctypes" {>="0.12.0"}
-  "ppx_sexp_conv" {>="v0.9.0"}
+  "ctypes" {>= "0.12.0"}
+  "ppx_sexp_conv" {>= "v0.9.0"}
   "sexplib"
   "rresult"
   "fmt"
   "logs"
   "bos"
-  "alcotest" {test}
-  "ezjsonm" {test}
+  "alcotest" {with-test}
+  "ezjsonm" {with-test}
 ]
 build: [
   ["dune" "subst"] {pinned}
   ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
 ]
-build-test: [
-  ["dune" "runtest" "-p" name "-j" jobs]
-]
+dev-repo: "git+https://github.com/avsm/ocaml-yaml.git"
+synopsis: "Parse and generate YAML 1.1 files"
+description: """
+This is an OCaml library to parse and generate the YAML file
+format.  It is intended to interoperable with the [Ezjsonm](https://github.com/mirage/ezjsonm)
+JSON handling library, if the simple common subset of Yaml 
+is used.  Anchors and other advanced Yaml features are not
+implemented in the JSON compatibility layer.
+
+The [Yaml module docs](http://anil-code.recoil.org/ocaml-yaml/yaml/Yaml/index.html) are browseable online.
+"""

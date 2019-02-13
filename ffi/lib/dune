@@ -15,6 +15,6 @@
  (modules g m)
  (c_names yaml_stubs)
  (flags (:standard -w -9-27-32-34))
- (c_flags ((:standard \ -fPIC -Werror -pedantic -Wall -Wunused) -I../../vendor))
+ (c_flags ((:standard -Wno-incompatible-pointer-types-discards-qualifiers -Wno-pointer-sign \ -fPIC -Werror -pedantic -Wall -Wunused) -I../../vendor))
  (libraries yaml.bindings yaml.types ctypes.stubs ctypes yaml.c))
 

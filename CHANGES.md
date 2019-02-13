@@ -1,3 +1,10 @@
+## v0.3.0 (13/02/2018)
+* Port from jbuilder to dune (#2 @rgrinberg)
+* Use dune.configurator for config probing (#18 @emillon)
+* Upgrade opam metadata to 2.0 format (@avsm)
+* Suppress some C warnings on build due to ctypes autogen
+  until ctypes gains support for unsigned char types (@avsm)
+
 ## v0.2.1 (01/06/2018)
 
 * Repair build on ppc64le by using Configurator to query CFLAGS.
