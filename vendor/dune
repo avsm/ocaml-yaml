@@ -6,14 +6,9 @@
  (self_build_stubs_archive (yaml_c)))
 
 (rule
- (targets libyaml_c_stubs.a)
+ (targets libyaml_c_stubs%{ext_lib} dllyaml_c_stubs%{ext_dll})
  (deps   api.o emitter.o loader.o parser.o reader.o scanner.o writer.o)
- (action (run ar rcs %{targets} %{deps})))
-
-(rule
- (targets dllyaml_c_stubs.so)
- (deps   api.o emitter.o loader.o parser.o reader.o scanner.o writer.o)
- (action (run %{cc} -shared -o %{targets} %{deps})))
+ (action (run ocamlmklib -o yaml_c_stubs %{deps})))
 
 (rule
  (targets api.o)
