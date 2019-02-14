@@ -42,9 +42,7 @@ let emit =
 let version =
   [ "version", `Quick, (fun () -> Alcotest.check t "version" (Ok ()) (Test_version.v ())) ]
 
-(* Run it *)
-let () =
-  Alcotest.run "Event-based parsed" [
+let tests = [
     "parse_event_test_set", parse_event_test_set all_files;
     "parse_of_string", parse_of_string all_simple_files;
     "reflect", reflect all_files;
@@ -52,3 +50,9 @@ let () =
     "version", version
   ]
 
+(* Run it *)
+let () =
+  Junit_alcotest.run_and_report "Yaml" tests |>
+  fun (r,e) ->
+  Junit.(to_file (make [r]) "alcotest-junit.xml");
+  e ()
