@@ -8,6 +8,7 @@
   until ctypes gains support for unsigned char types (@avsm)
 * Remove a bash action to improve Windows portability
   (@avsm #11 ongoing)
+* Refresh libyaml to upstream changeset 85d1f168ef39f4 (@avsm)
 
 ## v0.2.1 (01/06/2018)
 
