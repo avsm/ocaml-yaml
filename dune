@@ -1,6 +1,6 @@
 (env (_ (flags (:standard -w -9-27-32))))
 (alias
- (name runtest)
+ (name readme)
  (deps README.md)
  (action (progn (run mdx test %{deps}) (diff? %{deps} %{deps}.corrected))))
 

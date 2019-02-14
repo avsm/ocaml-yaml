@@ -23,5 +23,7 @@ for v in $VERSIONS; do
   opam install --deps-only -t --switch $v .
 done
 
+dune build --workspace dune-workspace.dev
 dune runtest --workspace dune-workspace.dev
+opam install -y .
 rm -f dune-workspace.dev
