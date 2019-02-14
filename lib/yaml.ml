@@ -31,9 +31,7 @@ let yaml_scalar_to_json t =
   | "-.inf" -> `Float neg_infinity
   | ".inf" -> `Float infinity
   | ".nan"|".NaN"|".NAN" -> `Float nan
-  | s -> match Float.of_string_opt s with
-      | Some f -> `Float f
-      | None -> `String s
+  | s -> (try `Float (float_of_string s) with _ -> `String s)
 
 let to_json v =
   let rec fn = function
