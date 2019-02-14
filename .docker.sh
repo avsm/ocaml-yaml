@@ -25,5 +25,5 @@ done
 
 dune build --workspace dune-workspace.dev
 dune runtest --workspace dune-workspace.dev
-opam install -y .
+opam install -vy .
 rm -f dune-workspace.dev
