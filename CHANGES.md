@@ -1,4 +1,4 @@
-## v0.3.0 (13/02/2019)
+## v1.0.0 (17/02/2019)
 * Support parsing of canonical Yaml null, float and bool
   values (@avsm, fixes #15 #16).
 * Port from jbuilder to dune (#2 @rgrinberg)
@@ -6,9 +6,11 @@
 * Upgrade opam metadata to 2.0 format (@avsm)
 * Suppress some C warnings on build due to ctypes autogen
   until ctypes gains support for unsigned char types (@avsm)
-* Remove a bash action to improve Windows portability
-  (@avsm #11 ongoing)
+* Add Windows build support (@avsm #11)
 * Refresh libyaml to upstream changeset 85d1f168ef39f4 (@avsm)
+* Switch CI to Azure Pipelines and test Windows, Linux and
+  macOS (@avsm)
+* Add Junit output to the Alcotest (@avsm)
 
 ## v0.2.1 (01/06/2018)
 
