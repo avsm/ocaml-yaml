@@ -16,7 +16,8 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/_build/*.xml'
+      testResultsFiles: '_build/default/tests/*.xml'
+      searchFolder: $(Build.SourcesDirectory)
       failTaskOnFailedTests: true
       testRunTitle: "Package Tests"
       buildPlatform: amd64-linux
@@ -47,7 +48,8 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/_build/*.xml'
+      testResultsFiles: '_build/default/tests/*.xml'
+      searchFolder: $(Build.SourcesDirectory)
       failTaskOnFailedTests: true
       testRunTitle: "Package Tests"
       buildPlatform: amd64-darwin
