@@ -23,8 +23,6 @@ depends: [
 ]
 build: [
   ["dune" "subst"] {pinned}
-  ["dune" "build" "-p" name "-j" jobs "types/lib/g.ml"]
-  ["cat" "_build/default/types/lib/g.ml"]
   ["dune" "build" "-p" name "-j" jobs]
   ["dune" "runtest" "-p" name "-j" jobs] {with-test}
 ]

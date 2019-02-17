@@ -133,9 +133,3 @@ if [ "$TEST_DISTRIB" = "yes" ]; then
   dune-release distrib
   dune runtest --force
 fi
-
-echo debug
-ls -la
-pwd
-echo looking for junit files
-find _build | grep xml
