@@ -20,7 +20,6 @@ jobs:
       failTaskOnFailedTests: true
       testRunTitle: "Package Tests"
       buildPlatform: amd64-linux
-      searchFolder: $(Build.SourcesDirectory)
 - job: LinuxDistros
   pool:
     vmImage: 'ubuntu-16.04'
@@ -52,7 +51,6 @@ jobs:
       failTaskOnFailedTests: true
       testRunTitle: "Package Tests"
       buildPlatform: amd64-darwin
-      searchFolder: $(Build.SourcesDirectory)
 - job: Windows
   variables:
     CYGWIN_ROOT: $(System.Workfolder)\cygwin
