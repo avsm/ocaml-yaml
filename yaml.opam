@@ -4,7 +4,7 @@ authors: "Anil Madhavapeddy <anil@recoil.org>"
 license: "ISC"
 tags: ["org:mirage" "org:ocamllabs"]
 homepage: "https://github.com/avsm/ocaml-yaml"
-doc: "http://anil-code.github.io/ocaml-yaml/"
+doc: "https://avsm.github.io/ocaml-yaml/"
 bug-reports: "https://github.com/avsm/ocaml-yaml/issues"
 depends: [
   "ocaml" {>= "4.03.0"}
