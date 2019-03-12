@@ -16,7 +16,7 @@
 
   It is based on a binding to {{:http://pyyaml.org/wiki/LibYAML:}libyaml}
   which covers the generation and parsing processes.
- 
+
   Most simple use cases can simply use the {!of_string} and {!to_string}
   functions, which are compatible with the {!Ezjsonm} types.  This means
   that you can convert between JSON and Yaml format easily.
@@ -57,6 +57,7 @@ type yaml =
 and anchor_string = {
   anchor: string option;
   value: string;
+  quoted_implicit: bool;
 } [@@deriving sexp]
 (** [anchor_string] holds a possible Yaml anchor, and the string [value] *)
 

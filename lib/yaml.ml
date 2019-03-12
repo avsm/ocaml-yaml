@@ -35,6 +35,7 @@ let yaml_scalar_to_json t =
 
 let to_json v =
   let rec fn = function
+   | `String {value; quoted_implicit=true} -> `String value
    | `String {value} -> yaml_scalar_to_json value
    | `Alias _ -> failwith "Anchors are not supported when serialising to JSON"
    | `A l -> `A (List.map fn l)
@@ -46,16 +47,16 @@ let to_json v =
 
 let of_json (v:value) =
   let rec fn = function
-  | `Null -> `String {anchor=None;value=""}
-  | `Bool b -> `String {anchor=None;value=string_of_bool b}
-  | `Float f -> `String {anchor=None;value=string_of_float f}
-  | `String value -> `String {anchor=None; value}
+  | `Null -> `String {anchor=None;value=""; quoted_implicit=false}
+  | `Bool b -> `String {anchor=None;value=string_of_bool b; quoted_implicit=false}
+  | `Float f -> `String {anchor=None;value=string_of_float f; quoted_implicit=false}
+  | `String value -> `String {anchor=None; value; quoted_implicit=false}
   | `A l -> `A (List.map fn l)
-  | `O l -> `O (List.map (fun (k,v) -> {anchor=None;value=k}, (fn v)) l)
+  | `O l -> `O (List.map (fun (k,v) -> {anchor=None;value=k; quoted_implicit=false}, (fn v)) l)
   in match fn v with
   | r -> Ok r
   | exception (Failure msg) -> R.error_msg msg
- 
+
 let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
   emitter ?len () >>= fun t ->
   stream_start t encoding >>= fun () ->
@@ -65,7 +66,7 @@ let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
      |`String s -> scalar ?style:scalar_style t s
      |`Float s -> string_of_float s |> scalar t
      |`Bool s -> string_of_bool s |> scalar t
-     |`A l -> 
+     |`A l ->
         sequence_start ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> sequence_end t
@@ -74,7 +75,7 @@ let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
      |`O l ->
         mapping_start ?style:layout_style t >>= fun () ->
         let rec fn = function
-          | [] -> mapping_end t 
+          | [] -> mapping_end t
           | (k,v)::tl -> iter (`String k) >>= fun () -> iter v >>= fun () -> fn tl
         in fn l
   in
@@ -97,7 +98,7 @@ let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?layout_style v =
   let rec iter = function
     |`String {anchor;value} -> scalar ?anchor ?style:scalar_style t value
     |`Alias anchor -> alias t anchor
-    |`A l -> 
+    |`A l ->
         sequence_start ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> sequence_end t
@@ -106,7 +107,7 @@ let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?layout_style v =
      |`O l ->
         mapping_start ?style:layout_style t >>= fun () ->
         let rec fn = function
-          | [] -> mapping_end t 
+          | [] -> mapping_end t
           | (k,v)::tl -> iter (`String k) >>= fun () -> iter v >>= fun () -> fn tl
         in fn l
   in
@@ -135,7 +136,7 @@ let yaml_of_string s =
             next () >>=
             parse_seq [] >>= fun s ->
             Ok (`A s)
-         | Scalar {anchor; value} -> Ok (`String {anchor;value})
+         | Scalar {anchor; value; quoted_implicit} -> Ok (`String {anchor;value; quoted_implicit})
          | Alias {anchor} -> Ok (`Alias anchor)
          | Mapping_start _ ->
             next () >>=
@@ -156,7 +157,7 @@ let yaml_of_string s =
              parse_v (e,pos) >>= fun v ->
              begin match v with
              | `String k ->
-                next () >>= 
+                next () >>=
                 parse_v >>= fun v ->
                 next () >>=
                 parse_map ((k,v)::acc)
@@ -164,10 +165,10 @@ let yaml_of_string s =
              end
          end
        in
-       next () >>= 
+       next () >>=
        parse_v
     end
-    | Stream_end -> Ok (`String {anchor=None;value=""})
+    | Stream_end -> Ok (`String {anchor=None;value=""; quoted_implicit=false})
     | e -> R.error_msg (Fmt.strf "Not document start: %s" (sexp_of_t e |> Sexplib.Sexp.to_string_hum))
   end
   | _ -> R.error_msg "Not stream start"

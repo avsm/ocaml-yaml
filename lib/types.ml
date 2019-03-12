@@ -16,7 +16,7 @@ open Sexplib.Conv
 
 type version = [
  | `V1_0
- | `V1_1 
+ | `V1_1
 ] [@@deriving sexp]
 
 type encoding = [
@@ -53,6 +53,7 @@ type value =
 type anchor_string = {
   anchor: string option;
   value: string;
+  quoted_implicit: bool;
 } [@@deriving sexp]
 
 type yaml =
