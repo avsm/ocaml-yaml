@@ -80,7 +80,7 @@ let list_of_tag_directives tds =
 (* TODO not clear how to parse this as not a linked list *)
   let acc = [hd] in
   List.map tag_directive_of_ffi acc
- 
+
 let version_of_directive ~major ~minor =
   match major, minor with
   | 1,0 -> `V1_0
@@ -115,12 +115,12 @@ module Event = struct
    | Document_end of { implicit: bool }
    | Mapping_start of { anchor: string option; tag: string option; implicit: bool; style: layout_style }
    | Mapping_end
-   | Stream_end 
-   | Scalar of { anchor: string option; tag: string option; value: string; plain_implicit: bool; quoted_implicit: bool; style: scalar_style }
+   | Stream_end
+   | Scalar of scalar
    | Sequence_start of { anchor: string option; tag: string option; implicit: bool; style: layout_style }
    | Sequence_end
    | Alias of { anchor: string }
-   | Nothing 
+   | Nothing
    [@@deriving sexp]
 
   let of_ffi e : t * pos =
@@ -175,12 +175,12 @@ module Event = struct
       let implicit = getf ss Sequence_start.implicit <> 0 in
       let style = getf ss Sequence_start.style |> layout_style_of_ffi in
       Sequence_start {anchor; tag; implicit; style}
-    |`Sequence_end -> Sequence_end 
-    |`Mapping_end -> Mapping_end 
+    |`Sequence_end -> Sequence_end
+    |`Mapping_end -> Mapping_end
     |`Stream_end -> Stream_end
     |`Alias ->
       let a = getf data Data.alias in
-      let anchor = 
+      let anchor =
         match getf a Alias.anchor with
         | None -> raise (Invalid_argument "empty anchor alias")
         | Some a -> a in
@@ -188,7 +188,7 @@ module Event = struct
     |`None -> Nothing
     |`E i -> raise (Invalid_argument ("Unexpected event, internal library error "^(Int64.to_string i)))
     in r, pos
-    
+
 end
 
 let version = B.version
@@ -274,9 +274,9 @@ let document_start ?(implicit=true) t  =
   check_emit "doc_start" t @@ B.document_start_event_init t.event ver tag tag implicit
 
 let document_end ?(implicit=true) t =
-  check_emit "doc_end" t @@ B.document_end_event_init t.event implicit 
+  check_emit "doc_end" t @@ B.document_end_event_init t.event implicit
 
-let scalar ?(plain_implicit=true) ?(quoted_implicit=false) ?anchor ?tag ?(style=`Plain) t value =
+let scalar {plain_implicit; quoted_implicit; anchor; tag; style; value} t =
   check_emit "scalar" t @@ B.scalar_event_init t.event anchor tag value (String.length value) plain_implicit quoted_implicit (style :> T.Scalar_style.t)
 
 let sequence_start ?anchor ?tag ?(implicit=true) ?(style=`Block) t =
@@ -303,7 +303,7 @@ let emit t =
   | Mapping_start { anchor; tag; implicit; style } -> mapping_start ?anchor ?tag ~implicit ~style t
   | Mapping_end -> mapping_end t
   | Stream_end -> stream_end t
-  | Scalar { anchor; tag; value; plain_implicit; quoted_implicit; style } -> scalar ?anchor ?tag ~plain_implicit ~quoted_implicit ~style t value
+  | Scalar s -> scalar s t
   | Sequence_start { anchor; tag; implicit; style } -> sequence_start ?anchor ?tag ~implicit ~style t
   | Sequence_end -> sequence_end t
   | Alias { anchor } -> alias t anchor

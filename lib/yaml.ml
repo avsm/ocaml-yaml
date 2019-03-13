@@ -19,6 +19,10 @@ open R.Infix
 module Stream = Stream
 open Stream
 
+let scalar ?anchor ?tag ?(plain_implicit=true) ?(quoted_implicit=false)
+    ?(style=`Plain) value =
+  { anchor; tag; plain_implicit; quoted_implicit; style; value }
+
 let yaml_scalar_to_json t =
   match t with
   | "null" | "NULL" | "" | "Null" | "~" -> `Null
@@ -35,8 +39,9 @@ let yaml_scalar_to_json t =
 
 let to_json v =
   let rec fn = function
-   | `String {value; quoted_implicit=true} -> `String value
-   | `String {value} -> yaml_scalar_to_json value
+   (* Quoted implicts are represented as strings in Json. *)
+   | `Scalar {value; quoted_implicit=true} -> `String value
+   | `Scalar {value} -> yaml_scalar_to_json value
    | `Alias _ -> failwith "Anchors are not supported when serialising to JSON"
    | `A l -> `A (List.map fn l)
    | `O l -> `O (List.map (fun ({anchor;value},v) -> value, (fn v)) l)
@@ -47,12 +52,12 @@ let to_json v =
 
 let of_json (v:value) =
   let rec fn = function
-  | `Null -> `String {anchor=None;value=""; quoted_implicit=false}
-  | `Bool b -> `String {anchor=None;value=string_of_bool b; quoted_implicit=false}
-  | `Float f -> `String {anchor=None;value=string_of_float f; quoted_implicit=false}
-  | `String value -> `String {anchor=None; value; quoted_implicit=false}
+  | `Null -> `Scalar (scalar "")
+  | `Bool b -> `Scalar (scalar (string_of_bool b))
+  | `Float f -> `Scalar (scalar (string_of_float f))
+  | `String value -> `Scalar (scalar value)
   | `A l -> `A (List.map fn l)
-  | `O l -> `O (List.map (fun (k,v) -> {anchor=None;value=k; quoted_implicit=false}, (fn v)) l)
+  | `O l -> `O (List.map (fun (k,v) -> scalar k, (fn v)) l)
   in match fn v with
   | r -> Ok r
   | exception (Failure msg) -> R.error_msg msg
@@ -62,10 +67,10 @@ let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
-     |`Null -> scalar t ""
-     |`String s -> scalar ?style:scalar_style t s
-     |`Float s -> string_of_float s |> scalar t
-     |`Bool s -> string_of_bool s |> scalar t
+     |`Null -> Stream.scalar (scalar "") t
+     |`String s -> Stream.scalar (scalar ?style:scalar_style s) t
+     |`Float s -> Stream.scalar (scalar (string_of_float s)) t
+     |`Bool s -> Stream.scalar (scalar (string_of_bool s)) t
      |`A l ->
         sequence_start ?style:layout_style t >>= fun () ->
         let rec fn = function
@@ -96,7 +101,7 @@ let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?layout_style v =
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
-    |`String {anchor;value} -> scalar ?anchor ?style:scalar_style t value
+    |`Scalar s -> Stream.scalar s t
     |`Alias anchor -> alias t anchor
     |`A l ->
         sequence_start ?style:layout_style t >>= fun () ->
@@ -108,7 +113,7 @@ let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?layout_style v =
         mapping_start ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> mapping_end t
-          | (k,v)::tl -> iter (`String k) >>= fun () -> iter v >>= fun () -> fn tl
+          | (k,v)::tl -> iter (`Scalar k) >>= fun () -> iter v >>= fun () -> fn tl
         in fn l
   in
   iter v >>= fun () ->
@@ -136,7 +141,7 @@ let yaml_of_string s =
             next () >>=
             parse_seq [] >>= fun s ->
             Ok (`A s)
-         | Scalar {anchor; value; quoted_implicit} -> Ok (`String {anchor;value; quoted_implicit})
+         | Scalar scalar -> Ok (`Scalar scalar)
          | Alias {anchor} -> Ok (`Alias anchor)
          | Mapping_start _ ->
             next () >>=
@@ -156,7 +161,7 @@ let yaml_of_string s =
          | e -> begin
              parse_v (e,pos) >>= fun v ->
              begin match v with
-             | `String k ->
+             | `Scalar k ->
                 next () >>=
                 parse_v >>= fun v ->
                 next () >>=
@@ -168,7 +173,7 @@ let yaml_of_string s =
        next () >>=
        parse_v
     end
-    | Stream_end -> Ok (`String {anchor=None;value=""; quoted_implicit=false})
+    | Stream_end -> Ok (`Scalar (scalar ""))
     | e -> R.error_msg (Fmt.strf "Not document start: %s" (sexp_of_t e |> Sexplib.Sexp.to_string_hum))
   end
   | _ -> R.error_msg "Not stream start"

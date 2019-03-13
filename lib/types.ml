@@ -50,17 +50,20 @@ type value =
   | `O of (string * value) list
 ] [@@deriving sexp]
 
-type anchor_string = {
+type scalar = {
   anchor: string option;
+  tag: string option;
   value: string;
+  plain_implicit: bool;
   quoted_implicit: bool;
+  style: scalar_style
 } [@@deriving sexp]
 
 type yaml =
-  [ `String of anchor_string
+  [ `Scalar of scalar
   | `Alias of string
   | `A of yaml list
-  | `O of (anchor_string * yaml) list
+  | `O of (scalar * yaml) list
 ] [@@deriving sexp]
 
 type 'a res = ('a, Rresult.R.msg) Result.result
