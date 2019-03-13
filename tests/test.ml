@@ -22,6 +22,7 @@ type error = [`Msg of string]
 let pp_error ppf (`Msg x) = Fmt.string ppf x
 let error = Alcotest.testable pp_error (=)
 let t = Alcotest.(result unit error)
+let value = Alcotest.testable Yaml.pp Yaml.equal
 let check_file f fn =
   let name = Fpath.to_string f in
   let test () = Alcotest.check t name (Ok ()) (fn f) in
@@ -41,6 +42,33 @@ let emit =
 
 let version =
   [ "version", `Quick, (fun () -> Alcotest.check t "version" (Ok ()) (Test_version.v ())) ]
+
+let quoted_scalars =
+  (* Given an input string, we want to test two things:
+    - if the input is parsed as an expected Yaml.value and;
+    - if encoding the parsed Yaml.yaml results in the original string. *)
+  let open Rresult.R.Infix in
+  let test name str expected =
+    let actual_yaml = Yaml.yaml_of_string str in
+    let actual_value = actual_yaml >>= Yaml.to_json in
+    let str' = actual_yaml >>= Yaml.yaml_to_string in
+    (name, `Quick, Alcotest.(fun () ->
+      check (result value error) (name ^ " value") (Ok expected) actual_value;
+      check (result string error) (name ^ " encoding") (Ok (str ^ "\n")) str'));
+  in [
+    test "quoted bool" {|'true'|} (`String "true");
+    test "quoted null" {|'null'|} (`String "null");
+    test "quoted float" {|'2.718'|} (`String "2.718");
+    test "quoted string" {|"bar"|} (`String "bar");
+    test "quoted int" {|"42"|} (`String "42");
+    test "plain int" {|42|} (`Float 42.0);
+    test "plain bool" {|true|} (`Bool true);
+    test "plain string" {|foo|} (`String "foo");
+    test "plain string with quote" {|foo 'bar'|} (`String "foo 'bar'");
+    test "plain string with int and quote" {|42 "foo"|} (`String {|42 "foo"|});
+    test "double quoted string" {|"'foo bar'"|} (`String "'foo bar'");
+    test "partially double quoted string" {|'foo "bar"'|} (`String {|foo "bar"|});
+  ]
 
 let yaml_equal =
   let test name expected v1 v2 =
@@ -65,6 +93,7 @@ let tests = [
     "reflect", reflect all_files;
     "emit", emit;
     "version", version;
+    "quoted_scalars", quoted_scalars;
     "yaml_equal", yaml_equal;
   ]
 
