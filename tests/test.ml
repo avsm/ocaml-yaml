@@ -42,12 +42,30 @@ let emit =
 let version =
   [ "version", `Quick, (fun () -> Alcotest.check t "version" (Ok ()) (Test_version.v ())) ]
 
+let yaml_equal =
+  let test name expected v1 v2 =
+    (name, `Quick, Alcotest.(fun () ->
+      check bool name expected (Yaml.equal v1 v2)));
+  in [
+    test "two null equal" true `Null `Null;
+    test "two floats equal" true (`Float 2.718) (`Float 2.718);
+    test "two floats not equal" false (`Float 2.718) (`Float 3.141);
+    test "two bools equal" true (`Bool true) (`Bool true);
+    test "two strings equal" true (`String "foo") (`String "foo");
+    test "two strings not equal" false (`String "foo") (`String "bar");
+    test "two arrays equal" true (`A [`String "foo"; `Null; `Bool true]) (`A [`String "foo"; `Null; `Bool true]);
+    test "two arrays not equal" false (`A [`Null]) (`A [`String "foo"; `Null; `Bool true]);
+    test "two objects equal" true (`O ["a", `A [`String "foo"; `Null]]) (`O ["a", `A [`String "foo"; `Null]]);
+    test "different types not equal" false (`Float 2.718) (`O ["k1", `String "foo"; "k2", `Null; "k3", `Bool true]);
+  ]
+
 let tests = [
     "parse_event_test_set", parse_event_test_set all_files;
     "parse_of_string", parse_of_string all_simple_files;
     "reflect", reflect all_files;
     "emit", emit;
-    "version", version
+    "version", version;
+    "yaml_equal", yaml_equal;
   ]
 
 (* Run it *)

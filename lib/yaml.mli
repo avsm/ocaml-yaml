@@ -132,6 +132,9 @@ val to_string_exn : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style
 val pp : Format.formatter -> value -> unit
 (** [pp ppf s] will output the Yaml value [s] to the formatter [ppf]. *)
 
+val equal : value -> value -> bool
+(** [equal v1 v2] is [true] iff [v1] and [v2] are equal. *)
+
 (** {3 Yaml-specific functions} *)
 
 val yaml_of_string : string -> yaml res

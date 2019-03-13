@@ -184,3 +184,16 @@ let pp ppf s =
   match to_string s with
   | Ok s -> Format.pp_print_string ppf s
   | Error (`Msg m) -> Format.pp_print_string ppf (Printf.sprintf "(error (%s))" m)
+
+let rec equal v1 v2 =
+  match v1, v2 with
+  | `Null, `Null -> true
+  | `Bool x1, `Bool x2 -> ((=) : bool -> bool -> bool) x1 x2
+  | `Float x1, `Float x2 -> Float.equal x1 x2
+  | `String x1, `String x2 -> String.equal x1 x2
+  | `A xs1, `A xs2 -> List.for_all2 equal xs1 xs2
+  | `O xs1, `O xs2 ->
+      List.for_all2 (fun (k1, v1) (k2, v2) ->
+        String.equal k1 k2 && equal v1 v2) xs1 xs2
+  | _ -> false
+
