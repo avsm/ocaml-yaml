@@ -69,7 +69,8 @@ let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
   let rec iter = function
      |`Null -> Stream.scalar (scalar "") t
      |`String s -> Stream.scalar (scalar ?style:scalar_style s) t
-     |`Float s -> Stream.scalar (scalar (string_of_float s)) t
+     |`Float s -> Stream.scalar (scalar (Printf.sprintf "%.16g" s)) t
+     (* NOTE: Printf format on the line above taken from the jsonm library *)
      |`Bool s -> Stream.scalar (scalar (string_of_bool s)) t
      |`A l ->
         sequence_start ?style:layout_style t >>= fun () ->
@@ -201,4 +202,3 @@ let rec equal v1 v2 =
       List.for_all2 (fun (k1, v1) (k2, v2) ->
         String.equal k1 k2 && equal v1 v2) xs1 xs2
   | _ -> false
-
