@@ -108,8 +108,8 @@ echo Processing $PACKAGES
 opam pin add -n -k path . 
 opam --yes depext -y $PACKAGES
 echo "PATH is $PATH"
-eval $(opam env)
-echo "PATH is $PATH"
+#eval $(opam env)
+#echo "PATH is $PATH"
 opam install --with-test --with-doc --deps-only .
 case $TEST_CURRENT_SWITCH_ONLY in
 yes)
