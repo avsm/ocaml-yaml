@@ -1,8 +1,8 @@
-## vX.Y.Z (dd/mm/yyyy)
+## v2.0.0 (20/02/2019)
 
-* Represent quoted scalars as strings in Json encoding (@rizo, fixes #20).
-* Expose more detailed scalar information in `Yaml.yaml` (@rizo).
-* Add `Yaml.equal` (@rizo)
+* Represent quoted scalars as strings in Json encoding (#22 @rizo, fixes #20).
+* Expose more detailed scalar information in `Yaml.yaml` (#22 @rizo).
+* Add `Yaml.equal` (#22 @rizo)
 
 ## v1.0.0 (17/02/2019)
 * Support parsing of canonical Yaml null, float and bool
