@@ -16,7 +16,7 @@
 
   It is based on a binding to {{:http://pyyaml.org/wiki/LibYAML:}libyaml}
   which covers the generation and parsing processes.
- 
+
   Most simple use cases can simply use the {!of_string} and {!to_string}
   functions, which are compatible with the {!Ezjsonm} types.  This means
   that you can convert between JSON and Yaml format easily.
@@ -43,10 +43,10 @@ type value =
   most simple uses of Yaml can be interchanged with JSON. *)
 
 type yaml =
-  [ `String of anchor_string
+  [ `Scalar of scalar
   | `Alias of string
   | `A of yaml list
-  | `O of (anchor_string * yaml) list
+  | `O of (scalar * yaml) list
 ]
 (** [yaml] is the representation of a Yaml document that
   preserves alias information and other Yaml-specific metadata
@@ -54,21 +54,24 @@ type yaml =
   to convert untrusted Yaml with aliases into JSON due to the
   risk of denial-of-service via a
   {{:https://en.wikipedia.org/wiki/Billion_laughs_attack}Billion Laughs attack}. *)
-and anchor_string = {
+
+and scalar = {
   anchor: string option;
+  tag: string option;
   value: string;
+  plain_implicit: bool;
+  quoted_implicit: bool;
+  style: scalar_style
 } [@@deriving sexp]
-(** [anchor_string] holds a possible Yaml anchor, and the string [value] *)
+(** [scalar] is the description of a Yaml scalar.
 
-type version = [ `V1_0 | `V1_1 ] [@@deriving sexp]
-(** Version of the YAML spec of a document.
-  Refer to the {{:http://www.yaml.org/spec/1.2/spec.html}Yaml specification}
-  for details of the differences between versions. *)
+   Scalar values are represented as strings. A scalar can optionally have an
+   [anchor] and a [tag]. The flow style of the scalar is defined by the [style]
+   field. If [plain_implicit] is [true], the tag is optional for the plain
+   style. If [quoted_implicit] is [true], the tag is optional for any non-plain
+   style. *)
 
-type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
-(** Document encoding. The recommended format is [Utf8]. *)
-
-type scalar_style = [
+and scalar_style = [
   | `Any
   | `Plain
   | `Single_quoted
@@ -81,6 +84,14 @@ type scalar_style = [
   and expressive power.
   The {{:http://www.yaml.org/spec/1.2/spec.html#id2786942:}Yaml spec section 7.3}
   has more details. *)
+
+type version = [ `V1_0 | `V1_1 ] [@@deriving sexp]
+(** Version of the YAML spec of a document.
+  Refer to the {{:http://www.yaml.org/spec/1.2/spec.html}Yaml specification}
+  for details of the differences between versions. *)
+
+type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
+(** Document encoding. The recommended format is [Utf8]. *)
 
 type layout_style = [
   | `Any
@@ -130,6 +141,9 @@ val to_string_exn : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style
 
 val pp : Format.formatter -> value -> unit
 (** [pp ppf s] will output the Yaml value [s] to the formatter [ppf]. *)
+
+val equal : value -> value -> bool
+(** [equal v1 v2] is [true] iff [v1] and [v2] are equal. *)
 
 (** {3 Yaml-specific functions} *)
 
@@ -202,13 +216,7 @@ module Stream : sig
           ; style: layout_style }
       | Mapping_end
       | Stream_end
-      | Scalar of
-          { anchor: string option
-          ; tag: string option
-          ; value: string
-          ; plain_implicit: bool
-          ; quoted_implicit: bool
-          ; style: scalar_style }
+      | Scalar of scalar
       | Sequence_start of
           { anchor: string option
           ; tag: string option
@@ -251,8 +259,7 @@ module Stream : sig
 
   val document_end : ?implicit:bool -> emitter -> unit res
 
-  val scalar : ?plain_implicit:bool -> ?quoted_implicit:bool -> ?anchor:string ->
-    ?tag:string -> ?style:scalar_style -> emitter -> string -> unit res
+  val scalar : scalar -> emitter -> unit res
 
   val alias : emitter -> string -> unit res
 

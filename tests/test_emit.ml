@@ -17,22 +17,26 @@ open R.Infix
 
 module S = Yaml.Stream
 
+let scalar ?anchor ?tag ?(plain_implicit=true) ?(quoted_implicit=false)
+    ?(style=`Plain) value : Yaml.scalar =
+  { anchor; tag; plain_implicit; quoted_implicit; style; value }
+
 let v () =
   S.emitter () >>= fun t ->
   S.stream_start t `Utf8 >>= fun () ->
   S.document_start t >>= fun () ->
   S.sequence_start t >>= fun () ->
-  S.scalar ~tag:"sup" t "foo1" >>= fun () ->
+  S.scalar (scalar ~tag:"sup" "foo1") t >>= fun () ->
   S.mapping_start ~tag:"xx" t >>= fun () ->
-  S.scalar ~tag:"sup" t "foo2" >>= fun () ->
-  S.scalar ~tag:"sup" t "bar3" >>= fun () ->
+  S.scalar (scalar ~tag:"sup" "foo2") t >>= fun () ->
+  S.scalar (scalar ~tag:"sup" "bar3") t >>= fun () ->
   S.mapping_end t >>= fun () ->
   S.mapping_start t >>= fun () ->
-  S.scalar ~tag:"bar" t "foo4" >>= fun () ->
+  S.scalar (scalar ~tag:"bar" "foo4") t >>= fun () ->
   S.sequence_start t >>= fun () ->
-  S.scalar t ~tag:"bar" "foo5" >>= fun () ->
-  S.scalar t ~tag:"bar2" "foo6" >>= fun () ->
-  S.scalar t ~tag:"bar3" "foo7" >>= fun () ->
+  S.scalar (scalar ~tag:"bar" "foo5") t >>= fun () ->
+  S.scalar (scalar ~tag:"bar2" "foo6") t >>= fun () ->
+  S.scalar (scalar ~tag:"bar3" "foo7") t >>= fun () ->
   S.sequence_end t >>= fun () ->
   S.mapping_end t >>= fun () ->
   S.sequence_end t >>= fun () ->
@@ -42,4 +46,4 @@ let v () =
   let r = S.emitter_buf t in
   print_endline (Bytes.to_string r);
   Ok ()
-  
+
