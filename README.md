@@ -21,7 +21,7 @@ locally by running `dune utop`.
 # Yaml.of_string "- foo";;
 - : Yaml.value Yaml.res = Result.Ok (`A [`String "foo"])
 # Yaml.to_string (`O ["foo1", `String "bar1"; "foo2", `Float 1.0]);;
-- : string Yaml.res = Result.Ok "foo1: bar1\nfoo2: 1.\n"
+- : string Yaml.res = Result.Ok "foo1: bar1\nfoo2: 1\n"
 # #require "yaml.unix" ;;
 # Yaml_unix.to_file Fpath.(v "my.yml") (`String "bar") ;;
 - : (unit, Rresult.R.msg) result = Result.Ok ()
@@ -89,7 +89,9 @@ just an integer.
 
 ```ocaml
 # Yaml.of_string_exn "1"
+- : Yaml.value = `Float 1.
 # Yaml.of_string_exn "1" |> Yaml.to_string
+- : string Yaml.res = Result.Ok "1\n"
 ```
 
 ### Repository Structure
