@@ -83,6 +83,15 @@ this will show up as a string for now:
 - : Yaml.value = `String "190:20:30.15"
 ```
 
+Integers will be internally represented as a float (for JSON compat),
+but be printed back out without a trailing decimal point if it is
+just an integer.
+
+```ocaml
+# Yaml.of_string_exn "1"
+# Yaml.of_string_exn "1" |> Yaml.to_string
+```
+
 ### Repository Structure
 
 ocaml-yaml is based around a binding to the C [libyaml](http://pyyaml.org/wiki/LibYAML)

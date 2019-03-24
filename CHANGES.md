@@ -1,8 +1,10 @@
-## v2.0.0 (20/02/2019)
+## v2.0.0 (24/03/2019)
 
 * Represent quoted scalars as strings in Json encoding (#22 @rizo, fixes #20).
 * Expose more detailed scalar information in `Yaml.yaml` (#22 @rizo).
 * Add `Yaml.equal` (#22 @rizo)
+* Avoid printing the decimal point when the float number is an
+  integer (#25 @kit-ty-kate)
 
 ## v1.0.0 (17/02/2019)
 * Support parsing of canonical Yaml null, float and bool
