@@ -98,7 +98,7 @@ just an integer.
 
 ocaml-yaml is based around a binding to the C [libyaml](http://pyyaml.org/wiki/LibYAML)
 library to do the majority of the low-level parsing and serialisation,
-with a higher-level OCaml module that provids a simple interface for the
+with a higher-level OCaml module that provides a simple interface for the
 majority of common uses.
 
 We use the following major OCaml tools and libraries:
