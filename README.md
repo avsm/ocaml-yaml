@@ -179,7 +179,7 @@ is listed below.
 ### Further Information
 
 - **Discussion:** Post on <https://discuss.ocaml.org/> with the `yaml` tag under
-  the Ecosystem categoey.
+  the Ecosystem category.
 - **Bugs:** <https://github.com/avsm/ocaml-yaml/issues>
 - **Docs:** <http://anil-code.recoil.org/ocaml-yaml>
 
