@@ -216,14 +216,14 @@ let parser buf =
   B.parser_set_input_string p buf len;
   match r with
   | 1 -> R.ok {buf; p;event}
-  | _ -> R.error_msg "error initialising parser"
+  | n -> R.error_msg ("error initialising parser: " ^ string_of_int n)
 
 let do_parse {p;event} =
   let open Ctypes in
   let r = B.parser_parse p event in
   match r with
   | 1 -> Event.of_ffi (!@ event) |> R.ok
-  | _ -> R.error_msg "error calling parser"
+  | n -> R.error_msg ("error calling parser: " ^ string_of_int n)
 
 type emitter = {
   e: T.Emitter.t Ctypes.structure Ctypes.ptr;
@@ -244,7 +244,7 @@ let emitter ?(len=16386) () =
   B.emitter_set_output_string e (Ctypes.ocaml_bytes_start buf) len written;
   match r with
   | 1 -> R.ok {e;event;written; buf}
-  | _ -> R.error_msg "error initialising emitter"
+  | n -> R.error_msg ("error initialising emitter: " ^ string_of_int n)
 
 let emitter_buf {buf; written} =
   Ctypes.(!@ written) |> Unsigned.Size_t.to_int |>
@@ -254,7 +254,7 @@ let check l a =
   match a with
   | 0 -> R.error_msg (l ^ " failed")
   | 1 -> R.ok ()
-  | _ -> R.error_msg "unexpected return value"
+  | n -> R.error_msg ("unexpected return value: " ^ string_of_int n)
 
 let check_emit l {e;event} a =
   check l a >>= fun () ->
