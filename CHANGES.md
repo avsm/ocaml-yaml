@@ -1,3 +1,8 @@
+## v2.0.1 (18/08/2019)
+
+* Add unexpected error codes to error messages so that
+  debugging errors from libyaml is possible (#28 @mjambon)
+
 ## v2.0.0 (24/03/2019)
 
 * Represent quoted scalars as strings in Json encoding (#22 @rizo, fixes #20).
