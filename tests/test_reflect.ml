@@ -18,18 +18,28 @@ open Rresult
 let reflect e ev pos =
   Yaml.Stream.emit e ev
 
+let example_length n =
+  print_endline (string_of_int n);
+  let r = match n with
+  | r when r > 1_000 -> 10_000_000
+  | r when r > 1_700 -> 10_000_000_000
+  | _ -> 1_600
+  in
+  print_endline (string_of_int r);
+  r
+
 let v file =
   let open R.Infix in
   Bos.OS.File.read file >>= fun buf ->
   Yaml.Stream.parser buf >>= fun t ->
-  Yaml.Stream.emitter () >>= fun e ->
+  Yaml.Stream.emitter ~len:(example_length (String.length buf)) () >>= fun e ->
   let rec iter_until_done fn =
     Yaml.Stream.do_parse t >>= fun (e, pos) ->
-    match e with 
+    match e with
     | Yaml.Stream.Event.Nothing -> R.ok ()
     | event -> fn event pos >>= fun () -> iter_until_done fn in
   iter_until_done (reflect e) >>= fun () ->
   let r = Yaml.Stream.emitter_buf e in
   print_endline buf;
-  print_endline (Bytes.to_string r); 
+  print_endline (Bytes.to_string r);
   Ok ()

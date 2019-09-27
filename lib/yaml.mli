@@ -151,7 +151,7 @@ val yaml_of_string : string -> yaml res
 (** [yaml_of_string s] parses [s] into a Yaml {!yaml} representation,
   preserving Yaml-specific information such as anchors. *)
 
-val yaml_to_string : ?encoding:encoding -> ?scalar_style:scalar_style ->
+val yaml_to_string : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
   ?layout_style:layout_style -> yaml -> string res
 (** [yaml_to_string v] converts the Yaml value to a string representation.
    The [encoding], [scalar_style] and [layout_style] control the various

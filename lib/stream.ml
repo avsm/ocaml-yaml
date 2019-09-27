@@ -308,4 +308,3 @@ let emit t =
   | Sequence_end -> sequence_end t
   | Alias { anchor } -> alias t anchor
   | Nothing -> Ok ()
-
