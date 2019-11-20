@@ -1,3 +1,7 @@
+## dev
+
+* Switch CI to GitHub Actions (@avsm)
+
 ## v2.0.1 (18/08/2019)
 
 * Add unexpected error codes to error messages so that
