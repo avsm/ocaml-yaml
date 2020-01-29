@@ -205,15 +205,17 @@ let get_version () =
 type parser = {
   p: T.Parser.t Ctypes.structure Ctypes.ptr;
   event: T.Event.t Ctypes.structure Ctypes.ptr;
-  buf: string;
+  buf: char Ctypes_static.carray;
 }
 
-let parser buf =
+let parser str =
   let p = Ctypes.(allocate_n T.Parser.t ~count:1) in
   let event = Ctypes.(allocate_n T.Event.t ~count:1) in
   let r = B.parser_init p in
-  let len = String.length buf |> Unsigned.Size_t.of_int in
-  B.parser_set_input_string p buf len;
+  let buf = Ctypes.CArray.of_string str in
+  let buf_ptr = Ctypes.CArray.start buf in
+  let len = String.length str |> Unsigned.Size_t.of_int in
+  B.parser_set_input_string p buf_ptr len;
   match r with
   | 1 -> R.ok {buf; p;event}
   | n -> R.error_msg ("error initialising parser: " ^ string_of_int n)
