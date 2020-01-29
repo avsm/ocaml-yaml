@@ -193,6 +193,9 @@ module M(F : Ctypes.TYPE) : sig
   module Parser : sig
     type t
     val t : t typ
+    val problem : (t, string option) field
+    val problem_offset : (t, Unsigned.size_t) field
+    val problem_value : (t, int) field
   end
 
   module Emitter : sig
