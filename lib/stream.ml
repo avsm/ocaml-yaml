@@ -223,9 +223,17 @@ let parser str =
 let do_parse {p;event} =
   let open Ctypes in
   let r = B.parser_parse p event in
+  let describe_problem () =
+    match Ctypes.(getf !@p T.Parser.problem) with
+    | None -> "(no problem description)"
+    | Some s ->
+      let pv = Ctypes.(getf !@p T.Parser.problem_value) in
+      let po = Ctypes.(getf !@p T.Parser.problem_offset) in
+      s ^ " character " ^ (string_of_int pv) ^ " position " ^ (Unsigned.Size_t.to_string po)
+  in
   match r with
   | 1 -> Event.of_ffi (!@ event) |> R.ok
-  | n -> R.error_msg ("error calling parser: " ^ string_of_int n)
+  | n -> R.error_msg ("error calling parser: " ^ (describe_problem ()) ^ " returned: " ^ string_of_int n)
 
 type emitter = {
   e: T.Emitter.t Ctypes.structure Ctypes.ptr;

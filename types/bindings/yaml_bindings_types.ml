@@ -282,6 +282,9 @@ struct
     let t : t typ = F.structure "yaml_parser_s"
     (* TODO *)
     let error = F.(field t "error" error_t)
+    let problem = F.(field t "problem" string_opt)
+    let problem_offset = F.(field t "problem_offset" size_t)
+    let problem_value = F.(field t "problem_value" int)
     let () = F.seal t
   end
 
