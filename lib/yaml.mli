@@ -132,7 +132,7 @@ val to_string : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
    The [encoding], [scalar_style] and [layout_style] control the various
    output parameters.
    The current implementation uses a non-resizable internal string buffer of
-   16KB, which can be increased via [len].  *)
+   64KB, which can be increased via [len].  *)
 
 val to_string_exn : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
   ?layout_style:layout_style -> value -> string

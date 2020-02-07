@@ -1,5 +1,13 @@
-## dev
+## v2.1.0 (07/02/2020)
 
+* Fix a memory unsoundness issue with larger files in the
+  bindings to libyaml, which fixes spurious errors when parsing
+  larger YAML files (#35 marcinkoziej)
+* Expose more information about error locations while parsing
+  a Yaml file (#34 @marcinkoziej)
+* Add test for a large Yaml file (#30 @pmonson711)
+* Bump size of internal serialisation buffer in `to_string`
+  to 64KB from 16KB (@avsm).
 * Switch CI to GitHub Actions (@avsm)
 
 ## v2.0.1 (18/08/2019)

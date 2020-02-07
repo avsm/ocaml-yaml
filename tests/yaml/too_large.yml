@@ -1,3 +1,4 @@
+---
 definitions:
   io.k8s.api.CollectorDTO:
     properties:
