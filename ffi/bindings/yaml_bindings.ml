@@ -40,7 +40,7 @@ struct
     foreign "yaml_parser_delete" C.(ptr T.Parser.t @-> returning void)
 
   let parser_set_input_string =
-    foreign "yaml_parser_set_input_string" C.(ptr T.Parser.t @-> string @-> size_t @-> returning void)
+    foreign "yaml_parser_set_input_string" C.(ptr T.Parser.t @-> ptr char @-> size_t @-> returning void)
 
   let parser_parse =
     foreign "yaml_parser_parse" C.(ptr T.Parser.t @-> ptr T.Event.t @-> returning int)
