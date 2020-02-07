@@ -9,6 +9,8 @@
 * Bump size of internal serialisation buffer in `to_string`
   to 64KB from 16KB (@avsm).
 * Switch CI to GitHub Actions (@avsm)
+* Depend on dune-configurator in the build to be compatible
+  with dune 2.0 and higher (@avsm)
 
 ## v2.0.1 (18/08/2019)
 
