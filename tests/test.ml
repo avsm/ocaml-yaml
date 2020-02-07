@@ -12,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-let files = [ "anchor.yml"; "cohttp.yml"; "linuxkit.yml"; "seq.yml" ]
+let files = [ "anchor.yml"; "cohttp.yml"; "linuxkit.yml"; "seq.yml"; "too_large.yml" ]
 let dir f = Fpath.(v "yaml" / f)
 
 let all_files = List.map dir ("bomb.yml"::files)
