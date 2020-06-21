@@ -85,7 +85,7 @@ and scalar_style = [
   The {{:http://www.yaml.org/spec/1.2/spec.html#id2786942:}Yaml spec section 7.3}
   has more details. *)
 
-type version = [ `V1_0 | `V1_1 ] [@@deriving sexp]
+type version = [ `V1_1 | `V1_2 ] [@@deriving sexp]
 (** Version of the YAML spec of a document.
   Refer to the {{:http://www.yaml.org/spec/1.2/spec.html}Yaml specification}
   for details of the differences between versions. *)
@@ -255,7 +255,7 @@ module Stream : sig
 
   val emit : emitter -> Event.t -> unit res
 
-  val document_start : ?implicit:bool -> emitter -> unit res
+  val document_start : ?version:version -> ?implicit:bool -> emitter -> unit res
 
   val document_end : ?implicit:bool -> emitter -> unit res
 

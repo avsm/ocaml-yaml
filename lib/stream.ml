@@ -83,9 +83,14 @@ let list_of_tag_directives tds =
 
 let version_of_directive ~major ~minor =
   match major, minor with
-  | 1,0 -> `V1_0
   | 1,1 -> `V1_1
+  | 1,2 -> `V1_2
   | _ -> raise (Invalid_argument (Printf.sprintf "Unsupported Yaml version %d.%d" major minor))
+
+let directive_of_version =
+  function
+  | `V1_1 -> 1,1
+  | `V1_2 -> 1,2
 
 module Mark = struct
   type t = {
@@ -277,9 +282,18 @@ let stream_start t encoding =
 let stream_end t =
   check_emit "stream_end" t @@ B.stream_end_event_init t.event
 
-let document_start ?(implicit=true) t  =
+let document_start ?version ?(implicit=true) t  =
   let open Ctypes in
-  let ver = from_voidp T.Version_directive.t null in
+  let ver =
+    match version with
+    | None -> from_voidp T.Version_directive.t null
+    | Some v ->
+      let major, minor = directive_of_version v in
+      let v = make T.Version_directive.t in
+      setf v T.Version_directive.major major;
+      setf v T.Version_directive.minor minor;
+      allocate T.Version_directive.t @@ v
+  in
   let tag = from_voidp T.Tag_directive.t null in
   check_emit "doc_start" t @@ B.document_start_event_init t.event ver tag tag implicit
 
@@ -308,7 +322,7 @@ let emit t =
   let open Event in
   function
   | Stream_start { encoding } -> stream_start t encoding
-  | Document_start { version; implicit } -> document_start ~implicit t
+  | Document_start { version; implicit } -> document_start ?version ~implicit t
   | Document_end { implicit } -> document_end ~implicit t
   | Mapping_start { anchor; tag; implicit; style } -> mapping_start ?anchor ?tag ~implicit ~style t
   | Mapping_end -> mapping_end t

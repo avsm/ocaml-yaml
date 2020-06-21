@@ -28,7 +28,7 @@ build: [
   ["dune" "runtest" "-p" name "-j" jobs] {with-test}
 ]
 dev-repo: "git+https://github.com/avsm/ocaml-yaml.git"
-synopsis: "Parse and generate YAML 1.1 files"
+synopsis: "Parse and generate YAML 1.1/1.2 files"
 description: """
 This is an OCaml library to parse and generate the YAML file
 format.  It is intended to interoperable with the [Ezjsonm](https://github.com/mirage/ezjsonm)
