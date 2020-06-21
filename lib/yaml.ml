@@ -43,8 +43,14 @@ let to_json v =
    | `Scalar {value; quoted_implicit=true} -> `String value
    | `Scalar {value} -> yaml_scalar_to_json value
    | `Alias _ -> failwith "Anchors are not supported when serialising to JSON"
-   | `A l -> `A (List.map fn l)
-   | `O l -> `O (List.map (fun ({anchor;value},v) -> value, (fn v)) l)
+   | `A {s_members} -> `A (List.map fn s_members)
+   | `O {m_members} ->
+      let simple_key_to_string =
+        function
+        | `Scalar {anchor;value} -> value
+        | k -> failwith (Fmt.strf "non-string key %s is not supported" (sexp_of_yaml k |> Sexplib.Sexp.to_string_hum))
+      in
+      `O (List.map (fun (k,v) -> simple_key_to_string k, fn v) m_members)
   in
   match fn v with
   | r -> Ok r
@@ -56,8 +62,8 @@ let of_json (v:value) =
   | `Bool b -> `Scalar (scalar (string_of_bool b))
   | `Float f -> `Scalar (scalar (string_of_float f))
   | `String value -> `Scalar (scalar value)
-  | `A l -> `A (List.map fn l)
-  | `O l -> `O (List.map (fun (k,v) -> scalar k, (fn v)) l)
+  | `A l -> `A {s_anchor=None; s_tag=None; s_implicit=true; s_members=List.map fn l}
+  | `O l -> `O {m_anchor=None; m_tag=None; m_implicit=true; m_members=List.map (fun (k,v) -> `Scalar (scalar k), (fn v)) l}
   in match fn v with
   | r -> Ok r
   | exception (Failure msg) -> R.error_msg msg
@@ -104,18 +110,18 @@ let yaml_to_string ?(encoding=`Utf8) ?scalar_style ?layout_style v =
   let rec iter = function
     |`Scalar s -> Stream.scalar s t
     |`Alias anchor -> alias t anchor
-    |`A l ->
-        sequence_start ?style:layout_style t >>= fun () ->
+    |`A {s_anchor=anchor; s_tag=tag; s_implicit=implicit; s_members} ->
+        sequence_start ?anchor ?tag ~implicit ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> sequence_end t
           | hd::tl -> iter hd >>= fun () -> fn tl
-        in fn l
-     |`O l ->
-        mapping_start ?style:layout_style t >>= fun () ->
+        in fn s_members
+     |`O {m_anchor=anchor; m_tag=tag; m_implicit=implicit; m_members} ->
+        mapping_start ?anchor ?tag ~implicit ?style:layout_style t >>= fun () ->
         let rec fn = function
           | [] -> mapping_end t
-          | (k,v)::tl -> iter (`Scalar k) >>= fun () -> iter v >>= fun () -> fn tl
-        in fn l
+          | (k,v)::tl -> iter k >>= fun () -> iter v >>= fun () -> fn tl
+        in fn m_members
   in
   iter v >>= fun () ->
   document_end t >>= fun () ->
@@ -138,16 +144,16 @@ let yaml_of_string s =
     | Document_start _ -> begin
        let rec parse_v (e,pos) =
          match e with
-         | Sequence_start _ ->
+         | Sequence_start {anchor; tag; implicit; style = _} ->
             next () >>=
             parse_seq [] >>= fun s ->
-            Ok (`A s)
+            Ok (`A {s_anchor = anchor; s_tag = tag; s_implicit = implicit; s_members = s})
          | Scalar scalar -> Ok (`Scalar scalar)
          | Alias {anchor} -> Ok (`Alias anchor)
-         | Mapping_start _ ->
+         | Mapping_start {anchor; tag; implicit; style = _} ->
             next () >>=
             parse_map [] >>= fun s ->
-            Ok (`O s)
+            Ok (`O {m_anchor = anchor; m_tag = anchor; m_implicit = implicit; m_members = s})
          | e -> R.error_msg (Fmt.strf "todo %s (%s)" (sexp_of_t e |> Sexplib.Sexp.to_string_hum) (sexp_of_pos pos |> Sexplib.Sexp.to_string_hum))
        and parse_seq acc (e,pos) =
           match e with
@@ -160,15 +166,11 @@ let yaml_of_string s =
          match e with
          | Mapping_end -> Ok (List.rev acc)
          | e -> begin
-             parse_v (e,pos) >>= fun v ->
-             begin match v with
-             | `Scalar k ->
-                next () >>=
-                parse_v >>= fun v ->
-                next () >>=
-                parse_map ((k,v)::acc)
-             | _ -> R.error_msg (Fmt.strf "only string keys are supported (%s)" (sexp_of_pos pos |> Sexplib.Sexp.to_string_hum))
-             end
+             parse_v (e,pos) >>= fun k ->
+             next () >>=
+             parse_v >>= fun v ->
+             next () >>=
+             parse_map ((k,v)::acc)
          end
        in
        next () >>=
