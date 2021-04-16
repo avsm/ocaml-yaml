@@ -12,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-module T = Yaml_types.M
+module T = Yaml_ffi.C.Types
 open Rresult
 
 let reflect e ev pos =
@@ -25,11 +25,11 @@ let v file =
   Yaml.Stream.emitter () >>= fun e ->
   let rec iter_until_done fn =
     Yaml.Stream.do_parse t >>= fun (e, pos) ->
-    match e with 
+    match e with
     | Yaml.Stream.Event.Nothing -> R.ok ()
     | event -> fn event pos >>= fun () -> iter_until_done fn in
   iter_until_done (reflect e) >>= fun () ->
   let r = Yaml.Stream.emitter_buf e in
   print_endline buf;
-  print_endline (Bytes.to_string r); 
+  print_endline (Bytes.to_string r);
   Ok ()

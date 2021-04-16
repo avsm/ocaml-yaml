@@ -12,47 +12,44 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-open Sexplib.Conv
-
-module Encoding = struct
-  type t = [ `Any | `E of int64 | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
-end
-
-module Error = struct
-  type t = [ `None | `Memory | `Reader | `Scanner | `Parser 
-           | `Composer | `Writer | `Emitter | `E of int64 ] [@@deriving sexp]
-end
-
-module Scalar_style = struct
-  type t = [ `Any | `Plain | `Single_quoted | `Double_quoted
-           | `Literal | `Folded | `E of int64 ] [@@deriving sexp]
-end
-
-module Sequence_style = struct
-  type t = [ `Any | `Block | `Flow | `E of int64 ] [@@deriving sexp]
-end
-
-module Mapping_style = struct
-  type t = [ `Any | `Block | `Flow | `E of int64 ] [@@deriving sexp]
-end
-
-module Token_type = struct
-  type t = [ `None | `Stream_start | `Stream_end | `Version_directive
-           | `Tag_directive | `Document_start | `Document_end
-           | `Block_sequence_start | `Block_mapping_start | `Block_end
-           | `Flow_sequence_start | `Flow_sequence_end | `Flow_mapping_start
-           | `Flow_mapping_end | `Block_entry | `Flow_entry | `Key
-           | `Value | `Alias | `Anchor | `Tag | `Scalar | `E of int64 ] [@@deriving sexp]
-end
-
-module Event_type = struct
-  type t = [ `None | `Stream_start | `Stream_end | `Document_start
-           | `Document_end | `Alias | `Scalar | `Sequence_start
-           | `Sequence_end | `Mapping_start | `Mapping_end | `E of int64 ] [@@deriving sexp]
-end
- 
-module M(F : Ctypes.TYPE) =
+module Types(F : Ctypes.TYPE) =
 struct
+  module Encoding = struct
+    type t = [ `Any | `E of int64 | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
+  end
+
+  module Error = struct
+    type t = [ `None | `Memory | `Reader | `Scanner | `Parser
+             | `Composer | `Writer | `Emitter | `E of int64 ] [@@deriving sexp]
+  end
+
+  module Scalar_style = struct
+    type t = [ `Any | `Plain | `Single_quoted | `Double_quoted
+             | `Literal | `Folded | `E of int64 ] [@@deriving sexp]
+  end
+
+  module Sequence_style = struct
+    type t = [ `Any | `Block | `Flow | `E of int64 ] [@@deriving sexp]
+  end
+
+  module Mapping_style = struct
+    type t = [ `Any | `Block | `Flow | `E of int64 ] [@@deriving sexp]
+  end
+
+  module Token_type = struct
+    type t = [ `None | `Stream_start | `Stream_end | `Version_directive
+             | `Tag_directive | `Document_start | `Document_end
+             | `Block_sequence_start | `Block_mapping_start | `Block_end
+             | `Flow_sequence_start | `Flow_sequence_end | `Flow_mapping_start
+             | `Flow_mapping_end | `Block_entry | `Flow_entry | `Key
+             | `Value | `Alias | `Anchor | `Tag | `Scalar | `E of int64 ] [@@deriving sexp]
+  end
+
+  module Event_type = struct
+    type t = [ `None | `Stream_start | `Stream_end | `Document_start
+             | `Document_end | `Alias | `Scalar | `Sequence_start
+             | `Sequence_end | `Mapping_start | `Mapping_end | `E of int64 ] [@@deriving sexp]
+  end
 
   let yaml_char_t = F.uchar
 
@@ -138,7 +135,7 @@ struct
       let t : t typ = F.(structure "stream_start_s")
       let encoding = F.(field t "encoding" encoding_t)
       let () = F.seal t
-     
+
     end
     module Alias = struct (* YAML_ALIAS_TOKEN *)
       type t
@@ -260,7 +257,7 @@ struct
       let t : t utyp = F.union "event_data_u"
       let stream_start = F.(field t "stream_start" Stream_start.t)
       let document_start = F.(field t "document_start" Document_start.t)
-      let document_end = F.(field t "document_end" Document_end.t)	
+      let document_end = F.(field t "document_end" Document_end.t)
       let alias = F.(field t "alias" Alias.t)
       let scalar = F.(field t "scalar" Scalar.t)
       let sequence_start = F.(field t "sequence_start" Sequence_start.t)

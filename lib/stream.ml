@@ -16,8 +16,8 @@ open Sexplib.Conv
 open Rresult
 open Types
 
-module B = Yaml_ffi.M
-module T = Yaml_types.M
+module B = Yaml_ffi.C.Functions
+module T = Yaml_ffi.C.Types
 
 type tag_directive = {
   handle: string;
@@ -318,4 +318,3 @@ let emit t =
   | Sequence_end -> sequence_end t
   | Alias { anchor } -> alias t anchor
   | Nothing -> Ok ()
-

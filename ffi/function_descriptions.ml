@@ -12,9 +12,9 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-module T = Yaml_types.M
+module T = Types_generated
 
-module M(F: Ctypes.FOREIGN) =
+module Functions(F: Ctypes.FOREIGN) =
 struct
   let foreign = F.foreign
 
@@ -54,7 +54,7 @@ struct
   let emitter_set_output_string =
     foreign "yaml_emitter_set_output_string" C.(ptr T.Emitter.t @-> ocaml_bytes @-> size_t @-> ptr size_t @-> returning void)
 
-(* TODO static funptr 
+(* TODO static funptr
   let write_handler = C.(ptr void @-> ptr uchar @-> size_t @-> returning int)
 
   let emitter_set_output =
@@ -81,7 +81,7 @@ struct
 
 (* TODO bind break_t
   let emitter_set_break =
-    foreign "yaml_emitter_set_break" C.(ptr T.Emitter.t @-> T.break_t @-> returning void) 
+    foreign "yaml_emitter_set_break" C.(ptr T.Emitter.t @-> T.break_t @-> returning void)
 *)
 
   let emitter_emit =
@@ -92,7 +92,7 @@ struct
 
   let stream_end_event_init =
      foreign "yaml_stream_end_event_initialize" C.(ptr T.Event.t @-> returning int)
- 
+
   let document_start_event_init =
      foreign "yaml_document_start_event_initialize" C.(ptr T.Event.t @-> ptr T.Version_directive.t @-> ptr T.Tag_directive.t @-> ptr T.Tag_directive.t @-> bool @-> returning int)
 
