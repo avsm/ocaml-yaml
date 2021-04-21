@@ -62,13 +62,13 @@ let of_json (v:value) =
   | r -> Ok r
   | exception (Failure msg) -> R.error_msg msg
 
-let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
+let to_string ?len ?(encoding=`Utf8) ?string_style ?scalar_style ?layout_style (v:value) =
   emitter ?len () >>= fun t ->
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
      |`Null -> Stream.scalar (scalar "") t
-     |`String s -> Stream.scalar (scalar ?style:scalar_style s) t
+     |`String s -> Stream.scalar (scalar ?style:string_style s) t
      |`Float s -> Stream.scalar (scalar (Printf.sprintf "%.16g" s)) t
      (* NOTE: Printf format on the line above taken from the jsonm library *)
      |`Bool s -> Stream.scalar (scalar (string_of_bool s)) t
@@ -91,8 +91,8 @@ let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
   let r = Stream.emitter_buf t in
   Ok (Bytes.to_string r)
 
-let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
-  match to_string ?len ?encoding ?scalar_style ?layout_style s with
+let to_string_exn ?len ?encoding ?string_style ?scalar_style ?layout_style s =
+  match to_string ?len ?encoding ?string_style ?scalar_style ?layout_style s with
   | Ok s -> s
   | Error (`Msg m) -> raise (Invalid_argument m)
 

@@ -126,7 +126,9 @@ val of_string_exn : string -> value
 (** [of_string_exn s] acts as {!of_string}, but raises {!Invalid_argument}
   if there is an error. *)
 
-val to_string : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
+val to_string : ?len:int -> ?encoding:encoding ->
+  ?string_style:scalar_style ->
+  ?scalar_style:scalar_style ->
   ?layout_style:layout_style -> value -> string res
 (** [to_string v] converts the JSON value to a Yaml string representation.
    The [encoding], [scalar_style] and [layout_style] control the various
@@ -134,7 +136,9 @@ val to_string : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
    The current implementation uses a non-resizable internal string buffer of
    64KB, which can be increased via [len].  *)
 
-val to_string_exn : ?len:int -> ?encoding:encoding -> ?scalar_style:scalar_style ->
+val to_string_exn : ?len:int -> ?encoding:encoding ->
+  ?string_style:scalar_style ->
+  ?scalar_style:scalar_style ->
   ?layout_style:layout_style -> value -> string
 (** [to_string_exn v] acts as {!to_string}, but raises {!Invalid_argument} in
   if there is an error. *)
