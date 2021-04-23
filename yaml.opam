@@ -30,7 +30,7 @@ build: [
 dev-repo: "git+https://github.com/avsm/ocaml-yaml.git"
 synopsis: "Parse and generate YAML 1.1 files"
 pin-depends: [
-  [ "dune.dev" "git+https://github.com/ocaml/dune#64a581b012e3ce5f1077cf0be7de194d86b98ad6" ]
+  [ "dune.dev" "git+https://github.com/mbacarella/dune#64a581b012e3ce5f1077cf0be7de194d86b98ad6" ]
 ]
 description: """
 This is an OCaml library to parse and generate the YAML file
