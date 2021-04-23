@@ -1,3 +1,4 @@
+version: "2.1.0-12-ga05fb74"
 opam-version: "2.0"
 maintainer: "Anil Madhavapeddy <anil@recoil.org>"
 authors: ["Anil Madhavapeddy <anil@recoil.org>" "Rizo Isrof <rizo@odis.io>"]
@@ -30,7 +31,7 @@ build: [
 dev-repo: "git+https://github.com/avsm/ocaml-yaml.git"
 synopsis: "Parse and generate YAML 1.1 files"
 pin-depends: [
-  [ "dune.dev" "git+https://github.com/mbacarella/dune#44988cc44e0071fb118e540314b4821182be7380" ]
+  [ "dune.dev" "git+https://github.com/mbacarella/dune#968e2387ad909d6bd9522ee2b1d183e884fa7a35" ]
 ]
 description: """
 This is an OCaml library to parse and generate the YAML file

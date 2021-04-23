@@ -3,3 +3,4 @@
 (using mdx 0.1)
 (use_standard_c_and_cxx_flags false)
 (name yaml)
+(version v2.1.0-12-ga05fb74)
