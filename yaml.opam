@@ -30,7 +30,7 @@ build: [
 dev-repo: "git+https://github.com/avsm/ocaml-yaml.git"
 synopsis: "Parse and generate YAML 1.1 files"
 pin-depends: [
-  [ "index.dev" , "git+https://github.com/avsm/ocaml-yaml#6666f7fc2829ed74b9605d06320e7265282127ff" ]
+  [ "ocaml-yaml.dev" , "git+https://github.com/avsm/ocaml-yaml#6666f7fc2829ed74b9605d06320e7265282127ff" ]
 ]
 description: """
 This is an OCaml library to parse and generate the YAML file
