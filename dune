@@ -1,6 +1,2 @@
 (env (_ (flags (:standard -w -9-27-32))))
-; 2021-04-23 mbac: this replaces a readme alias stanza that called the mdx
-;  tool.  dune has mdx stanza support built in now, so we can just say (mdx)
-;  to check the code in README.md files.  But... it doesn't seem like
-;  it worked properly as an alias, so commenting it out for now.
-;(mdx)
+(mdx)
