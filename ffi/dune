@@ -11,6 +11,10 @@
      ;  called from multiple places
     (c_flags (-I../vendor/headers -Ivendor/headers))))
   (headers (include "preamble.h"))
-  (type_descriptions Type_descriptions)
-  (function_descriptions Function_descriptions)
+  (type_description
+    (instance Types)
+    (functor Type_description))
+  (function_description
+    (instance Functions)
+    (functor Function_description))
   (generated_entry_point C)))
