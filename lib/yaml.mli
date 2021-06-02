@@ -281,3 +281,95 @@ module Stream : sig
   (** [library_version ()] returns the major, minor and patch version of the underlying libYAML implementation. *)
 
 end
+
+(** {2 Utility functions for yaml}
+
+    The {!Util} modules provides combinators and useful functions for
+    manipulating yaml and OCaml values. *)
+module Util : sig
+  exception Value_error of string
+  (** An exception raise when the wrong type of yaml value is passed to a
+      utility function. *)
+
+  val keys : value -> string list res
+  (** [keys obj] returns the keys of the object value or an error if the wrong
+      type of value is given as an argument. *)
+
+  val keys_exn : value -> string list
+  (** [keys_exn obj] is the same as {!keys} except it raises an exception. *)
+
+  val values : value -> value list res
+  (** [values obj] returns the values of the object value or an error if the
+      wrong type of value is given as an argument. *)
+
+  val values_exn : value -> value list
+  (** [values_exn obj] is the same as {!values} except it raises an exception. *)
+
+  val combine : value -> value -> value res
+  (** [combine a b] combines the key-value pairs of the two objects or returns
+      an error if the wrong type of value is given as an argument. *)
+
+  val combine_exn : value -> value -> value
+  (** [combines_exn a b] is the same as {!combines} except it raises an
+      exception. *)
+
+  val find : string -> value -> value option res
+  (** [find key obj] returns the value associated with the [key] in the object,
+      or [None] if nothing is found. An error is returned if the wrong type of
+      value is given as an argument. *)
+
+  val find_exn : string -> value -> value option
+  (** [find_exn s obj] is the same as {!find} except it raises an exception. *)
+
+  val map : (value -> value) -> value -> value res
+  (** [map f arr] applies [f] to every value in [arr], an error is retured if
+      the wrong type of value is given. *)
+
+  val map_exn : (value -> value) -> value -> value
+  (** [map_exn f obj] is the same as {!map} except it raises an exception. *)
+
+  val filter : (value -> bool) -> value -> value res
+  (** [filter f arr] filters out values in [arr] using [f], an error is retured
+      if the wrong type of value is given. *)
+
+  val filter_exn : (value -> bool) -> value -> value
+  (** [filter_exn p obj] is the same as {!filter} except it raises an exception. *)
+
+  val to_string : value -> string res
+  (** [to_string v] tries to convert [v] to a string if the underlying value is
+      a string. *)
+
+  val to_string_exn : value -> string
+  (** [to_string_exn v] is the same as {!to_string} except it raises an
+      exception. *)
+
+  val to_bool : value -> bool res
+  (** [to_bool v] tries to convert [v] to a boolean if the underlying value is a
+      boolean. *)
+
+  val to_bool_exn : value -> bool
+  (** [to_bool_exn v] is the same as {!to_bool} except it raises an exception. *)
+
+  val to_float : value -> float res
+  (** [to_float v] tries to convert [v] to a float if the underlying value is a
+      float. *)
+
+  val to_float_exn : value -> float
+  (** [to_float_exn v] is the same as {!to_float} except it raises an exception. *)
+
+  val string : string -> value
+  (** Make a value from a string. *)
+
+  val bool : bool -> value
+  (** Make a value from a boolean. *)
+
+  val float : float -> value
+  (** Make a value from a float. *)
+
+  val list : ('a -> value) -> 'a list -> value
+  (** [list f lst] makes a value from a list and a function [f] to apply to
+      every element. *)
+
+  val obj : (string * value) list -> value
+  (** Make a value from an association list. *)
+end
