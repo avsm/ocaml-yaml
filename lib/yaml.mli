@@ -288,7 +288,7 @@ end
     manipulating yaml and OCaml values. *)
 module Util : sig
   exception Value_error of string
-  (** An exception raise when the wrong type of yaml value is passed to a
+  (** An exception raised when the wrong type of yaml value is passed to a
       utility function. *)
 
   val keys : value -> string list res
