@@ -34,7 +34,6 @@ let find_exn s = function
   | `O assoc -> List.assoc_opt s assoc
   | _ -> raise (Value_error "Expected an object")
 
-(* "Array" functions *)
 let map f = function
   | `A lst -> Ok (`A (List.map f lst))
   | _ -> Error (`Msg "Expected a value array")
