@@ -19,6 +19,7 @@ depends: [
   "bos"
   "mdx" {with-test}
   "alcotest" {with-test}
+  "crowbar" {with-test}
   "junit_alcotest" {with-test}
   "ezjsonm" {with-test}
 ]
