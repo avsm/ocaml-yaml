@@ -7,14 +7,10 @@ homepage: "https://github.com/avsm/ocaml-yaml"
 doc: "https://avsm.github.io/ocaml-yaml/"
 bug-reports: "https://github.com/avsm/ocaml-yaml/issues"
 depends: [
-  "ocaml" {>= "4.03.0"}
   "dune" {build & >="1.3"}
-  "dune-configurator"
-  "ctypes" {>= "0.12.0"}
-  "rresult"
-  "fmt"
-  "logs"
-  "bos"
+  "ppx_sexp_conv" {>= "v0.9.0"}
+  "sexplib"
+  "yaml" {= version}
   "mdx" {with-test}
   "alcotest" {with-test}
   "crowbar" {with-test}
@@ -29,11 +25,5 @@ build: [
 dev-repo: "git+https://github.com/avsm/ocaml-yaml.git"
 synopsis: "Parse and generate YAML 1.1 files"
 description: """
-This is an OCaml library to parse and generate the YAML file
-format.  It is intended to interoperable with the [Ezjsonm](https://github.com/mirage/ezjsonm)
-JSON handling library, if the simple common subset of Yaml
-is used.  Anchors and other advanced Yaml features are not
-implemented in the JSON compatibility layer.
-
-The [Yaml module docs](http://anil-code.recoil.org/ocaml-yaml/yaml/Yaml/index.html) are browseable online.
+ocaml-yaml with sexp support
 """

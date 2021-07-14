@@ -12,19 +12,16 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-open Sexplib.Conv
-
 type version = [
  | `V1_0
  | `V1_1
-] [@@deriving sexp]
+]
 
 type encoding = [
  | `Any
  | `Utf16be
  | `Utf16le
  | `Utf8  ]
-[@@deriving sexp]
 
 type scalar_style = [
  | `Any
@@ -33,13 +30,12 @@ type scalar_style = [
  | `Double_quoted
  | `Literal
  | `Folded ]
-[@@deriving sexp]
 
 type layout_style = [
   | `Any
   | `Block
   | `Flow
-] [@@deriving sexp]
+]
 
 type value =
   [ `Null
@@ -48,7 +44,7 @@ type value =
   | `String of string
   | `A of value list
   | `O of (string * value) list
-] [@@deriving sexp]
+]
 
 type scalar = {
   anchor: string option;
@@ -57,13 +53,13 @@ type scalar = {
   plain_implicit: bool;
   quoted_implicit: bool;
   style: scalar_style
-} [@@deriving sexp]
+}
 
 type yaml =
   [ `Scalar of scalar
   | `Alias of string
   | `A of yaml list
   | `O of (scalar * yaml) list
-] [@@deriving sexp]
+]
 
 type 'a res = ('a, Rresult.R.msg) Result.result

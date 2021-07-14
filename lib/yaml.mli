@@ -37,7 +37,7 @@ type value =
   | `String of string
   | `A of value list
   | `O of (string * value) list
-] [@@deriving sexp]
+]
 (** [value] is the subset of a Yaml document that is compatible
   with JSON.  This type is the same as {!Ezjsonm.value}, and so
   most simple uses of Yaml can be interchanged with JSON. *)
@@ -62,7 +62,7 @@ and scalar = {
   plain_implicit: bool;
   quoted_implicit: bool;
   style: scalar_style
-} [@@deriving sexp]
+}
 (** [scalar] is the description of a Yaml scalar.
 
    Scalar values are represented as strings. A scalar can optionally have an
@@ -78,26 +78,25 @@ and scalar_style = [
   | `Double_quoted
   | `Literal
   | `Folded ]
-  [@@deriving sexp]
 (** YAML provides three flow scalar styles: double-quoted, single-quoted
   and plain (unquoted). Each provides a different trade-off between readability
   and expressive power.
   The {{:http://www.yaml.org/spec/1.2/spec.html#id2786942:}Yaml spec section 7.3}
   has more details. *)
 
-type version = [ `V1_0 | `V1_1 ] [@@deriving sexp]
+type version = [ `V1_0 | `V1_1 ]
 (** Version of the YAML spec of a document.
   Refer to the {{:http://www.yaml.org/spec/1.2/spec.html}Yaml specification}
   for details of the differences between versions. *)
 
-type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
+type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ]
 (** Document encoding. The recommended format is [Utf8]. *)
 
 type layout_style = [
   | `Any
   | `Block
   | `Flow
-] [@@deriving sexp]
+]
 (** Mappings and sequences can be rendered in two different ways:
   - [Flow] styles can be thought of as the natural extension of
     JSON to cover folding long content lines for readability, tagging nodes
@@ -188,13 +187,12 @@ module Stream : sig
       { index: int  (** position in characters *)
       ; line: int  (** line number *)
       ; column: int  (** column number *) }
-      [@@deriving sexp]
   end
 
   (** Definition of an individual event during a processing stream *)
   module Event : sig
     (** Delimited positioning information for an event in the document. *)
-    type pos = {start_mark: Mark.t; end_mark: Mark.t} [@@deriving sexp]
+    type pos = {start_mark: Mark.t; end_mark: Mark.t}
 
     (** [t] represents a single event in a YAML processing stream.
 
@@ -225,7 +223,6 @@ module Stream : sig
       | Sequence_end
       | Alias of { anchor: string}
       | Nothing
-      [@@deriving sexp]
   end
 
   (** {3 Parsing functions} *)

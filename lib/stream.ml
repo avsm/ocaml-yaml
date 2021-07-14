@@ -12,7 +12,6 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-open Sexplib.Conv
 open Rresult
 open Types
 
@@ -107,7 +106,7 @@ module Event = struct
   type pos = {
     start_mark: Mark.t;
     end_mark: Mark.t;
-  } [@@deriving sexp]
+  }
 
   type t =
    | Stream_start of { encoding: encoding }
@@ -121,7 +120,6 @@ module Event = struct
    | Sequence_end
    | Alias of { anchor: string }
    | Nothing
-   [@@deriving sexp]
 
   let of_ffi e : t * pos =
     let open T.Event in
