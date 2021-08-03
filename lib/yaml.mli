@@ -45,8 +45,8 @@ type value =
 type yaml =
   [ `Scalar of scalar
   | `Alias of string
-  | `A of yaml list
-  | `O of (scalar * yaml) list
+  | `A of sequence
+  | `O of mapping
 ]
 (** [yaml] is the representation of a Yaml document that
   preserves alias information and other Yaml-specific metadata
@@ -70,6 +70,29 @@ and scalar = {
    field. If [plain_implicit] is [true], the tag is optional for the plain
    style. If [quoted_implicit] is [true], the tag is optional for any non-plain
    style. *)
+
+and sequence = {
+  s_anchor: string option;
+  s_tag: string option;
+  s_implicit: bool;
+  s_members: yaml list
+}
+(** [sequence] is the description of a Yaml sequence.
+
+    Sequences are similar to JSON arrays. A Yaml sequence can have an [s_anchor] and
+    an [s_tag]. If [s_implicit] is [true], the [s_tag] is optional. *)
+
+and mapping = {
+  m_anchor: string option;
+  m_tag: string option;
+  m_implicit: bool;
+  m_members: (yaml * yaml) list
+} [@@deriving sexp]
+(** [mapping] is the description of a Yaml mapping.
+
+    Mappings are similar to JSON objects. A Yaml object can have an [m_anchor] and
+    an [m_tag]. If [m_implicit] is [true], the [m_tag] is optional. A key in a Yaml
+    mapping can be an arbitrary Yaml node. *)
 
 and scalar_style = [
   | `Any

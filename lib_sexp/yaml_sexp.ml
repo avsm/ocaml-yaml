@@ -27,9 +27,23 @@ type value =
 type yaml =
   [ `Scalar of scalar
   | `Alias of string
-  | `A of yaml list
-  | `O of (scalar * yaml) list
+  | `A of sequence
+  | `O of mapping
 ] [@@deriving sexp]
+
+and sequence = Yaml.sequence = {
+  s_anchor: string option;
+  s_tag: string option;
+  s_implicit: bool;
+  s_members: yaml list
+} [@@deriving sexp]
+
+and mapping = Yaml.mapping = {
+  m_anchor: string option;
+  m_tag: string option;
+  m_implicit: bool;
+  m_members: (yaml * yaml) list
+} [@@deriving sexp]
 
 and scalar = Yaml.scalar = {
   anchor: string option;

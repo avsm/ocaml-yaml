@@ -58,8 +58,22 @@ type scalar = {
 type yaml =
   [ `Scalar of scalar
   | `Alias of string
-  | `A of yaml list
-  | `O of (scalar * yaml) list
+  | `A of sequence
+  | `O of mapping
 ]
+
+and sequence = {
+  s_anchor: string option;
+  s_tag: string option;
+  s_implicit: bool;
+  s_members: yaml list
+}
+
+and mapping = {
+  m_anchor: string option;
+  m_tag: string option;
+  m_implicit: bool;
+  m_members: (yaml * yaml) list
+}
 
 type 'a res = ('a, Rresult.R.msg) Result.result

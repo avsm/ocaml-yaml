@@ -1,4 +1,4 @@
-## v3.0.0
+## v3.0.0
 
 * Support Yaml 1.2, and stop advertising Yaml 1.0 support.
   This also updates the vendored libyaml to 0.2.5 (@favonia #37).
@@ -15,6 +15,10 @@
   `Yaml.value` (or other type) with `Yaml_sexp.value` which is
   an alias that also includes the Sexp conversion functions in
   its scope. (@alan-j-hu @avsm #46).
+
+* Track anchors and mappings in `Yaml.yaml` (but not in the
+  `Yaml.value` JSON representation). This also allows non-scalar
+   values to be used as keys. (@favonia #38)
 
 * Bump the internal write buffer for stream emission to
   256k from 64k, as people are writing ever-larger Yaml
