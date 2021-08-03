@@ -95,6 +95,7 @@ let tests = [
     "version", version;
     "quoted_scalars", quoted_scalars;
     "yaml_equal", yaml_equal;
+    "yaml_util", Test_util.tests;
   ]
 
 (* Run it *)
