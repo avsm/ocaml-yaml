@@ -3,6 +3,11 @@
 * Support Yaml 1.2, and stop advertising Yaml 1.0 support.
   This also updates the vendored libyaml to 0.2.5 (@favonia #37).
 
+* Add a `Yaml.Util` module with a number of useful combinators
+  to manipulate `Yaml.value` types, such as retrieving keys and
+  values, finding entries and converting to OCaml native
+  types (@patricoferris #43)
+
 * Bump the internal write buffer for stream emission to
   256k from 64k, as people are writing ever-larger Yaml
   files! In the future, this static buffer will be replaced
