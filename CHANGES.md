@@ -1,4 +1,7 @@
-## dev
+## v3.0.0
+
+* Support Yaml 1.2, and stop advertising Yaml 1.0 support.
+  This also updates the vendored libyaml to 0.2.5 (@favonia #37).
 
 * Bump the internal write buffer for stream emission to
   256k from 64k, as people are writing ever-larger Yaml
