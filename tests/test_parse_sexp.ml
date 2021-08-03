@@ -1,5 +1,9 @@
 open Rresult
 
+type t = {
+  v: Yaml_sexp.value
+} [@@deriving sexp]
+
 let v file =
   let open R.Infix in
   Bos.OS.File.read file >>= fun buf ->

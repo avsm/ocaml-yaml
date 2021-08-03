@@ -8,6 +8,14 @@
   values, finding entries and converting to OCaml native
   types (@patricoferris #43)
 
+* Move the sexpression derivers into a separate `Yaml_sexp`
+  package (the `yaml-sexp` opam package). This reduces dependencies
+  on the main library.  You can still use `Yaml` types in
+  `ppx_sexplib_conv` derivers by simply replacing the 
+  `Yaml.value` (or other type) with `Yaml_sexp.value` which is
+  an alias that also includes the Sexp conversion functions in
+  its scope. (@alan-j-hu @avsm #46).
+
 * Bump the internal write buffer for stream emission to
   256k from 64k, as people are writing ever-larger Yaml
   files! In the future, this static buffer will be replaced

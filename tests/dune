@@ -10,4 +10,5 @@
  (package yaml-sexp)
  (libraries yaml-sexp bos alcotest junit_alcotest)
  (modules test_sexp test_parse_sexp)
+ (preprocess (pps ppx_sexp_conv))
  (deps (source_tree yaml)))
