@@ -244,7 +244,7 @@ type emitter = {
 
 let emitter_written {written;_} = Ctypes.(!@ written) |> Unsigned.Size_t.to_int
 
-let emitter ?(len=65535) () =
+let emitter ?(len=(65535*4)) () =
   let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
   let event = Ctypes.(allocate_n T.Event.t ~count:1) in
   let written = Ctypes.allocate_n Ctypes.size_t ~count:1 in

@@ -1,3 +1,11 @@
+## dev
+
+* Bump the internal write buffer for stream emission to
+  256k from 64k, as people are writing ever-larger Yaml
+  files! In the future, this static buffer will be replaced
+  by a dynamically growing output buffer but for now needs
+  to be set manually.
+
 ## v2.1.0 (07/02/2020)
 
 * Fix a memory unsoundness issue with larger files in the
