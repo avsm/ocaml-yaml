@@ -129,7 +129,6 @@ let yaml_of_string s =
   parser s >>= fun t ->
   let next () =
    do_parse t >>= fun (e, pos) ->
-   Logs.debug (fun l -> l "event %s\n%!" (sexp_of_t e |> Sexplib.Sexp.to_string_hum));
    Ok (e,pos) in
   next () >>= fun (e,pos) ->
   match e with
@@ -149,14 +148,14 @@ let yaml_of_string s =
             next () >>=
             parse_map [] >>= fun s ->
             Ok (`O s)
-         | e -> R.error_msg (Fmt.strf "todo %s (%s)" (sexp_of_t e |> Sexplib.Sexp.to_string_hum) (sexp_of_pos pos |> Sexplib.Sexp.to_string_hum))
+         | e -> R.error_msg "todo"
        and parse_seq acc (e,pos) =
-          match e with
-          | Sequence_end -> Ok (List.rev acc)
-          | e ->
-             parse_v (e,pos) >>= fun v ->
-             next () >>=
-             parse_seq (v :: acc)
+         match e with
+         | Sequence_end -> Ok (List.rev acc)
+         | e ->
+           parse_v (e,pos) >>= fun v ->
+           next () >>=
+           parse_seq (v :: acc)
        and parse_map acc (e,pos) =
          match e with
          | Mapping_end -> Ok (List.rev acc)
@@ -168,7 +167,7 @@ let yaml_of_string s =
                 parse_v >>= fun v ->
                 next () >>=
                 parse_map ((k,v)::acc)
-             | _ -> R.error_msg (Fmt.strf "only string keys are supported (%s)" (sexp_of_pos pos |> Sexplib.Sexp.to_string_hum))
+             | _ -> R.error_msg "only string keys are supported"
              end
          end
        in
@@ -176,7 +175,7 @@ let yaml_of_string s =
        parse_v
     end
     | Stream_end -> Ok (`Scalar (scalar ""))
-    | e -> R.error_msg (Fmt.strf "Not document start: %s" (sexp_of_t e |> Sexplib.Sexp.to_string_hum))
+    | e -> R.error_msg "Not document start"
   end
   | _ -> R.error_msg "Not stream start"
 

@@ -1,0 +1,5 @@
+(library
+ (name yaml_sexp)
+ (public_name yaml-sexp)
+ (libraries yaml sexplib)
+ (preprocess (pps ppx_sexp_conv)))
