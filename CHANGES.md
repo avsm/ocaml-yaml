@@ -14,6 +14,8 @@
   by a dynamically growing output buffer but for now needs
   to be set manually.
 
+* The minimum supported OCaml version is now OCaml 4.05.
+
 ## v2.1.0 (07/02/2020)
 
 * Fix a memory unsoundness issue with larger files in the
