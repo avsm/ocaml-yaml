@@ -103,9 +103,9 @@ majority of common uses.
 
 We use the following major OCaml tools and libraries:
 
-- **build:** [jbuilder](https://github.com/janestreet/jbuilder) is the build tool used.
+- **build:** [dune](https://github.com/janestreet/dune) is the build tool used.
 - **ffi:** [ctypes](https://github.com/ocamllabs/ocaml-ctypes) is the library to interface with the C FFI exposed by libYaml.
-- **preprocessor:** [ppx_sexp_conv](https://github.com/janestreet/ppx_sexp_conv) generates s-expression serialises and deserialisers for the types exposed by the library.
+- **preprocessor:** [ppx_sexp_conv](https://github.com/janestreet/ppx_sexp_conv) generates s-expression serialises and deserialisers for the types exposed by the library, exposed in a `yaml-sexp` package.
 - **error handling:** [rresult](https://github.com/dbuenzli/rresult) is a set of combinators for returning errors as values, instead of raising OCaml exceptions.
 - **tests:** [alcotest](https://github.com/mirage/alcotest) specifies conventional unit tests, and [crowbar](https://github.com/stedolan/crowbar) is used to drive property-based fuzz-testing of the library.
 
@@ -119,6 +119,7 @@ within the following directories in the repository:
 - [`types/`](types/) has OCaml definitions for the C types defined in [`yaml.h`](vendor/yaml.h).
 - [`ffi/`](ffi/) has OCaml definitions for the C functions defined in [`yaml.h`](vendor/yaml.h).
 - [`lib/`](lib/) contains the high-level OCaml interface for Yaml manipulation, using the FFI definitions above.
+- [`lib_sexp/`](lib_sexp/) contains the reexported types with s-expression converters also included.
 - [`unix/`](unix/) contains OS-specific bindings with file-handling.
 - [`tests/`](tests/) has unit tests for the library functionality.
 - [`fuzz/`](fuzz/) contains exploratory fuzz testing that randomises inputs to find bugs.
