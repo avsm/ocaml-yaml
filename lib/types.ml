@@ -15,8 +15,8 @@
 open Sexplib.Conv
 
 type version = [
- | `V1_0
  | `V1_1
+ | `V1_2
 ] [@@deriving sexp]
 
 type encoding = [

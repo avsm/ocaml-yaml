@@ -1,4 +1,4 @@
-## ocaml-yaml -- parse and generate YAML 1.1 files
+## ocaml-yaml -- parse and generate YAML 1.1/1.2 files
 
 This is an OCaml library to parse and generate the YAML file
 format.  It is intended to interoperable with the [Ezjsonm](https://github.com/mirage/ezjsonm)
