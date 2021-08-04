@@ -16,6 +16,10 @@
   an alias that also includes the Sexp conversion functions in
   its scope. (@alan-j-hu @avsm #46).
 
+* When outputting values, wrap special values like "true" or
+  "1.0" in double quotes, so that `Yaml.of_string` will not
+  interpret them as a non-string value.
+
 * Track anchors and mappings in `Yaml.yaml` (but not in the
   `Yaml.value` JSON representation). This also allows non-scalar
    values to be used as keys. (@favonia #38)
