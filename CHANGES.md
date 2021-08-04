@@ -1,4 +1,4 @@
-## v3.0.0
+## v3.0.0 (04/08/2021)
 
 * Support Yaml 1.2, and stop advertising Yaml 1.0 support.
   This also updates the vendored libyaml to 0.2.5 (@favonia #37).
@@ -18,7 +18,7 @@
 
 * When outputting values, wrap special values like "true" or
   "1.0" in double quotes, so that `Yaml.of_string` will not
-  interpret them as a non-string value.
+  interpret them as a non-string value (@avsm #47).
 
 * Track anchors and mappings in `Yaml.yaml` (but not in the
   `Yaml.value` JSON representation). This also allows non-scalar
