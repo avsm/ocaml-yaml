@@ -12,7 +12,6 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-open Rresult
 open Types
 
 module B = Yaml_ffi.M
@@ -220,8 +219,8 @@ let parser str =
   let len = String.length str |> Unsigned.Size_t.of_int in
   B.parser_set_input_string p buf_ptr len;
   match r with
-  | 1 -> R.ok {buf; p;event}
-  | n -> R.error_msg ("error initialising parser: " ^ string_of_int n)
+  | 1 -> Ok {buf; p;event}
+  | n -> Error (`Msg ("error initialising parser: " ^ string_of_int n))
 
 let do_parse {p;event} =
   let open Ctypes in
@@ -235,8 +234,8 @@ let do_parse {p;event} =
       s ^ " character " ^ (string_of_int pv) ^ " position " ^ (Unsigned.Size_t.to_string po)
   in
   match r with
-  | 1 -> Event.of_ffi (!@ event) |> R.ok
-  | n -> R.error_msg ("error calling parser: " ^ (describe_problem ()) ^ " returned: " ^ string_of_int n)
+  | 1 -> Event.of_ffi (!@ event) |> Result.ok
+  | n -> Error (`Msg ("error calling parser: " ^ (describe_problem ()) ^ " returned: " ^ string_of_int n))
 
 type emitter = {
   e: T.Emitter.t Ctypes.structure Ctypes.ptr;
@@ -256,8 +255,8 @@ let emitter ?(len=(65535*4)) () =
   let len = Bytes.length buf |> Unsigned.Size_t.of_int in
   B.emitter_set_output_string e (Ctypes.ocaml_bytes_start buf) len written;
   match r with
-  | 1 -> R.ok {e;event;written; buf}
-  | n -> R.error_msg ("error initialising emitter: " ^ string_of_int n)
+  | 1 -> Ok {e;event;written; buf}
+  | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
 let emitter_buf {buf; written} =
   Ctypes.(!@ written) |> Unsigned.Size_t.to_int |>
@@ -265,12 +264,12 @@ let emitter_buf {buf; written} =
 
 let check l a =
   match a with
-  | 0 -> R.error_msg (l ^ " failed")
-  | 1 -> R.ok ()
-  | n -> R.error_msg ("unexpected return value: " ^ string_of_int n)
+  | 0 -> Error (`Msg (l ^ " failed"))
+  | 1 -> Ok ()
+  | n -> Error (`Msg ("unexpected return value: " ^ string_of_int n))
 
 let check_emit l {e;event} a =
-  check l a >>= fun () ->
+  Result.bind (check l a) @@ fun () ->
   check l @@ B.emitter_emit e event
 
 let stream_start t encoding =
@@ -330,4 +329,3 @@ let emit t =
   | Sequence_end -> sequence_end t
   | Alias { anchor } -> alias t anchor
   | Nothing -> Ok ()
-

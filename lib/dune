@@ -1,4 +1,4 @@
 (library
  (name yaml)
  (public_name yaml)
- (libraries yaml.ffi rresult))
+ (libraries yaml.ffi))

@@ -16,7 +16,7 @@
 
 (** [of_file p] will read the whole of the file at path [p] and
     convert it in a {!Yaml.value}. *)
-val of_file : Fpath.t -> (Yaml.value, Rresult.R.msg) Result.result
+val of_file : Fpath.t -> (Yaml.value, [`Msg of string]) result
 
 (** [of_file_exn p] acts as {!of_file}, but errors are thrown as
     a {!Failure} exception instead of in the return value. *)
@@ -24,7 +24,7 @@ val of_file_exn : Fpath.t -> Yaml.value
 
 (** [to_file p v] will convert the Yaml value [v] to a string and
    write it to the file at path [p]. *)
-val to_file : Fpath.t -> Yaml.value -> (unit, Rresult.R.msg) Result.result
+val to_file : Fpath.t -> Yaml.value -> (unit, [`Msg of string]) result
 
 (** [to_file_exn p] acts as {!to_file}, but errors are thrown as
     a {!Failure} exception instead of in the return value. *)

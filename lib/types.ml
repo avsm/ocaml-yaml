@@ -76,4 +76,4 @@ and mapping = {
   m_members: (yaml * yaml) list
 }
 
-type 'a res = ('a, Rresult.R.msg) Result.result
+type 'a res = ('a, [`Msg of string]) result
