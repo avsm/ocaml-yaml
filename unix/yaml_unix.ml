@@ -12,17 +12,13 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-open Rresult
-open R.Infix
 open Bos
 
 let of_file f =
-  OS.File.read f >>=
-  Yaml.of_string
+  Result.bind (OS.File.read f) Yaml.of_string
 
 let to_file f y =
-  Yaml.to_string y >>=
-  OS.File.write f 
+  Result.bind (Yaml.to_string y) (OS.File.write f)
 
 let of_file_exn f =
   match of_file f with

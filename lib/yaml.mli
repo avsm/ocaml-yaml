@@ -129,7 +129,7 @@ type layout_style = [
     This results in a more human readable (though less compact) notation.
 *)
 
-type 'a res = ('a, Rresult.R.msg) Result.result
+type 'a res = ('a, [`Msg of string]) result
 (** This library uses the {!Rresult.R.msg} conventions for returning
    errors rather than raising exceptions. *)
 
@@ -253,7 +253,7 @@ module Stream : sig
   type parser
   (** [parser] tracks the state of generating {!Event.t} values. *)
 
-  val parser : string -> (parser, [> Rresult.R.msg]) Result.result
+  val parser : string -> (parser, [> `Msg of string]) result
   (** [parser ()] will allocate a fresh parser state. *)
 
   val do_parse : parser -> (Event.t * Event.pos) res

@@ -13,12 +13,12 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
 include Types
-open Rresult
-open R.Infix
 
 module Util = Util
 module Stream = Stream
 open Stream
+
+let (>>=) = Result.bind
 
 let scalar ?anchor ?tag ?(plain_implicit=true) ?(quoted_implicit=false)
     ?(style=`Plain) value =
@@ -55,7 +55,7 @@ let to_json v =
   in
   match fn v with
   | r -> Ok r
-  | exception (Failure msg) -> R.error_msg msg
+  | exception (Failure msg) -> Error (`Msg msg)
 
 let of_json (v:value) =
   let rec fn = function
@@ -67,7 +67,7 @@ let of_json (v:value) =
   | `O l -> `O {m_anchor=None; m_tag=None; m_implicit=true; m_members=List.map (fun (k,v) -> `Scalar (scalar k), (fn v)) l}
   in match fn v with
   | r -> Ok r
-  | exception (Failure msg) -> R.error_msg msg
+  | exception (Failure msg) -> Error (`Msg msg)
 
 let to_string ?len ?(encoding=`Utf8) ?scalar_style ?layout_style (v:value) =
   emitter ?len () >>= fun t ->
@@ -160,7 +160,7 @@ let yaml_of_string s =
             next () >>=
             parse_map [] >>= fun s ->
             Ok (`O {m_anchor = anchor; m_tag = anchor; m_implicit = implicit; m_members = s})
-         | e -> R.error_msg "todo"
+         | e -> Error (`Msg "todo")
        and parse_seq acc (e,pos) =
          match e with
          | Sequence_end -> Ok (List.rev acc)
@@ -183,9 +183,9 @@ let yaml_of_string s =
        parse_v
     end
     | Stream_end -> Ok (`Scalar (scalar ""))
-    | e -> R.error_msg "Not document start"
+    | e -> Error (`Msg "Not document start")
   end
-  | _ -> R.error_msg "Not stream start"
+  | _ -> Error (`Msg "Not stream start")
 
 let of_string s = yaml_of_string s >>= to_json
 
