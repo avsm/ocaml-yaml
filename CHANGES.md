@@ -1,3 +1,7 @@
+## v3.0.1 (04/02/2022)
+
+* Remove dependency on Rresult (@maxtori #50).
+
 ## v3.0.0 (04/08/2021)
 
 * Support Yaml 1.2, and stop advertising Yaml 1.0 support.
