@@ -1,8 +1,15 @@
 (executable
  (name discover)
- (libraries dune.configurator))
+ (libraries dune.configurator)
+ (foreign_stubs
+  (language c)
+  (names realpath)))
 
 (rule
  (targets cflags ctypes-cflags)
- (action (run ./discover.exe -cstubs %{lib:ctypes:ctypes_cstubs_internals.h})))
-
+ (deps %{lib:ctypes:ctypes_primitives.h} %{lib:ctypes:ocaml_integers.h}
+   %{lib:ctypes:ctypes_complex_stubs.h} %{lib:ctypes:ctypes_ldouble_stubs.h}
+   %{lib:ctypes:ctypes_raw_pointer.h}
+   %{lib:ctypes:ctypes_managed_buffer_stubs.h})
+ (action
+  (run ./discover.exe -cstubs %{lib:ctypes:ctypes_cstubs_internals.h})))
