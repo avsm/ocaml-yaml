@@ -6,10 +6,16 @@
 (rule
  (targets ffi_ml_types_stubgen.c)
  (deps ./ffi_types_stubgen.exe)
- (action (with-stdout-to %{targets} (run %{deps}))))
+ (action
+  (with-stdout-to
+   %{targets}
+   (run %{deps}))))
 
 (rule
  (targets ffi_ml_types_stubgen.exe)
- (deps    (:c ./ffi_ml_types_stubgen.c) ../../vendor/libyaml_c_stubs.a)
- (action (run %{cc} %{c} -I../../vendor %{read-lines:../../config/ctypes-cflags} 
-  -I %{ocaml_where} -o %{targets})))
+ (deps
+  (:c ./ffi_ml_types_stubgen.c)
+  ../../vendor/libyaml_c_stubs.a)
+ (action
+  (run %{cc} %{c} -I../../vendor %{read-lines:../../config/ctypes-cflags} -I
+    %{ocaml_where} -o %{targets})))

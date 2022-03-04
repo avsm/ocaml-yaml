@@ -2,13 +2,17 @@
  (name test)
  (package yaml)
  (libraries yaml bos ezjsonm alcotest junit_alcotest)
- (modules test test_parse test_reflect test_event_parse test_emit test_version test_util)
- (deps (source_tree yaml)))
+ (modules test test_parse test_reflect test_event_parse test_emit
+   test_version test_util)
+ (deps
+  (source_tree yaml)))
 
 (test
  (name test_sexp)
  (package yaml-sexp)
  (libraries yaml-sexp bos alcotest junit_alcotest)
  (modules test_sexp test_parse_sexp)
- (preprocess (pps ppx_sexp_conv))
- (deps (source_tree yaml)))
+ (preprocess
+  (pps ppx_sexp_conv))
+ (deps
+  (source_tree yaml)))
