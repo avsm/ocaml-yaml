@@ -1,9 +1,6 @@
 (executable
  (name discover)
- (libraries dune.configurator)
- (foreign_stubs
-  (language c)
-  (names realpath)))
+ (libraries dune.configurator))
 
 (rule
  (targets cflags ctypes-cflags)
