@@ -10,6 +10,6 @@
 
 (rule
  (targets ffi_ml_types_stubgen.exe)
- (deps    (:c ./ffi_ml_types_stubgen.c) ../../vendor/libyaml_c_stubs.a)
+ (deps    (:c ./ffi_ml_types_stubgen.c) ../../vendor/libyaml_c_stubs%{ext_lib})
  (action (run %{cc} %{c} -I../../vendor %{read-lines:../../config/ctypes-cflags} 
   -I %{ocaml_where} -o %{targets})))

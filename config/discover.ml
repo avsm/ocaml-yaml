@@ -13,12 +13,18 @@ let ppc64_lines c =
   | "power", "ppc64le" -> ["-mcmodel=small"]
   | _ -> []
 
+let dll_lines c =
+  let ccomp_type = C.ocaml_config_var_exn c "ccomp_type" in
+  match ccomp_type with
+  | "msvc" -> ["-DYAML_DECLARE_EXPORT"]
+  | _ -> []
+
 let () =
   let cstubs = ref "" in
   let args = Arg.["-cstubs",Set_string cstubs,"cstubs loc"] in
   C.main ~args ~name:"yaml" (fun c ->
     let cstubs_cflags = Printf.sprintf "-I%s" (Filename.dirname !cstubs) in
-    let lines = ocamlopt_lines c @ ppc64_lines c in
+    let lines = ocamlopt_lines c @ ppc64_lines c @ dll_lines c in
     C.Flags.write_lines "cflags" lines;
     C.Flags.write_lines "ctypes-cflags" [cstubs_cflags]
   )
