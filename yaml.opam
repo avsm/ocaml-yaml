@@ -41,3 +41,6 @@ build: [
   ["dune" "runtest" "-p" name "-j" jobs] {with-test}
 ]
 dev-repo: "git+https://github.com/avsm/ocaml-yaml.git"
+conflicts:[
+  "result" {< "1.5"}
+]
