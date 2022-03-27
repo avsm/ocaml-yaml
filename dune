@@ -1,6 +1,13 @@
-(env (_ (flags (:standard -w -9-27-32))))
-(alias
- (name readme)
- (deps README.md)
- (action (progn (run mdx test %{deps}) (diff? %{deps} %{deps}.corrected))))
+(env
+ (_
+  (flags
+   (:standard -w -9-27-32))))
 
+(rule
+ (alias readme)
+ (deps
+  (:readme README.md))
+ (action
+  (progn
+   (run ocaml-mdx test %{readme})
+   (diff? %{readme} %{readme}.corrected))))
