@@ -1,7 +1,13 @@
-## Pending
+## v3.1.0 (27/03/2022)
 
 * Support MSVC with .obj and .lib extensions, and defining
   -DDYAML_DECLARE_EXPORT (@jonahbeckford #53)
+
+* Upgrade to dune 2 (@TheLortex, #54)
+
+* Add ocamlformat (@samoht, #55)
+
+* Make yaml compatible with opam-monorepo (@TheLortex, #56)
 
 ## v3.0.1 (04/02/2022)
 
@@ -20,7 +26,7 @@
 * Move the sexpression derivers into a separate `Yaml_sexp`
   package (the `yaml-sexp` opam package). This reduces dependencies
   on the main library.  You can still use `Yaml` types in
-  `ppx_sexplib_conv` derivers by simply replacing the 
+  `ppx_sexplib_conv` derivers by simply replacing the
   `Yaml.value` (or other type) with `Yaml_sexp.value` which is
   an alias that also includes the Sexp conversion functions in
   its scope. (@alan-j-hu @avsm #46).
