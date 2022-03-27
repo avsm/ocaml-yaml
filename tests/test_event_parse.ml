@@ -23,5 +23,6 @@ let v file =
     Yaml.Stream.do_parse t >>= fun (e, _pos) ->
     match e with
     | Yaml.Stream.Event.Nothing -> R.ok ()
-    | _ -> iter_until_done fn in
+    | _ -> iter_until_done fn
+  in
   iter_until_done ()

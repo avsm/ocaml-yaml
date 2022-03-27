@@ -12,30 +12,13 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-type version = [
- | `V1_1
- | `V1_2
-]
+type version = [ `V1_1 | `V1_2 ]
+type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ]
 
-type encoding = [
- | `Any
- | `Utf16be
- | `Utf16le
- | `Utf8  ]
+type scalar_style =
+  [ `Any | `Plain | `Single_quoted | `Double_quoted | `Literal | `Folded ]
 
-type scalar_style = [
- | `Any
- | `Plain
- | `Single_quoted
- | `Double_quoted
- | `Literal
- | `Folded ]
-
-type layout_style = [
-  | `Any
-  | `Block
-  | `Flow
-]
+type layout_style = [ `Any | `Block | `Flow ]
 
 type value =
   [ `Null
@@ -43,37 +26,32 @@ type value =
   | `Float of float
   | `String of string
   | `A of value list
-  | `O of (string * value) list
-]
+  | `O of (string * value) list ]
 
 type scalar = {
-  anchor: string option;
-  tag: string option;
-  value: string;
-  plain_implicit: bool;
-  quoted_implicit: bool;
-  style: scalar_style
+  anchor : string option;
+  tag : string option;
+  value : string;
+  plain_implicit : bool;
+  quoted_implicit : bool;
+  style : scalar_style;
 }
 
 type yaml =
-  [ `Scalar of scalar
-  | `Alias of string
-  | `A of sequence
-  | `O of mapping
-]
+  [ `Scalar of scalar | `Alias of string | `A of sequence | `O of mapping ]
 
 and sequence = {
-  s_anchor: string option;
-  s_tag: string option;
-  s_implicit: bool;
-  s_members: yaml list
+  s_anchor : string option;
+  s_tag : string option;
+  s_implicit : bool;
+  s_members : yaml list;
 }
 
 and mapping = {
-  m_anchor: string option;
-  m_tag: string option;
-  m_implicit: bool;
-  m_members: (yaml * yaml) list
+  m_anchor : string option;
+  m_tag : string option;
+  m_implicit : bool;
+  m_members : (yaml * yaml) list;
 }
 
-type 'a res = ('a, [`Msg of string]) result
+type 'a res = ('a, [ `Msg of string ]) result

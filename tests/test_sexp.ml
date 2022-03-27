@@ -12,32 +12,37 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-let files = [ "anchor.yml"; "cohttp.yml"; "linuxkit.yml"; "seq.yml"; "too_large.yml"; "yaml-1.2.yml" ]
-let dir f = Fpath.(v "yaml" / f)
+let files =
+  [
+    "anchor.yml";
+    "cohttp.yml";
+    "linuxkit.yml";
+    "seq.yml";
+    "too_large.yml";
+    "yaml-1.2.yml";
+  ]
 
-let all_files = List.map dir ("bomb.yml"::files)
+let dir f = Fpath.(v "yaml" / f)
+let all_files = List.map dir ("bomb.yml" :: files)
 let all_simple_files = List.map dir files
 
-type error = [`Msg of string]
+type error = [ `Msg of string ]
+
 let pp_error ppf (`Msg x) = Fmt.string ppf x
-let error = Alcotest.testable pp_error (=)
+let error = Alcotest.testable pp_error ( = )
 let t = Alcotest.(result unit error)
 let value = Alcotest.testable Yaml.pp Yaml.equal
+
 let check_file f fn =
   let name = Fpath.to_string f in
   let test () = Alcotest.check t name (Ok ()) (fn f) in
-  name, `Quick, test
+  (name, `Quick, test)
 
-let parse_of_string =
-  List.map (fun f -> check_file f Test_parse_sexp.v)
-
-let tests = [
-    "parse_of_string", parse_of_string all_simple_files;
-  ]
+let parse_of_string = List.map (fun f -> check_file f Test_parse_sexp.v)
+let tests = [ ("parse_of_string", parse_of_string all_simple_files) ]
 
 (* Run it *)
 let () =
-  Junit_alcotest.run_and_report "Yaml" tests |>
-  fun (r,e) ->
-  Junit.(to_file (make [r]) "alcotest2-junit.xml");
+  Junit_alcotest.run_and_report "Yaml" tests |> fun (r, e) ->
+  Junit.(to_file (make [ r ]) "alcotest2-junit.xml");
   e ()
