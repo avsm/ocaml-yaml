@@ -1,3 +1,8 @@
+## Pending
+
+* Support MSVC with .obj and .lib extensions, and defining
+  -DDYAML_DECLARE_EXPORT (@jonahbeckford #53)
+
 ## v3.0.1 (04/02/2022)
 
 * Remove dependency on Rresult (@maxtori #50).

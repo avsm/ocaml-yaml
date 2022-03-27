@@ -7,41 +7,41 @@
 
 (rule
  (targets libyaml_c_stubs%{ext_lib} dllyaml_c_stubs%{ext_dll})
- (deps   api.o emitter.o loader.o parser.o reader.o scanner.o writer.o)
+ (deps   api%{ext_obj} emitter%{ext_obj} loader%{ext_obj} parser%{ext_obj} reader%{ext_obj} scanner%{ext_obj} writer%{ext_obj})
  (action (run ocamlmklib -o yaml_c_stubs %{deps})))
 
 (rule
- (targets api.o)
+ (targets api%{ext_obj})
  (deps    (:c api.c) yaml.h config.h yaml_private.h)
  (action  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
 
 (rule
- (targets emitter.o)
+ (targets emitter%{ext_obj})
  (deps    (:c emitter.c) yaml.h config.h yaml_private.h)
  (action  (run %{cc}  %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
 
 (rule
- (targets loader.o)
+ (targets loader%{ext_obj})
  (deps    (:c loader.c) yaml.h config.h yaml_private.h)
  (action  (run %{cc}  %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
 
 (rule
- (targets parser.o)
+ (targets parser%{ext_obj})
  (deps    (:c parser.c) yaml.h config.h yaml_private.h)
  (action  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
 
 (rule
- (targets reader.o)
+ (targets reader%{ext_obj})
  (deps    (:c reader.c) yaml.h config.h yaml_private.h)
  (action  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
 
 (rule
- (targets scanner.o)
+ (targets scanner%{ext_obj})
  (deps    (:c scanner.c) yaml.h config.h yaml_private.h)
  (action  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
 
 (rule
- (targets writer.o)
+ (targets writer%{ext_obj})
  (deps    (:c writer.c) yaml.h config.h yaml_private.h)
  (action  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
 
