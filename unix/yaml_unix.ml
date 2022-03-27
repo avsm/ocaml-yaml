@@ -14,18 +14,11 @@
 
 open Bos
 
-let of_file f =
-  Result.bind (OS.File.read f) Yaml.of_string
-
-let to_file f y =
-  Result.bind (Yaml.to_string y) (OS.File.write f)
+let of_file f = Result.bind (OS.File.read f) Yaml.of_string
+let to_file f y = Result.bind (Yaml.to_string y) (OS.File.write f)
 
 let of_file_exn f =
-  match of_file f with
-  | Ok v -> v
-  | Error (`Msg m) -> raise (Failure m)
+  match of_file f with Ok v -> v | Error (`Msg m) -> raise (Failure m)
 
 let to_file_exn f v =
-  match to_file f v with
-  | Ok () -> ()
-  | Error (`Msg m) -> raise (Failure m)
+  match to_file f v with Ok () -> () | Error (`Msg m) -> raise (Failure m)

@@ -13,4 +13,4 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
 include Yaml_bindings_types
-include Yaml_bindings_types.M(G)
+include Yaml_bindings_types.M (G)

@@ -21,90 +21,82 @@ type value =
   | `Float of float
   | `String of string
   | `A of value list
-  | `O of (string * value) list
-] [@@deriving sexp]
+  | `O of (string * value) list ]
+[@@deriving sexp]
 
 type yaml =
-  [ `Scalar of scalar
-  | `Alias of string
-  | `A of sequence
-  | `O of mapping
-] [@@deriving sexp]
+  [ `Scalar of scalar | `Alias of string | `A of sequence | `O of mapping ]
+[@@deriving sexp]
 
 and sequence = Yaml.sequence = {
-  s_anchor: string option;
-  s_tag: string option;
-  s_implicit: bool;
-  s_members: yaml list
-} [@@deriving sexp]
+  s_anchor : string option;
+  s_tag : string option;
+  s_implicit : bool;
+  s_members : yaml list;
+}
+[@@deriving sexp]
 
 and mapping = Yaml.mapping = {
-  m_anchor: string option;
-  m_tag: string option;
-  m_implicit: bool;
-  m_members: (yaml * yaml) list
-} [@@deriving sexp]
+  m_anchor : string option;
+  m_tag : string option;
+  m_implicit : bool;
+  m_members : (yaml * yaml) list;
+}
+[@@deriving sexp]
 
 and scalar = Yaml.scalar = {
-  anchor: string option;
-  tag: string option;
-  value: string;
-  plain_implicit: bool;
-  quoted_implicit: bool;
-  style: scalar_style
-} [@@deriving sexp]
+  anchor : string option;
+  tag : string option;
+  value : string;
+  plain_implicit : bool;
+  quoted_implicit : bool;
+  style : scalar_style;
+}
+[@@deriving sexp]
 
-and scalar_style = [
-  | `Any
-  | `Plain
-  | `Single_quoted
-  | `Double_quoted
-  | `Literal
-  | `Folded ]
+and scalar_style =
+  [ `Any | `Plain | `Single_quoted | `Double_quoted | `Literal | `Folded ]
 [@@deriving sexp]
 
 type version = [ `V1_1 | `V1_2 ] [@@deriving sexp]
-
 type encoding = [ `Any | `Utf16be | `Utf16le | `Utf8 ] [@@deriving sexp]
-
-type layout_style = [
-  | `Any
-  | `Block
-  | `Flow
-] [@@deriving sexp]
+type layout_style = [ `Any | `Block | `Flow ] [@@deriving sexp]
 
 module Stream = struct
   module Mark = struct
-    type t = Yaml.Stream.Mark.t =
-      { index: int
-      ; line: int
-      ; column: int }
-      [@@deriving sexp]
+    type t = Yaml.Stream.Mark.t = { index : int; line : int; column : int }
+    [@@deriving sexp]
   end
 
   module Event = struct
-    type pos = Yaml.Stream.Event.pos = {start_mark: Mark.t; end_mark: Mark.t} [@@deriving sexp]
+    type pos = Yaml.Stream.Event.pos = {
+      start_mark : Mark.t;
+      end_mark : Mark.t;
+    }
+    [@@deriving sexp]
 
     type t = Yaml.Stream.Event.t =
-      | Stream_start of { encoding: encoding}
-      | Document_start of { version: version option; implicit: bool}
-      | Document_end of { implicit: bool}
-      | Mapping_start of
-          { anchor: string option
-          ; tag: string option
-          ; implicit: bool
-          ; style: layout_style }
+      | Stream_start of { encoding : encoding }
+      | Document_start of { version : version option; implicit : bool }
+      | Document_end of { implicit : bool }
+      | Mapping_start of {
+          anchor : string option;
+          tag : string option;
+          implicit : bool;
+          style : layout_style;
+        }
       | Mapping_end
       | Stream_end
       | Scalar of scalar
-      | Sequence_start of
-          { anchor: string option
-          ; tag: string option
-          ; implicit: bool
-          ; style: layout_style }
+      | Sequence_start of {
+          anchor : string option;
+          tag : string option;
+          implicit : bool;
+          style : layout_style;
+        }
       | Sequence_end
-      | Alias of { anchor: string}
+      | Alias of { anchor : string }
       | Nothing
-      [@@deriving sexp]
+    [@@deriving sexp]
   end
 end

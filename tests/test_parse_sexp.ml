@@ -1,8 +1,6 @@
 open Rresult
 
-type t = {
-  v: Yaml_sexp.value
-} [@@deriving sexp]
+type t = { v : Yaml_sexp.value } [@@deriving sexp]
 
 let v file =
   let open R.Infix in
@@ -12,5 +10,5 @@ let v file =
   Sexplib.Sexp.to_string_hum s |> fun b ->
   Printf.printf "%s\n%!" b;
   Sexplib.Sexp.of_string b |> Yaml_sexp.yaml_of_sexp |> fun v' ->
-  assert(v = v');
+  assert (v = v');
   Ok ()

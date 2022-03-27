@@ -14,11 +14,10 @@
 
 open Rresult
 open R.Infix
-
 module S = Yaml.Stream
 
-let scalar ?anchor ?tag ?(plain_implicit=true) ?(quoted_implicit=false)
-    ?(style=`Plain) value : Yaml.scalar =
+let scalar ?anchor ?tag ?(plain_implicit = true) ?(quoted_implicit = false)
+    ?(style = `Plain) value : Yaml.scalar =
   { anchor; tag; plain_implicit; quoted_implicit; style; value }
 
 let v () =
@@ -46,4 +45,3 @@ let v () =
   let r = S.emitter_buf t in
   print_endline (Bytes.to_string r);
   Ok ()
-
