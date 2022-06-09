@@ -280,6 +280,17 @@ let emitter ?(len = 65535 * 4) () =
   | 1 -> Ok { e; event; written; buf }
   | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
+let emitter_file file =
+  let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
+  let event = Ctypes.(allocate_n T.Event.t ~count:1) in
+  let written = Ctypes.allocate_n Ctypes.size_t ~count:1 in (* TODO: unused *)
+  let r = B.emitter_init e in
+  let buf = Bytes.create 0 in (* TODO: unused *)
+  B.emitter_set_output_file e file;
+  match r with
+  | 1 -> Ok { e; event; written; buf }
+  | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
+
 let emitter_buf { buf; written } =
   Ctypes.(!@written) |> Unsigned.Size_t.to_int |> Bytes.sub buf 0
 

@@ -62,6 +62,13 @@ module M (F : Ctypes.FOREIGN) = struct
         @-> ptr size_t
         @-> returning void)
 
+  let emitter_set_output_file =
+    foreign "yaml_emitter_set_output_file"
+      C.(
+        ptr T.Emitter.t
+        @-> ptr void
+        @-> returning void)
+
   (* TODO static funptr
      let write_handler = C.(ptr void @-> ptr uchar @-> size_t @-> returning int)
 

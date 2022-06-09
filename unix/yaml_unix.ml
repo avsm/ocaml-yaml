@@ -14,8 +14,20 @@
 
 open Bos
 
+let ( >>= ) = Result.bind
+
+(* TODO: stubs not foreign *)
+let fdopen = Ctypes.(Foreign.foreign "fdopen" (int @-> string @-> returning (ptr void)))
+
+let to_channel ?(encoding = `Utf8) ?scalar_style ?layout_style oc (v : Yaml.value) =
+  let file_descr = Unix.descr_of_out_channel oc in
+  let fd: int = Obj.magic file_descr in
+  let file_ptr = fdopen fd "w" in
+  Yaml.Stream.emitter_file file_ptr >>= fun t ->
+  Yaml.to_emitter ~encoding ?scalar_style ?layout_style t v
+
 let of_file f = Result.bind (OS.File.read f) Yaml.of_string
-let to_file f y = Result.bind (Yaml.to_string y) (OS.File.write f)
+let to_file f y = OS.File.with_oc f to_channel y |> Result.join
 
 let of_file_exn f =
   match of_file f with Ok v -> v | Error (`Msg m) -> raise (Failure m)

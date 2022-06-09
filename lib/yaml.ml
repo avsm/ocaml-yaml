@@ -78,8 +78,7 @@ let of_json (v : value) =
   in
   match fn v with r -> Ok r | exception Failure msg -> Error (`Msg msg)
 
-let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
-  emitter ?len () >>= fun t ->
+let to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t: emitter) (v : value) =
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -113,7 +112,11 @@ let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
   in
   iter v >>= fun () ->
   document_end t >>= fun () ->
-  stream_end t >>= fun () ->
+  stream_end t
+
+let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
+  emitter ?len () >>= fun t ->
+  to_emitter ~encoding ?scalar_style ?layout_style t v >>= fun () ->
   let r = Stream.emitter_buf t in
   Ok (Bytes.to_string r)
 

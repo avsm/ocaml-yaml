@@ -277,6 +277,8 @@ module Stream : sig
       buffer that the output is written into is. In the future, [len] will be
       redundant as the buffer will be dynamically allocated. *)
 
+  val emitter_file : unit Ctypes.ptr -> emitter res
+
   val emitter_buf : emitter -> Bytes.t
   val emit : emitter -> Event.t -> unit res
   val document_start : ?version:version -> ?implicit:bool -> emitter -> unit res
@@ -311,6 +313,14 @@ module Stream : sig
   (** [library_version ()] returns the major, minor and patch version of the
       underlying libYAML implementation. *)
 end
+
+val to_emitter :
+  ?encoding:encoding ->
+  ?scalar_style:scalar_style ->
+  ?layout_style:layout_style ->
+  Stream.emitter ->
+  value ->
+  unit res
 
 (** {2 Utility functions for yaml}
 
