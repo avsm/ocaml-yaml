@@ -262,6 +262,7 @@ type emitter_kind =
   | String of { buf: Bytes.t; written : Unsigned.size_t Ctypes.ptr; }
   | File
   | Handler
+  | Buffer of Buffer.t
 
 type emitter = {
   e : T.Emitter.t Ctypes.structure Ctypes.ptr;
@@ -273,6 +274,8 @@ let emitter_written { kind; _ } =
   match kind with
   | String { written; _ } ->
     Ctypes.(!@written) |> Unsigned.Size_t.to_int
+  | Buffer buf ->
+    Buffer.length buf
   | _ ->
     invalid_arg "non-string emitter"
 
@@ -319,10 +322,26 @@ let emitter_handler handler =
   | 1 -> Ok { e; event; kind = Handler }
   | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
+let emitter_buffer () =
+  let buf = Buffer.create 1024 in
+  Result.bind (emitter_handler (Buffer.add_string buf)) @@ fun t ->
+  Ok { t with kind = Buffer buf }
+
 let emitter_buf { kind; _ } =
   match kind with
   | String { buf; written } ->
     Ctypes.(!@written) |> Unsigned.Size_t.to_int |> Bytes.sub buf 0
+  | Buffer buf ->
+    Buffer.to_bytes buf
+  | _ ->
+    invalid_arg "non-string emitter"
+
+let emitter_string ({ kind; _ } as emitter) =
+  match kind with
+  | String { buf; written } ->
+    emitter_buf emitter |> Bytes.to_string
+  | Buffer buf ->
+    Buffer.contents buf
   | _ ->
     invalid_arg "non-string emitter"
 

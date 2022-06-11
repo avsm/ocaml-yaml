@@ -281,7 +281,10 @@ module Stream : sig
 
   val emitter_handler: (string -> unit) -> emitter res
 
+  val emitter_buffer: unit -> emitter res
+
   val emitter_buf : emitter -> Bytes.t
+  val emitter_string : emitter -> string
   val emit : emitter -> Event.t -> unit res
   val document_start : ?version:version -> ?implicit:bool -> emitter -> unit res
   val document_end : ?implicit:bool -> emitter -> unit res
