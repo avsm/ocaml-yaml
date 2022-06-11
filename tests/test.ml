@@ -58,7 +58,7 @@ let quoted_scalars =
   (* Given an input string, we want to test two things:
      - if the input is parsed as an expected Yaml.value and;
      - if encoding the parsed Yaml.yaml results in the original string. *)
-  let open Rresult.R.Infix in
+  let ( >>= ) = Result.bind in
   let test name str expected =
     let actual_yaml = Yaml.yaml_of_string str in
     let actual_value = actual_yaml >>= Yaml.to_json in

@@ -13,16 +13,14 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
 module T = Yaml_types.M
-open Rresult
+
+let ( >>= ) = Result.bind
 
 let v file =
-  let open R.Infix in
   Bos.OS.File.read file >>= fun buf ->
   Yaml.Stream.parser buf >>= fun t ->
   let rec iter_until_done fn =
     Yaml.Stream.do_parse t >>= fun (e, _pos) ->
-    match e with
-    | Yaml.Stream.Event.Nothing -> R.ok ()
-    | _ -> iter_until_done fn
+    match e with Yaml.Stream.Event.Nothing -> Ok () | _ -> iter_until_done fn
   in
   iter_until_done ()
