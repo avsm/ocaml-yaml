@@ -24,9 +24,9 @@ locally by running `dune utop`.
 - : string Yaml.res = Result.Ok "foo1: bar1\nfoo2: 1\n"
 # #require "yaml.unix" ;;
 # Yaml_unix.to_file Fpath.(v "my.yml") (`String "bar") ;;
-- : (unit, Rresult.R.msg) result = Result.Ok ()
+- : (unit, [ `Msg of string ]) result = Result.Ok ()
 # Yaml_unix.of_file Fpath.(v "my.yml");;
-- : (Yaml.value, Rresult.R.msg) result = Result.Ok (`String "bar")
+- : (Yaml.value, [ `Msg of string ]) result = Result.Ok (`String "bar")
 # Yaml_unix.of_file_exn Fpath.(v "my.yml");;
 - : Yaml.value = `String "bar"
 ```
@@ -106,7 +106,6 @@ We use the following major OCaml tools and libraries:
 - **build:** [dune](https://github.com/janestreet/dune) is the build tool used.
 - **ffi:** [ctypes](https://github.com/ocamllabs/ocaml-ctypes) is the library to interface with the C FFI exposed by libYaml.
 - **preprocessor:** [ppx_sexp_conv](https://github.com/janestreet/ppx_sexp_conv) generates s-expression serialises and deserialisers for the types exposed by the library, exposed in a `yaml-sexp` package.
-- **error handling:** [rresult](https://github.com/dbuenzli/rresult) is a set of combinators for returning errors as values, instead of raising OCaml exceptions.
 - **tests:** [alcotest](https://github.com/mirage/alcotest) specifies conventional unit tests, and [crowbar](https://github.com/stedolan/crowbar) is used to drive property-based fuzz-testing of the library.
 
 #### Library Architecture
@@ -155,8 +154,8 @@ to compile with the C header files for the yaml library.  The resulting OCaml fu
 are exported in the `yaml.ffi` ocamlfind library.
 
 **OCaml API:** Finally, we define the OCaml API that uses the low-level FFI to expose
-a well-typed OCaml interface. We adopt a convention of using the [Rresult](https://github.com/dbuenzli/rresult)
-library to return explicit errors instead of raising OCaml exceptions.  We also
+a well-typed OCaml interface. We adopt a convention of using the standard `result`
+type to return explicit errors instead of raising OCaml exceptions.  We also
 define some polymorphic variant types to represent various configuration options
 (such as the printing style of different Yaml values).
 

@@ -116,8 +116,8 @@ type layout_style = [ `Any | `Block | `Flow ]
       notation. *)
 
 type 'a res = ('a, [ `Msg of string ]) result
-(** This library uses the {!Rresult.R.msg} conventions for returning errors
-    rather than raising exceptions. *)
+(** This library uses the standard {!result} type for returning errors rather
+    than raising exceptions. *)
 
 (** {2 Serialisers and deserialisers}
 
