@@ -298,11 +298,17 @@ let emitter_handler handler =
   let r = B.emitter_init e in
   let buf = Bytes.create 0 in (* TODO: unused *)
   let open Ctypes in
+  let handler _ buf len =
+    let buf' = Ctypes.(coerce (ptr uchar) (ptr char) buf) in
+    let s = Ctypes.(string_from_ptr buf' ~length:(Unsigned.Size_t.to_int len)) in
+    handler s;
+    1
+  in
   let f =
     coerce
       (Foreign.funptr B.write_handler)
       (static_funptr B.write_handler)
-      (fun _ -> handler)
+      handler
   in
   B.emitter_set_output e f Ctypes.null;
   match r with

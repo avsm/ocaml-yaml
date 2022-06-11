@@ -115,10 +115,10 @@ let to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t: emitter) (v :
   stream_end t
 
 let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
-  emitter ?len () >>= fun t ->
+  let buf = Buffer.create 1024 in
+  emitter_handler (Buffer.add_string buf) >>= fun t ->
   to_emitter ~encoding ?scalar_style ?layout_style t v >>= fun () ->
-  let r = Stream.emitter_buf t in
-  Ok (Bytes.to_string r)
+  Ok (Buffer.contents buf)
 
 let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
   match to_string ?len ?encoding ?scalar_style ?layout_style s with

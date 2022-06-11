@@ -279,7 +279,7 @@ module Stream : sig
 
   val emitter_file : unit Ctypes.ptr -> emitter res
 
-  val emitter_handler: (Unsigned.uchar Ctypes_static.ptr -> Unsigned.size_t -> int) -> emitter res
+  val emitter_handler: (string -> unit) -> emitter res
 
   val emitter_buf : emitter -> Bytes.t
   val emit : emitter -> Event.t -> unit res

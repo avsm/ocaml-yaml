@@ -20,13 +20,7 @@ let ( >>= ) = Result.bind
 let fdopen = Ctypes.(Foreign.foreign "fdopen" (int @-> string @-> returning (ptr void)))
 
 let to_channel ?(encoding = `Utf8) ?scalar_style ?layout_style oc (v : Yaml.value) =
-  let handler buf len =
-    let buf' = Ctypes.(coerce (ptr uchar) (ptr char) buf) in
-    let s = Ctypes.(string_from_ptr buf' ~length:(Unsigned.Size_t.to_int len)) in
-    output_string oc s;
-    1
-  in
-  Yaml.Stream.emitter_handler handler >>= fun t ->
+  Yaml.Stream.emitter_handler (output_string oc) >>= fun t ->
   Yaml.to_emitter ~encoding ?scalar_style ?layout_style t v
 
 let of_file f = Result.bind (OS.File.read f) Yaml.of_string
