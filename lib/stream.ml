@@ -258,15 +258,23 @@ let do_parse { p; event } =
           ^ " returned: "
           ^ string_of_int n))
 
+type emitter_kind =
+  | String of { buf: Bytes.t; written : Unsigned.size_t Ctypes.ptr; }
+  | File
+  | Handler
+
 type emitter = {
   e : T.Emitter.t Ctypes.structure Ctypes.ptr;
   event : T.Event.t Ctypes.structure Ctypes.ptr;
-  buf : Bytes.t;
-  written : Unsigned.size_t Ctypes.ptr;
+  kind: emitter_kind;
 }
 
-let emitter_written { written; _ } =
-  Ctypes.(!@written) |> Unsigned.Size_t.to_int
+let emitter_written { kind; _ } =
+  match kind with
+  | String { written; _ } ->
+    Ctypes.(!@written) |> Unsigned.Size_t.to_int
+  | _ ->
+    invalid_arg "non-string emitter"
 
 let emitter ?(len = 65535 * 4) () =
   let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
@@ -277,26 +285,22 @@ let emitter ?(len = 65535 * 4) () =
   let len = Bytes.length buf |> Unsigned.Size_t.of_int in
   B.emitter_set_output_string e (Ctypes.ocaml_bytes_start buf) len written;
   match r with
-  | 1 -> Ok { e; event; written; buf }
+  | 1 -> Ok { e; event; kind = String { written; buf } }
   | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
 let emitter_file file =
   let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
   let event = Ctypes.(allocate_n T.Event.t ~count:1) in
-  let written = Ctypes.allocate_n Ctypes.size_t ~count:1 in (* TODO: unused *)
   let r = B.emitter_init e in
-  let buf = Bytes.create 0 in (* TODO: unused *)
   B.emitter_set_output_file e file;
   match r with
-  | 1 -> Ok { e; event; written; buf }
+  | 1 -> Ok { e; event; kind = File }
   | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
 let emitter_handler handler =
   let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
   let event = Ctypes.(allocate_n T.Event.t ~count:1) in
-  let written = Ctypes.allocate_n Ctypes.size_t ~count:1 in (* TODO: unused *)
   let r = B.emitter_init e in
-  let buf = Bytes.create 0 in (* TODO: unused *)
   let open Ctypes in
   let handler _ buf len =
     let buf' = Ctypes.(coerce (ptr uchar) (ptr char) buf) in
@@ -312,11 +316,15 @@ let emitter_handler handler =
   in
   B.emitter_set_output e f Ctypes.null;
   match r with
-  | 1 -> Ok { e; event; written; buf }
+  | 1 -> Ok { e; event; kind = Handler }
   | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
-let emitter_buf { buf; written } =
-  Ctypes.(!@written) |> Unsigned.Size_t.to_int |> Bytes.sub buf 0
+let emitter_buf { kind; _ } =
+  match kind with
+  | String { buf; written } ->
+    Ctypes.(!@written) |> Unsigned.Size_t.to_int |> Bytes.sub buf 0
+  | _ ->
+    invalid_arg "non-string emitter"
 
 let check l a =
   match a with
