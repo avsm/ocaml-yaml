@@ -16,9 +16,6 @@ open Bos
 
 let ( >>= ) = Result.bind
 
-(* TODO: stubs not foreign *)
-let fdopen = Ctypes.(Foreign.foreign "fdopen" (int @-> string @-> returning (ptr void)))
-
 let to_channel ?(encoding = `Utf8) ?scalar_style ?layout_style oc (v : Yaml.value) =
   Yaml.Stream.emitter_handler (output_string oc) >>= fun t ->
   Yaml.to_emitter ~encoding ?scalar_style ?layout_style t v
