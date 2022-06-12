@@ -23,3 +23,5 @@ jobs:
       run: opam exec -- dune build
     - name: Test
       run: opam exec -- dune runtest
+    - name: Readme
+      run: opam exec -- dune build @readme
