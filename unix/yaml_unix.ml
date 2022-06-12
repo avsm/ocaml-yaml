@@ -16,12 +16,8 @@ open Bos
 
 let ( >>= ) = Result.bind
 
-let to_channel ?(encoding = `Utf8) ?scalar_style ?layout_style oc (v : Yaml.value) =
-  Yaml.Stream.emitter_handler (output_string oc) >>= fun t ->
-  Yaml.to_emitter ~encoding ?scalar_style ?layout_style t v
-
 let of_file f = Result.bind (OS.File.read f) Yaml.of_string
-let to_file f y = OS.File.with_oc f to_channel y |> Result.join
+let to_file f y = OS.File.with_oc f Yaml.to_channel y |> Result.join
 
 let of_file_exn f =
   match of_file f with Ok v -> v | Error (`Msg m) -> raise (Failure m)

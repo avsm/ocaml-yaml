@@ -156,6 +156,14 @@ val to_string_exn :
 (** [to_string_exn v] acts as {!to_string}, but raises {!Invalid_argument} in if
     there is an error. *)
 
+val to_channel :
+  ?encoding:encoding ->
+  ?scalar_style:scalar_style ->
+  ?layout_style:layout_style ->
+  out_channel ->
+  value ->
+  unit res
+
 val pp : Format.formatter -> value -> unit
 (** [pp ppf s] will output the Yaml value [s] to the formatter [ppf]. *)
 
