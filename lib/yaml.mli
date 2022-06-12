@@ -281,7 +281,7 @@ module Stream : sig
 
   val emitter_handler: (string -> unit) -> emitter res
 
-  val emitter_buffer: unit -> emitter res
+  val emitter_buffer: ?buf:Buffer.t -> unit -> emitter res
 
   val emitter_buf : emitter -> Bytes.t
   val emitter_string : emitter -> string

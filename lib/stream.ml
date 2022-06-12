@@ -322,8 +322,12 @@ let emitter_handler handler =
   | 1 -> Ok { e; event; kind = Handler }
   | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
-let emitter_buffer () =
-  let buf = Buffer.create 1024 in
+let emitter_buffer ?buf () =
+  let buf =
+    match buf with
+    | None -> Buffer.create 1024
+    | Some buf -> buf
+  in
   Result.bind (emitter_handler (Buffer.add_string buf)) @@ fun t ->
   Ok { t with kind = Buffer buf }
 
