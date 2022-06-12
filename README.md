@@ -17,16 +17,16 @@ locally by running `dune utop`.
 ```ocaml
 # #require "yaml" ;;
 # Yaml.of_string "foo";;
-- : Yaml.value Yaml.res = Result.Ok (`String "foo")
+- : Yaml.value Yaml.res = Ok (`String "foo")
 # Yaml.of_string "- foo";;
-- : Yaml.value Yaml.res = Result.Ok (`A [`String "foo"])
+- : Yaml.value Yaml.res = Ok (`A [`String "foo"])
 # Yaml.to_string (`O ["foo1", `String "bar1"; "foo2", `Float 1.0]);;
-- : string Yaml.res = Result.Ok "foo1: bar1\nfoo2: 1\n"
+- : string Yaml.res = Ok "foo1: bar1\nfoo2: 1\n"
 # #require "yaml.unix" ;;
 # Yaml_unix.to_file Fpath.(v "my.yml") (`String "bar") ;;
-- : (unit, Rresult.R.msg) result = Result.Ok ()
+- : (unit, [ `Msg of string ]) result = Ok ()
 # Yaml_unix.of_file Fpath.(v "my.yml");;
-- : (Yaml.value, Rresult.R.msg) result = Result.Ok (`String "bar")
+- : (Yaml.value, [ `Msg of string ]) result = Ok (`String "bar")
 # Yaml_unix.of_file_exn Fpath.(v "my.yml");;
 - : Yaml.value = `String "bar"
 ```
@@ -41,37 +41,37 @@ values.
 Consider [null values](http://yaml.org/type/null.html):
 
 ```ocaml
-# Yaml.of_string_exn "null"
+# Yaml.of_string_exn "null";;
 - : Yaml.value = `Null
-# Yaml.of_string_exn ""
+# Yaml.of_string_exn "";;
 - : Yaml.value = `Null
-# Yaml.of_string_exn "~"
+# Yaml.of_string_exn "~";;
 - : Yaml.value = `Null
 ```
 
 And [bool values](http://yaml.org/type/bool.html):
 
 ```ocaml
-# Yaml.of_string_exn "true"
+# Yaml.of_string_exn "true";;
 - : Yaml.value = `Bool true
-# Yaml.of_string_exn "n"
+# Yaml.of_string_exn "n";;
 - : Yaml.value = `Bool false
-# Yaml.of_string_exn "yes"
+# Yaml.of_string_exn "yes";;
 - : Yaml.value = `Bool true
 ```
 
 and [float values](https://yaml.org/type/float.html):
 
 ```ocaml
-# Yaml.of_string_exn "6.8523015e+5"
+# Yaml.of_string_exn "6.8523015e+5";;
 - : Yaml.value = `Float 685230.15
-# Yaml.of_string_exn "685.230_15e+03"
+# Yaml.of_string_exn "685.230_15e+03";;
 - : Yaml.value = `Float 685230.15
-# Yaml.of_string_exn "685_230.15"
+# Yaml.of_string_exn "685_230.15";;
 - : Yaml.value = `Float 685230.15
-# Yaml.of_string_exn "-.inf"
+# Yaml.of_string_exn "-.inf";;
 - : Yaml.value = `Float (neg_infinity)
-# Yaml.of_string_exn "NaN"
+# Yaml.of_string_exn "NaN";;
 - : Yaml.value = `Float nan
 ```
 
@@ -79,7 +79,7 @@ Note that yaml base60 ('sexagesimal') parsing is not yet supported, so
 this will show up as a string for now:
 
 ```ocaml
-# Yaml.of_string_exn "190:20:30.15"
+# Yaml.of_string_exn "190:20:30.15";;
 - : Yaml.value = `String "190:20:30.15"
 ```
 
@@ -88,10 +88,10 @@ but be printed back out without a trailing decimal point if it is
 just an integer.
 
 ```ocaml
-# Yaml.of_string_exn "1"
+# Yaml.of_string_exn "1";;
 - : Yaml.value = `Float 1.
-# Yaml.of_string_exn "1" |> Yaml.to_string
-- : string Yaml.res = Result.Ok "1\n"
+# Yaml.of_string_exn "1" |> Yaml.to_string;;
+- : string Yaml.res = Ok "1\n"
 ```
 
 ### Repository Structure
