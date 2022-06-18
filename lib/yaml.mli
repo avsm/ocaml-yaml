@@ -339,9 +339,8 @@ module Stream : sig
       output. *)
 
   val emitter : ?len:int -> unit -> emitter res
-  (** [emitter ?len ()] will allocate a new emitter state, which will output a
-      string. If [len] (in bytes) is specified, then a fixed-size buffer is used
-      internally. *)
+  (** [emitter ?len ()] will allocate a new emitter state, which will write to a
+      fixed-size buffer of size [len] (in bytes). By default the buffer is 64KB. *)
 
   val emitter_file : unit Ctypes.ptr -> emitter res
   (** [emitter_file f] will allocate a new emitter state, which will write to
