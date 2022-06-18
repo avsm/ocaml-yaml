@@ -22,9 +22,14 @@ let () =
   let cstubs = ref "" in
   let args = Arg.[ ("-cstubs", Set_string cstubs, "cstubs loc") ] in
   C.main ~args ~name:"yaml" (fun c ->
-      let cstubs_cflags =
+      let vendor_cflags =
         Printf.sprintf "-I%s" (Unix.realpath (Filename.dirname !cstubs))
       in
-      let lines = ocamlopt_lines c @ ppc64_lines c in
-      C.Flags.write_lines "cflags" lines;
-      C.Flags.write_lines "ctypes-cflags" [ cstubs_cflags ])
+      let ffi_cflags =
+        let vendor_headers =
+          Printf.sprintf "-I%s" (Unix.realpath "../vendor/headers")
+        in
+        (vendor_headers :: ocamlopt_lines c) @ ppc64_lines c
+      in
+      C.Flags.write_sexp "ffi-cflags.sexp" ffi_cflags;
+      C.Flags.write_sexp "vendor-cflags.sexp" [ vendor_cflags ])

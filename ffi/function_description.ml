@@ -12,9 +12,9 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-module T = Yaml_types.M
+module T = Types_generated
 
-module M (F : Ctypes.FOREIGN) = struct
+module Functions (F : Ctypes.FOREIGN) = struct
   let foreign = F.foreign
 
   module C = struct
