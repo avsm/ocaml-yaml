@@ -313,8 +313,8 @@ let emitter_handler handler =
   in
   let f =
     coerce
-      (Foreign.funptr B.write_handler)
-      (static_funptr B.write_handler)
+      (Foreign.funptr B.write_handler_t)
+      (static_funptr B.write_handler_t)
       handler
   in
   B.emitter_set_output e f Ctypes.null;
