@@ -156,11 +156,27 @@ val to_string_exn :
 (** [to_string_exn v] acts as {!to_string}, but raises {!Invalid_argument} in if
     there is an error. *)
 
+val to_file_fast :
+  ?encoding:encoding ->
+  ?scalar_style:scalar_style ->
+  ?layout_style:layout_style ->
+  unit Ctypes.ptr ->
+  value ->
+  unit res
+
 val to_channel :
   ?encoding:encoding ->
   ?scalar_style:scalar_style ->
   ?layout_style:layout_style ->
   out_channel ->
+  value ->
+  unit res
+
+val to_buffer :
+  ?encoding:encoding ->
+  ?scalar_style:scalar_style ->
+  ?layout_style:layout_style ->
+  Buffer.t ->
   value ->
   unit res
 

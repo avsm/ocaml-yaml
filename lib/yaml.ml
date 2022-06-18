@@ -129,8 +129,16 @@ let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
   | Ok s -> s
   | Error (`Msg m) -> raise (Invalid_argument m)
 
+let to_file_fast ?(encoding = `Utf8) ?scalar_style ?layout_style file (v : value) =
+  emitter_file file >>= fun t ->
+  to_emitter ~encoding ?scalar_style ?layout_style t v
+
 let to_channel ?(encoding = `Utf8) ?scalar_style ?layout_style oc (v : value) =
   emitter_handler (output_string oc) >>= fun t ->
+  to_emitter ~encoding ?scalar_style ?layout_style t v
+
+let to_buffer ?(encoding = `Utf8) ?scalar_style ?layout_style buf (v : value) =
+  emitter_buffer ~buf () >>= fun t ->
   to_emitter ~encoding ?scalar_style ?layout_style t v
 
 let yaml_to_string ?(encoding = `Utf8) ?scalar_style ?layout_style v =
