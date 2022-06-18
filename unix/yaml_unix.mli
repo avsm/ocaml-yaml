@@ -29,8 +29,9 @@ val to_file :
   Fpath.t ->
   Yaml.value ->
   unit Yaml.res
-(** [to_file p v] will convert the Yaml value [v] to a string and write it to
-    the file at path [p]. *)
+(** [to_file p v] will convert the Yaml value [v] to a Yaml representation
+    and write it to the file at path [p]. The [encoding], [scalar_style] and [layout_style]
+    control the various output parameters. *)
 
 val to_file_exn :
   ?encoding:Yaml.encoding ->
@@ -49,3 +50,7 @@ val to_file_fast :
   Fpath.t ->
   Yaml.value ->
   unit Yaml.res
+(** [to_file_fast p v] will convert the Yaml value [v] to a Yaml representation
+    and write it to the file at path [p]. The [encoding], [scalar_style] and [layout_style]
+    control the various output parameters.
+    Unlike {!to_file}, this function writes the file directly in libyaml instead of going through OCaml. *)

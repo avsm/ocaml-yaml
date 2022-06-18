@@ -143,8 +143,8 @@ val to_string :
   string res
 (** [to_string v] converts the JSON value to a Yaml string representation. The
     [encoding], [scalar_style] and [layout_style] control the various output
-    parameters. The current implementation uses a non-resizable internal string
-    buffer of 64KB, which can be increased via [len]. *)
+    parameters. If [len] (in bytes) is specified, then a fixed-size buffer
+    is used internally. *)
 
 val to_string_exn :
   ?len:int ->
@@ -163,6 +163,10 @@ val to_file_fast :
   unit Ctypes.ptr ->
   value ->
   unit res
+(** [to_file_fast f v] converts the JSON value to a Yaml representation and
+    writes it to the file [f] given as [FILE*]. The
+    [encoding], [scalar_style] and [layout_style] control the various output
+    parameters. *)
 
 val to_channel :
   ?encoding:encoding ->
@@ -171,6 +175,10 @@ val to_channel :
   out_channel ->
   value ->
   unit res
+(** [to_channel oc v] converts the JSON value to a Yaml representation and
+    writes it to the channel [oc]. The
+    [encoding], [scalar_style] and [layout_style] control the various output
+    parameters. *)
 
 val to_buffer :
   ?encoding:encoding ->
@@ -179,6 +187,10 @@ val to_buffer :
   Buffer.t ->
   value ->
   unit res
+(** [to_buffer b v] converts the JSON value to a Yaml representation and
+    writes it to the buffer [b]. The
+    [encoding], [scalar_style] and [layout_style] control the various output
+    parameters. *)
 
 val pp : Format.formatter -> value -> unit
 (** [pp ppf s] will output the Yaml value [s] to the formatter [ppf]. *)
@@ -201,8 +213,8 @@ val yaml_to_string :
   string res
 (** [yaml_to_string v] converts the Yaml value to a string representation. The
     [encoding], [scalar_style] and [layout_style] control the various output
-    parameters. The current implementation uses a non-resizable internal string
-    buffer of 16KB, which can be increased via [len]. *)
+    parameters. If [len] (in bytes) is specified, then a fixed-size buffer
+    is used internally. *)
 
 val yaml_to_file_fast :
   ?encoding:encoding ->
@@ -211,6 +223,9 @@ val yaml_to_file_fast :
   unit Ctypes.ptr ->
   yaml ->
   unit res
+(** [yaml_to_file_fast f v] writes the Yaml value to the file [f] given as [FILE*].
+    The [encoding], [scalar_style] and [layout_style] control the various output
+    parameters. *)
 
 val yaml_to_channel :
   ?encoding:encoding ->
@@ -219,6 +234,9 @@ val yaml_to_channel :
   out_channel ->
   yaml ->
   unit res
+(** [yaml_to_channel oc v] writes the Yaml value to the channel [oc]. The
+    [encoding], [scalar_style] and [layout_style] control the various output
+    parameters. *)
 
 val yaml_to_buffer :
   ?encoding:encoding ->
@@ -227,6 +245,9 @@ val yaml_to_buffer :
   Buffer.t ->
   yaml ->
   unit res
+(** [yaml_to_buffer b v] writes the Yaml value to the buffer [b]. The
+    [encoding], [scalar_style] and [layout_style] control the various output
+    parameters. *)
 
 (** {2 JSON/Yaml conversion functions} *)
 
@@ -321,16 +342,20 @@ module Stream : sig
       output. *)
 
   val emitter : ?len:int -> unit -> emitter res
-  (** [emitter ?len ()] will allocate a new emitter state. Due to a temporary
-      limitation in the implementation, [len] decides how large the fixed size
-      buffer that the output is written into is. In the future, [len] will be
-      redundant as the buffer will be dynamically allocated. *)
+  (** [emitter ?len ()] will allocate a new emitter state, which will output a string.
+      If [len] (in bytes) is specified, then a fixed-size buffer is used internally. *)
 
   val emitter_file : unit Ctypes.ptr -> emitter res
+  (** [emitter_file f] will allocate a new emitter state, which will write
+      to the file [f] given as [FILE*]. *)
 
   val emitter_handler: (string -> unit) -> emitter res
+  (** [emitter_handler h] will allocate a new emitter state, which will output
+      by calling [h] with the written string. *)
 
   val emitter_buffer: ?buf:Buffer.t -> unit -> emitter res
+  (** [emitter_buffer ~buf ()] will allocate a new emitter state, which will write
+      to the buffer [buf]. If [buf] is not specified, one will be created. *)
 
   val emitter_buf : emitter -> Bytes.t
   val emitter_string : emitter -> string
@@ -375,6 +400,10 @@ val to_emitter :
   Stream.emitter ->
   value ->
   unit res
+(** [to_emitter e v] converts the JSON value to a Yaml representation and
+    writes it to the emitter [e]. The
+    [encoding], [scalar_style] and [layout_style] control the various output
+    parameters. *)
 
 val yaml_to_emitter :
   ?encoding:encoding ->
@@ -383,6 +412,9 @@ val yaml_to_emitter :
   Stream.emitter ->
   yaml ->
   unit res
+(** [yaml_to_emitter e v] writes the Yaml value to the emitter [e]. The
+    [encoding], [scalar_style] and [layout_style] control the various output
+    parameters. *)
 
 (** {2 Utility functions for yaml}
 
