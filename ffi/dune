@@ -1,0 +1,21 @@
+(library
+ (name yaml_ffi)
+ (public_name yaml.ffi)
+ (libraries sexplib)
+ (foreign_archives ../vendor/yaml_c)
+ (ctypes
+  (external_library_name yaml)
+  (build_flags_resolver
+   (vendored
+    (c_flags
+     (:include ../config/ffi-cflags.sexp))))
+  (headers
+   (include "preamble.h"))
+  (type_description
+   (instance Types)
+   (functor Type_description))
+  (function_description
+   (instance Functions)
+   (functor Function_description))
+  (generated_entry_point C)
+  (generated_types Types_generated)))

@@ -26,7 +26,7 @@ let dir f = Fpath.(v "yaml" / f)
 let all_files = List.map dir ("bomb.yml" :: files)
 let all_simple_files = List.map dir files
 
-type error = [ `Msg of string ]
+type _error = [ `Msg of string ]
 
 let pp_error ppf (`Msg x) = Fmt.string ppf x
 let error = Alcotest.testable pp_error ( = )

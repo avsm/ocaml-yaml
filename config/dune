@@ -3,10 +3,13 @@
  (libraries dune.configurator))
 
 (rule
- (targets cflags ctypes-cflags)
- (deps %{lib:ctypes:ctypes_primitives.h} %{lib:ctypes:ocaml_integers.h}
-   %{lib:ctypes:ctypes_complex_stubs.h} %{lib:ctypes:ctypes_ldouble_stubs.h}
-   %{lib:ctypes:ctypes_raw_pointer.h}
-   %{lib:ctypes:ctypes_managed_buffer_stubs.h})
+ (targets ffi-cflags.sexp vendor-cflags.sexp)
+ (deps
+  %{lib:ctypes:ctypes_primitives.h}
+  %{lib:ctypes:ocaml_integers.h}
+  %{lib:ctypes:ctypes_complex_stubs.h}
+  %{lib:ctypes:ctypes_ldouble_stubs.h}
+  %{lib:ctypes:ctypes_raw_pointer.h}
+  %{lib:ctypes:ctypes_managed_buffer_stubs.h})
  (action
   (run ./discover.exe -cstubs %{lib:ctypes:ctypes_cstubs_internals.h})))

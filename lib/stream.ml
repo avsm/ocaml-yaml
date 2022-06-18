@@ -13,8 +13,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
 open Types
-module B = Yaml_ffi.M
-module T = Yaml_types.M
+module B = Yaml_ffi.C.Functions
+module T = Yaml_ffi.C.Types
 
 type tag_directive = { handle : string; prefix : string } [@@deriving sexp]
 

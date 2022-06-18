@@ -1,84 +1,9 @@
-(library
- (name yaml_c)
- (public_name yaml.c)
- (preprocess no_preprocessing)
+(foreign_library
+ (archive_name yaml_c)
+ (language c)
+ (names api emitter loader parser reader scanner writer)
  (flags
-  (:standard -safe-string))
- (foreign_archives yaml_c_stubs))
-
-(rule
- (targets libyaml_c_stubs%{ext_lib} dllyaml_c_stubs%{ext_dll})
- (deps api%{ext_obj} emitter%{ext_obj} loader%{ext_obj} parser%{ext_obj}
-   reader%{ext_obj} scanner%{ext_obj} writer%{ext_obj})
- (action
-  (run ocamlmklib -o yaml_c_stubs %{deps})))
-
-(rule
- (targets api%{ext_obj})
- (deps
-  (:c api.c)
-  yaml.h
-  config.h
-  yaml_private.h)
- (action
-  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
-
-(rule
- (targets emitter%{ext_obj})
- (deps
-  (:c emitter.c)
-  yaml.h
-  config.h
-  yaml_private.h)
- (action
-  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
-
-(rule
- (targets loader%{ext_obj})
- (deps
-  (:c loader.c)
-  yaml.h
-  config.h
-  yaml_private.h)
- (action
-  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
-
-(rule
- (targets parser%{ext_obj})
- (deps
-  (:c parser.c)
-  yaml.h
-  config.h
-  yaml_private.h)
- (action
-  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
-
-(rule
- (targets reader%{ext_obj})
- (deps
-  (:c reader.c)
-  yaml.h
-  config.h
-  yaml_private.h)
- (action
-  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
-
-(rule
- (targets scanner%{ext_obj})
- (deps
-  (:c scanner.c)
-  yaml.h
-  config.h
-  yaml_private.h)
- (action
-  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
-
-(rule
- (targets writer%{ext_obj})
- (deps
-  (:c writer.c)
-  yaml.h
-  config.h
-  yaml_private.h)
- (action
-  (run %{cc} %{read-lines:../config/cflags} -Wall -DHAVE_CONFIG_H -I. -c %{c})))
+  ((:include ../config/vendor-cflags.sexp)
+   -Wall
+   -DHAVE_CONFIG_H))
+ (include_dirs headers))

@@ -12,86 +12,86 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-module Encoding : sig
-  type t = [ `Any | `E of int64 | `Utf16be | `Utf16le | `Utf8 ]
-end
+module Types (F : Ctypes.TYPE) : sig
+  module Encoding : sig
+    type t = [ `Any | `E of int64 | `Utf16be | `Utf16le | `Utf8 ]
+  end
 
-module Error : sig
-  type t =
-    [ `None
-    | `Memory
-    | `Reader
-    | `Scanner
-    | `Parser
-    | `Composer
-    | `Writer
-    | `Emitter
-    | `E of int64 ]
-end
+  module Error : sig
+    type t =
+      [ `None
+      | `Memory
+      | `Reader
+      | `Scanner
+      | `Parser
+      | `Composer
+      | `Writer
+      | `Emitter
+      | `E of int64 ]
+  end
 
-module Scalar_style : sig
-  type t =
-    [ `Any
-    | `Plain
-    | `Single_quoted
-    | `Double_quoted
-    | `Literal
-    | `Folded
-    | `E of int64 ]
-end
+  module Scalar_style : sig
+    type t =
+      [ `Any
+      | `Plain
+      | `Single_quoted
+      | `Double_quoted
+      | `Literal
+      | `Folded
+      | `E of int64 ]
+  end
 
-module Sequence_style : sig
-  type t = [ `Any | `Block | `Flow | `E of int64 ]
-end
+  module Sequence_style : sig
+    type t = [ `Any | `Block | `Flow | `E of int64 ]
+  end
 
-module Mapping_style : sig
-  type t = [ `Any | `Block | `Flow | `E of int64 ]
-end
+  module Mapping_style : sig
+    type t = [ `Any | `Block | `Flow | `E of int64 ]
+  end
 
-module Token_type : sig
-  type t =
-    [ `None
-    | `Stream_start
-    | `Stream_end
-    | `Version_directive
-    | `Tag_directive
-    | `Document_start
-    | `Document_end
-    | `Block_sequence_start
-    | `Block_mapping_start
-    | `Block_end
-    | `Flow_sequence_start
-    | `Flow_sequence_end
-    | `Flow_mapping_start
-    | `Flow_mapping_end
-    | `Block_entry
-    | `Flow_entry
-    | `Key
-    | `Value
-    | `Alias
-    | `Anchor
-    | `Tag
-    | `Scalar
-    | `E of int64 ]
-end
+  module Token_type : sig
+    type t =
+      [ `None
+      | `Stream_start
+      | `Stream_end
+      | `Version_directive
+      | `Tag_directive
+      | `Document_start
+      | `Document_end
+      | `Block_sequence_start
+      | `Block_mapping_start
+      | `Block_end
+      | `Flow_sequence_start
+      | `Flow_sequence_end
+      | `Flow_mapping_start
+      | `Flow_mapping_end
+      | `Block_entry
+      | `Flow_entry
+      | `Key
+      | `Value
+      | `Alias
+      | `Anchor
+      | `Tag
+      | `Scalar
+      | `E of int64 ]
+  end
 
-module Event_type : sig
-  type t =
-    [ `None
-    | `Stream_start
-    | `Stream_end
-    | `Document_start
-    | `Document_end
-    | `Alias
-    | `Scalar
-    | `Sequence_start
-    | `Sequence_end
-    | `Mapping_start
-    | `Mapping_end
-    | `E of int64 ]
-end
+  module Event_type : sig
+    type t =
+      [ `None
+      | `Stream_start
+      | `Stream_end
+      | `Document_start
+      | `Document_end
+      | `Alias
+      | `Scalar
+      | `Sequence_start
+      | `Sequence_end
+      | `Mapping_start
+      | `Mapping_end
+      | `E of int64 ]
+  end
 
-module M (F : Ctypes.TYPE) : sig
   val encoding_t : Encoding.t F.typ
   val error_t : Error.t F.typ
   val scalar_style_t : Scalar_style.t F.typ
