@@ -22,12 +22,30 @@ val of_file_exn : Fpath.t -> Yaml.value
 (** [of_file_exn p] acts as {!of_file}, but errors are thrown as a {!Failure}
     exception instead of in the return value. *)
 
-val to_file : Fpath.t -> Yaml.value -> (unit, [ `Msg of string ]) result
+val to_file :
+  ?encoding:Yaml.encoding ->
+  ?scalar_style:Yaml.scalar_style ->
+  ?layout_style:Yaml.layout_style ->
+  Fpath.t ->
+  Yaml.value ->
+  unit Yaml.res
 (** [to_file p v] will convert the Yaml value [v] to a string and write it to
     the file at path [p]. *)
 
-val to_file_exn : Fpath.t -> Yaml.value -> unit
+val to_file_exn :
+  ?encoding:Yaml.encoding ->
+  ?scalar_style:Yaml.scalar_style ->
+  ?layout_style:Yaml.layout_style ->
+  Fpath.t ->
+  Yaml.value ->
+  unit
 (** [to_file_exn p] acts as {!to_file}, but errors are thrown as a {!Failure}
     exception instead of in the return value. *)
 
-val to_file_fast : Fpath.t -> Yaml.value -> (unit, [ `Msg of string ]) result
+val to_file_fast :
+  ?encoding:Yaml.encoding ->
+  ?scalar_style:Yaml.scalar_style ->
+  ?layout_style:Yaml.layout_style ->
+  Fpath.t ->
+  Yaml.value ->
+  unit Yaml.res
