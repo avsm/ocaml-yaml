@@ -62,12 +62,21 @@ module M (F : Ctypes.FOREIGN) = struct
         @-> ptr size_t
         @-> returning void)
 
-  (* TODO static funptr
-     let write_handler = C.(ptr void @-> ptr uchar @-> size_t @-> returning int)
+  let emitter_set_output_file =
+    foreign "yaml_emitter_set_output_file"
+      C.(ptr T.Emitter.t @-> ptr void @-> returning void)
 
-     let emitter_set_output =
-       foreign "yaml_emitter_set_output" C.(ptr T.Emitter.t @-> (static_funptr write_handler) @-> ptr void @-> returning void)
-  *)
+  (* TODO: should this be in Yaml_bindings_types? *)
+  let write_handler_t =
+    Ctypes.(ptr void @-> ptr uchar @-> size_t @-> returning int)
+
+  let emitter_set_output =
+    foreign "yaml_emitter_set_output"
+      C.(
+        ptr T.Emitter.t
+        @-> static_funptr write_handler_t
+        @-> ptr void
+        @-> returning void)
 
   let emitter_set_encoding =
     foreign "yaml_emitter_set_encoding"

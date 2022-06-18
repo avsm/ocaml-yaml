@@ -78,8 +78,8 @@ let of_json (v : value) =
   in
   match fn v with r -> Ok r | exception Failure msg -> Error (`Msg msg)
 
-let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
-  emitter ?len () >>= fun t ->
+let to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t : emitter)
+    (v : value) =
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -112,18 +112,35 @@ let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
         fn l
   in
   iter v >>= fun () ->
-  document_end t >>= fun () ->
-  stream_end t >>= fun () ->
-  let r = Stream.emitter_buf t in
-  Ok (Bytes.to_string r)
+  document_end t >>= fun () -> stream_end t
+
+let to_string ?len ?encoding ?scalar_style ?layout_style (v : value) =
+  let emitter =
+    match len with Some len -> emitter ~len () | None -> emitter_buffer ()
+  in
+  emitter >>= fun t ->
+  to_emitter ?encoding ?scalar_style ?layout_style t v >>= fun () ->
+  Ok (emitter_string t)
 
 let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
   match to_string ?len ?encoding ?scalar_style ?layout_style s with
   | Ok s -> s
   | Error (`Msg m) -> raise (Invalid_argument m)
 
-let yaml_to_string ?(encoding = `Utf8) ?scalar_style ?layout_style v =
-  emitter () >>= fun t ->
+let to_file_fast ?encoding ?scalar_style ?layout_style file (v : value) =
+  emitter_file file >>= fun t ->
+  to_emitter ?encoding ?scalar_style ?layout_style t v
+
+let to_channel ?encoding ?scalar_style ?layout_style oc (v : value) =
+  emitter_handler (output_string oc) >>= fun t ->
+  to_emitter ?encoding ?scalar_style ?layout_style t v
+
+let to_buffer ?encoding ?scalar_style ?layout_style buf (v : value) =
+  emitter_buffer ~buf () >>= fun t ->
+  to_emitter ?encoding ?scalar_style ?layout_style t v
+
+let yaml_to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style
+    (t : emitter) (v : yaml) =
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -148,10 +165,27 @@ let yaml_to_string ?(encoding = `Utf8) ?scalar_style ?layout_style v =
         fn m_members
   in
   iter v >>= fun () ->
-  document_end t >>= fun () ->
-  stream_end t >>= fun () ->
-  let r = Stream.emitter_buf t in
-  Ok (Bytes.to_string r)
+  document_end t >>= fun () -> stream_end t
+
+let yaml_to_string ?len ?encoding ?scalar_style ?layout_style v =
+  let emitter =
+    match len with Some len -> emitter ~len () | None -> emitter_buffer ()
+  in
+  emitter >>= fun t ->
+  yaml_to_emitter ?encoding ?scalar_style ?layout_style t v >>= fun () ->
+  Ok (emitter_string t)
+
+let yaml_to_file_fast ?encoding ?scalar_style ?layout_style file v =
+  emitter_file file >>= fun t ->
+  yaml_to_emitter ?encoding ?scalar_style ?layout_style t v
+
+let yaml_to_channel ?encoding ?scalar_style ?layout_style oc v =
+  emitter_handler (output_string oc) >>= fun t ->
+  yaml_to_emitter ?encoding ?scalar_style ?layout_style t v
+
+let yaml_to_buffer ?encoding ?scalar_style ?layout_style buf v =
+  emitter_buffer ~buf () >>= fun t ->
+  yaml_to_emitter ?encoding ?scalar_style ?layout_style t v
 
 let yaml_of_string s =
   let open Event in

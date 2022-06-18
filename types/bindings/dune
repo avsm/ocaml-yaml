@@ -1,4 +1,4 @@
 (library
  (name yaml_bindings_types)
  (public_name yaml.bindings.types)
- (libraries ctypes.stubs ctypes))
+ (libraries ctypes.stubs ctypes ctypes.foreign))

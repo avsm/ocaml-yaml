@@ -14,11 +14,30 @@
 
 open Bos
 
+let ( >>= ) = Result.bind
 let of_file f = Result.bind (OS.File.read f) Yaml.of_string
-let to_file f y = Result.bind (Yaml.to_string y) (OS.File.write f)
+
+let to_file ?encoding ?scalar_style ?layout_style f y =
+  OS.File.with_oc f (Yaml.to_channel ?encoding ?scalar_style ?layout_style) y
+  |> Result.join
 
 let of_file_exn f =
   match of_file f with Ok v -> v | Error (`Msg m) -> raise (Failure m)
 
-let to_file_exn f v =
-  match to_file f v with Ok () -> () | Error (`Msg m) -> raise (Failure m)
+let to_file_exn ?encoding ?scalar_style ?layout_style f v =
+  match to_file ?encoding ?scalar_style ?layout_style f v with
+  | Ok () -> ()
+  | Error (`Msg m) -> raise (Failure m)
+
+(* TODO: stubs not foreign *)
+let c_fopen =
+  Ctypes.(Foreign.foreign "fopen" (string @-> string @-> returning (ptr void)))
+
+let c_fclose = Ctypes.(Foreign.foreign "fclose" (ptr void @-> returning int))
+
+let to_file_fast ?encoding ?scalar_style ?layout_style f y =
+  (* TODO: error handling *)
+  let file = c_fopen (Fpath.to_string f) "w" in
+  Yaml.to_file_fast ?encoding ?scalar_style ?layout_style file y >>= fun () ->
+  ignore (c_fclose file);
+  Ok ()
