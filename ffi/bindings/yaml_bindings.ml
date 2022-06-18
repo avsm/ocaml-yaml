@@ -64,13 +64,11 @@ module M (F : Ctypes.FOREIGN) = struct
 
   let emitter_set_output_file =
     foreign "yaml_emitter_set_output_file"
-      C.(
-        ptr T.Emitter.t
-        @-> ptr void
-        @-> returning void)
+      C.(ptr T.Emitter.t @-> ptr void @-> returning void)
 
   (* TODO: should this be in Yaml_bindings_types? *)
-  let write_handler_t = Ctypes.(ptr void @-> ptr uchar @-> size_t @-> returning int)
+  let write_handler_t =
+    Ctypes.(ptr void @-> ptr uchar @-> size_t @-> returning int)
 
   let emitter_set_output =
     foreign "yaml_emitter_set_output"

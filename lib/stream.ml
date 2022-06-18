@@ -259,7 +259,7 @@ let do_parse { p; event } =
           ^ string_of_int n))
 
 type emitter_kind =
-  | String of { buf: Bytes.t; written : Unsigned.size_t Ctypes.ptr; }
+  | String of { buf : Bytes.t; written : Unsigned.size_t Ctypes.ptr }
   | File
   | Handler
   | Buffer of Buffer.t
@@ -267,17 +267,14 @@ type emitter_kind =
 type emitter = {
   e : T.Emitter.t Ctypes.structure Ctypes.ptr;
   event : T.Event.t Ctypes.structure Ctypes.ptr;
-  kind: emitter_kind;
+  kind : emitter_kind;
 }
 
 let emitter_written { kind; _ } =
   match kind with
-  | String { written; _ } ->
-    Ctypes.(!@written) |> Unsigned.Size_t.to_int
-  | Buffer buf ->
-    Buffer.length buf
-  | _ ->
-    invalid_arg "non-string emitter"
+  | String { written; _ } -> Ctypes.(!@written) |> Unsigned.Size_t.to_int
+  | Buffer buf -> Buffer.length buf
+  | _ -> invalid_arg "non-string emitter"
 
 let emitter ?(len = 65535 * 4) () =
   let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
@@ -307,7 +304,9 @@ let emitter_handler handler =
   let open Ctypes in
   let handler _ buf len =
     let buf' = Ctypes.(coerce (ptr uchar) (ptr char) buf) in
-    let s = Ctypes.(string_from_ptr buf' ~length:(Unsigned.Size_t.to_int len)) in
+    let s =
+      Ctypes.(string_from_ptr buf' ~length:(Unsigned.Size_t.to_int len))
+    in
     handler s;
     1
   in
@@ -323,31 +322,22 @@ let emitter_handler handler =
   | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
 let emitter_buffer ?buf () =
-  let buf =
-    match buf with
-    | None -> Buffer.create 1024
-    | Some buf -> buf
-  in
+  let buf = match buf with None -> Buffer.create 1024 | Some buf -> buf in
   Result.bind (emitter_handler (Buffer.add_string buf)) @@ fun t ->
   Ok { t with kind = Buffer buf }
 
 let emitter_buf { kind; _ } =
   match kind with
   | String { buf; written } ->
-    Ctypes.(!@written) |> Unsigned.Size_t.to_int |> Bytes.sub buf 0
-  | Buffer buf ->
-    Buffer.to_bytes buf
-  | _ ->
-    invalid_arg "non-string emitter"
+      Ctypes.(!@written) |> Unsigned.Size_t.to_int |> Bytes.sub buf 0
+  | Buffer buf -> Buffer.to_bytes buf
+  | _ -> invalid_arg "non-string emitter"
 
 let emitter_string ({ kind; _ } as emitter) =
   match kind with
-  | String { buf; written } ->
-    emitter_buf emitter |> Bytes.to_string
-  | Buffer buf ->
-    Buffer.contents buf
-  | _ ->
-    invalid_arg "non-string emitter"
+  | String { buf; written } -> emitter_buf emitter |> Bytes.to_string
+  | Buffer buf -> Buffer.contents buf
+  | _ -> invalid_arg "non-string emitter"
 
 let check l a =
   match a with

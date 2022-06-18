@@ -78,7 +78,8 @@ let of_json (v : value) =
   in
   match fn v with r -> Ok r | exception Failure msg -> Error (`Msg msg)
 
-let to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t: emitter) (v : value) =
+let to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t : emitter)
+    (v : value) =
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -111,14 +112,11 @@ let to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t: emitter) (v :
         fn l
   in
   iter v >>= fun () ->
-  document_end t >>= fun () ->
-  stream_end t
+  document_end t >>= fun () -> stream_end t
 
 let to_string ?len ?encoding ?scalar_style ?layout_style (v : value) =
   let emitter =
-    match len with
-    | Some len -> emitter ~len ()
-    | None -> emitter_buffer ()
+    match len with Some len -> emitter ~len () | None -> emitter_buffer ()
   in
   emitter >>= fun t ->
   to_emitter ?encoding ?scalar_style ?layout_style t v >>= fun () ->
@@ -141,7 +139,8 @@ let to_buffer ?encoding ?scalar_style ?layout_style buf (v : value) =
   emitter_buffer ~buf () >>= fun t ->
   to_emitter ?encoding ?scalar_style ?layout_style t v
 
-let yaml_to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t : emitter) (v : yaml) =
+let yaml_to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style
+    (t : emitter) (v : yaml) =
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -166,14 +165,11 @@ let yaml_to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t : emitter
         fn m_members
   in
   iter v >>= fun () ->
-  document_end t >>= fun () ->
-  stream_end t
+  document_end t >>= fun () -> stream_end t
 
 let yaml_to_string ?len ?encoding ?scalar_style ?layout_style v =
   let emitter =
-    match len with
-    | Some len -> emitter ~len ()
-    | None -> emitter_buffer ()
+    match len with Some len -> emitter ~len () | None -> emitter_buffer ()
   in
   emitter >>= fun t ->
   yaml_to_emitter ?encoding ?scalar_style ?layout_style t v >>= fun () ->
