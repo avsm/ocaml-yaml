@@ -193,6 +193,7 @@ val yaml_of_string : string -> yaml res
     Yaml-specific information such as anchors. *)
 
 val yaml_to_string :
+  ?len:int ->
   ?encoding:encoding ->
   ?scalar_style:scalar_style ->
   ?layout_style:layout_style ->
@@ -202,6 +203,30 @@ val yaml_to_string :
     [encoding], [scalar_style] and [layout_style] control the various output
     parameters. The current implementation uses a non-resizable internal string
     buffer of 16KB, which can be increased via [len]. *)
+
+val yaml_to_file_fast :
+  ?encoding:encoding ->
+  ?scalar_style:scalar_style ->
+  ?layout_style:layout_style ->
+  unit Ctypes.ptr ->
+  yaml ->
+  unit res
+
+val yaml_to_channel :
+  ?encoding:encoding ->
+  ?scalar_style:scalar_style ->
+  ?layout_style:layout_style ->
+  out_channel ->
+  yaml ->
+  unit res
+
+val yaml_to_buffer :
+  ?encoding:encoding ->
+  ?scalar_style:scalar_style ->
+  ?layout_style:layout_style ->
+  Buffer.t ->
+  yaml ->
+  unit res
 
 (** {2 JSON/Yaml conversion functions} *)
 
@@ -349,6 +374,14 @@ val to_emitter :
   ?layout_style:layout_style ->
   Stream.emitter ->
   value ->
+  unit res
+
+val yaml_to_emitter :
+  ?encoding:encoding ->
+  ?scalar_style:scalar_style ->
+  ?layout_style:layout_style ->
+  Stream.emitter ->
+  yaml ->
   unit res
 
 (** {2 Utility functions for yaml}

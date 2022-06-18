@@ -141,8 +141,7 @@ let to_buffer ?(encoding = `Utf8) ?scalar_style ?layout_style buf (v : value) =
   emitter_buffer ~buf () >>= fun t ->
   to_emitter ~encoding ?scalar_style ?layout_style t v
 
-let yaml_to_string ?(encoding = `Utf8) ?scalar_style ?layout_style v =
-  emitter () >>= fun t ->
+let yaml_to_emitter ?(encoding = `Utf8) ?scalar_style ?layout_style (t : emitter) (v : yaml) =
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -168,9 +167,29 @@ let yaml_to_string ?(encoding = `Utf8) ?scalar_style ?layout_style v =
   in
   iter v >>= fun () ->
   document_end t >>= fun () ->
-  stream_end t >>= fun () ->
-  let r = Stream.emitter_buf t in
-  Ok (Bytes.to_string r)
+  stream_end t
+
+let yaml_to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style v =
+  let emitter =
+    match len with
+    | Some len -> emitter ~len ()
+    | None -> emitter_buffer ()
+  in
+  emitter >>= fun t ->
+  yaml_to_emitter ~encoding ?scalar_style ?layout_style t v >>= fun () ->
+  Ok (emitter_string t)
+
+let yaml_to_file_fast ?(encoding = `Utf8) ?scalar_style ?layout_style file v =
+  emitter_file file >>= fun t ->
+  yaml_to_emitter ~encoding ?scalar_style ?layout_style t v
+
+let yaml_to_channel ?(encoding = `Utf8) ?scalar_style ?layout_style oc v =
+  emitter_handler (output_string oc) >>= fun t ->
+  yaml_to_emitter ~encoding ?scalar_style ?layout_style t v
+
+let yaml_to_buffer ?(encoding = `Utf8) ?scalar_style ?layout_style buf v =
+  emitter_buffer ~buf () >>= fun t ->
+  yaml_to_emitter ~encoding ?scalar_style ?layout_style t v
 
 let yaml_of_string s =
   let open Event in
