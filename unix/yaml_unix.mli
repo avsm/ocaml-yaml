@@ -29,3 +29,5 @@ val to_file : Fpath.t -> Yaml.value -> (unit, [ `Msg of string ]) result
 val to_file_exn : Fpath.t -> Yaml.value -> unit
 (** [to_file_exn p] acts as {!to_file}, but errors are thrown as a {!Failure}
     exception instead of in the return value. *)
+
+val to_file_fast : Fpath.t -> Yaml.value -> (unit, [ `Msg of string ]) result

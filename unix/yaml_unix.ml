@@ -24,3 +24,14 @@ let of_file_exn f =
 
 let to_file_exn f v =
   match to_file f v with Ok () -> () | Error (`Msg m) -> raise (Failure m)
+
+(* TODO: stubs not foreign *)
+let c_fopen = Ctypes.(Foreign.foreign "fopen" (string @-> string @-> returning (ptr void)))
+let c_fclose = Ctypes.(Foreign.foreign "fclose" (ptr void @-> returning int))
+
+let to_file_fast f y =
+  (* TODO: error handling *)
+  let file = c_fopen (Fpath.to_string f) "w" in
+  Yaml.to_file_fast file y >>= fun () ->
+  ignore (c_fclose file);
+  Ok ()
