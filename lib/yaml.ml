@@ -122,8 +122,8 @@ let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
   | Ok s -> s
   | Error (`Msg m) -> raise (Invalid_argument m)
 
-let yaml_to_string ?(encoding = `Utf8) ?scalar_style ?layout_style v =
-  emitter () >>= fun t ->
+let yaml_to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style v =
+  emitter ?len () >>= fun t ->
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function

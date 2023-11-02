@@ -169,6 +169,7 @@ val yaml_of_string : string -> yaml res
     Yaml-specific information such as anchors. *)
 
 val yaml_to_string :
+  ?len:int ->
   ?encoding:encoding ->
   ?scalar_style:scalar_style ->
   ?layout_style:layout_style ->
