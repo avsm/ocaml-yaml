@@ -144,7 +144,7 @@ val to_string :
 (** [to_string v] converts the JSON value to a Yaml string representation. The
     [encoding], [scalar_style] and [layout_style] control the various output
     parameters. The current implementation uses a non-resizable internal string
-    buffer of 64KB, which can be increased via [len]. *)
+    buffer of 256KB, which can be increased via [len]. *)
 
 val to_string_exn :
   ?len:int ->
@@ -178,7 +178,7 @@ val yaml_to_string :
 (** [yaml_to_string v] converts the Yaml value to a string representation. The
     [encoding], [scalar_style] and [layout_style] control the various output
     parameters. The current implementation uses a non-resizable internal string
-    buffer of 16KB, which can be increased via [len]. *)
+    buffer of 256KB, which can be increased via [len]. *)
 
 (** {2 JSON/Yaml conversion functions} *)
 
