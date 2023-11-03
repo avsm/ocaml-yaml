@@ -261,7 +261,7 @@ let do_parse { p; event } =
 type emitter = {
   e : T.Emitter.t Ctypes.structure Ctypes.ptr;
   event : T.Event.t Ctypes.structure Ctypes.ptr;
-  buf : char Ctypes.ptr;
+  buf : Buffer.t;
   written : Unsigned.size_t Ctypes.ptr;
 }
 
@@ -272,17 +272,21 @@ let emitter ?(len = 65535 * 4) () =
   let e = Ctypes.(allocate_n T.Emitter.t ~count:1) in
   let event = Ctypes.(allocate_n T.Event.t ~count:1) in
   let written = Ctypes.allocate_n Ctypes.size_t ~count:1 in
+  let buf = Buffer.create len in
   let r = B.emitter_init e in
-  let buf = Ctypes.(allocate_n Ctypes.char ~count:len) in
-  let len = Unsigned.Size_t.of_int len in
-  B.emitter_set_output_string e buf len written;
+  let callback _ (c_buf : Unsigned.UChar.t Ctypes.ptr) len =
+    let length = Unsigned.Size_t.to_int len in
+    let s = Ctypes.string_from_ptr (Ctypes.(coerce (ptr uchar) (ptr char) c_buf)) ~length in
+    Buffer.add_string buf s;
+    length
+  in
+  B.emitter_set_output e callback Ctypes.null;
   match r with
   | 1 -> Ok { e; event; written; buf }
   | n -> Error (`Msg ("error initialising emitter: " ^ string_of_int n))
 
 let emitter_buf { buf; written } =
-  let length = Ctypes.(!@written) |> Unsigned.Size_t.to_int in
-  Ctypes.string_from_ptr buf ~length
+  Buffer.contents buf
 
 let check l a =
   match a with
