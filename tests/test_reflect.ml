@@ -31,5 +31,5 @@ let v file =
   iter_until_done (reflect e) >>= fun () ->
   let r = Yaml.Stream.emitter_buf e in
   print_endline buf;
-  print_endline (Bytes.to_string r);
+  print_endline r;
   Ok ()

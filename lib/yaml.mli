@@ -278,7 +278,7 @@ module Stream : sig
       buffer that the output is written into is. In the future, [len] will be
       redundant as the buffer will be dynamically allocated. *)
 
-  val emitter_buf : emitter -> Bytes.t
+  val emitter_buf : emitter -> string
   val emit : emitter -> Event.t -> unit res
   val document_start : ?version:version -> ?implicit:bool -> emitter -> unit res
   val document_end : ?implicit:bool -> emitter -> unit res

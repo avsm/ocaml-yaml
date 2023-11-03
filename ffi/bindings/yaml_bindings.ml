@@ -57,7 +57,7 @@ module M (F : Ctypes.FOREIGN) = struct
     foreign "yaml_emitter_set_output_string"
       C.(
         ptr T.Emitter.t
-        @-> ocaml_bytes
+        @-> ptr char
         @-> size_t
         @-> ptr size_t
         @-> returning void)
