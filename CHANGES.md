@@ -1,7 +1,15 @@
+## v3.2.0 (04/111/2023)
+
+* Fix potential GC corruption when serialising large Yaml
+  buffers (#75 @hhugo)
+
+* Add missing `?len` argument to `yaml_of_string` to specify
+  buffer size (#74 @hhugo)
+
 ## v3.1.0 (27/03/2022)
 
 * Support MSVC with .obj and .lib extensions, and defining
-  -DDYAML_DECLARE_EXPORT (@jonahbeckford #53)
+  `-DDYAML_DECLARE_EXPORT` (@jonahbeckford #53)
 
 * Upgrade to dune 2 (@TheLortex, #54)
 

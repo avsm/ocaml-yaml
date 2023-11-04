@@ -115,15 +115,15 @@ let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
   document_end t >>= fun () ->
   stream_end t >>= fun () ->
   let r = Stream.emitter_buf t in
-  Ok (Bytes.to_string r)
+  Ok r
 
 let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
   match to_string ?len ?encoding ?scalar_style ?layout_style s with
   | Ok s -> s
   | Error (`Msg m) -> raise (Invalid_argument m)
 
-let yaml_to_string ?(encoding = `Utf8) ?scalar_style ?layout_style v =
-  emitter () >>= fun t ->
+let yaml_to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style v =
+  emitter ?len () >>= fun t ->
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
@@ -151,7 +151,7 @@ let yaml_to_string ?(encoding = `Utf8) ?scalar_style ?layout_style v =
   document_end t >>= fun () ->
   stream_end t >>= fun () ->
   let r = Stream.emitter_buf t in
-  Ok (Bytes.to_string r)
+  Ok r
 
 let yaml_of_string s =
   let open Event in

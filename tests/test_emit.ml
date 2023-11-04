@@ -43,5 +43,5 @@ let v () =
   S.stream_end t >>= fun () ->
   Printf.printf "written: %d\n%!" (S.emitter_written t);
   let r = S.emitter_buf t in
-  print_endline (Bytes.to_string r);
+  print_endline r;
   Ok ()
