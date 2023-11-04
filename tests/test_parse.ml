@@ -1,7 +1,6 @@
-open Rresult
+let ( >>= ) = Result.bind
 
 let v file =
-  let open R.Infix in
   Bos.OS.File.read file >>= fun buf ->
   Yaml.yaml_of_string buf >>= fun v ->
   Yaml.to_json v >>= fun json ->

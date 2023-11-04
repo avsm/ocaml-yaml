@@ -13,8 +13,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
 open Crowbar
-open Rresult
-open R.Infix
+
+let ( >>= ) = Result.bind
 
 (* Consume all the events in a stream using the
    low-level API and return a bool to indicate success *)

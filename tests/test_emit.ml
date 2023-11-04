@@ -12,9 +12,9 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. *)
 
-open Rresult
-open R.Infix
 module S = Yaml.Stream
+
+let ( >>= ) = Result.bind
 
 let scalar ?anchor ?tag ?(plain_implicit = true) ?(quoted_implicit = false)
     ?(style = `Plain) value : Yaml.scalar =
