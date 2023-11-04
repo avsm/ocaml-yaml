@@ -416,6 +416,8 @@ module M (F : Ctypes.TYPE) = struct
     type t
 
     let t : t typ = F.structure "yaml_emitter_s"
+    let error = F.(field t "error" error_t)
+    let problem = F.(field t "problem" string_opt)
 
     (* TODO *)
     let () = F.seal t

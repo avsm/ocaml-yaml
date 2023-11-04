@@ -14,6 +14,9 @@
 
 module T = Yaml_types.M
 
+
+let write_handler = let open Ctypes in (ptr void @-> ptr uchar @-> size_t @-> returning int)
+
 module M (F : Ctypes.FOREIGN) = struct
   let foreign = F.foreign
 
@@ -62,12 +65,14 @@ module M (F : Ctypes.FOREIGN) = struct
         @-> ptr size_t
         @-> returning void)
 
-  (* TODO static funptr
-     let write_handler = C.(ptr void @-> ptr uchar @-> size_t @-> returning int)
 
-     let emitter_set_output =
-       foreign "yaml_emitter_set_output" C.(ptr T.Emitter.t @-> (static_funptr write_handler) @-> ptr void @-> returning void)
-  *)
+  let emitter_set_output =
+    foreign "yaml_emitter_set_output"
+      C.(
+        ptr T.Emitter.t
+        @-> (Foreign.funptr write_handler)
+        @-> ptr void
+        @-> returning void)
 
   let emitter_set_encoding =
     foreign "yaml_emitter_set_encoding"

@@ -15,11 +15,10 @@
 include Types
 module Util = Util
 module Stream = Stream
-open Stream
 
 let ( >>= ) = Result.bind
 
-let scalar ?anchor ?tag ?(plain_implicit = true) ?(quoted_implicit = false)
+let make_scalar ?anchor ?tag ?(plain_implicit = true) ?(quoted_implicit = false)
     ?(style = `Plain) value =
   { anchor; tag; plain_implicit; quoted_implicit; style; value }
 
@@ -55,10 +54,10 @@ let to_json v =
 
 let of_json (v : value) =
   let rec fn = function
-    | `Null -> `Scalar (scalar "")
-    | `Bool b -> `Scalar (scalar (string_of_bool b))
-    | `Float f -> `Scalar (scalar (string_of_float f))
-    | `String value -> `Scalar (scalar value)
+    | `Null -> `Scalar (make_scalar "")
+    | `Bool b -> `Scalar (make_scalar (string_of_bool b))
+    | `Float f -> `Scalar (make_scalar (string_of_float f))
+    | `String value -> `Scalar (make_scalar value)
     | `A l ->
         `A
           {
@@ -73,27 +72,28 @@ let of_json (v : value) =
             m_anchor = None;
             m_tag = None;
             m_implicit = true;
-            m_members = List.map (fun (k, v) -> (`Scalar (scalar k), fn v)) l;
+            m_members = List.map (fun (k, v) -> (`Scalar (make_scalar k), fn v)) l;
           }
   in
   match fn v with r -> Ok r | exception Failure msg -> Error (`Msg msg)
 
 let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
+  let open Stream in
   emitter ?len () >>= fun t ->
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
-    | `Null -> Stream.scalar (scalar "") t
+    | `Null -> scalar (make_scalar "") t
     | `String s ->
         let style =
           match yaml_scalar_to_json s with
           | `String s -> scalar_style
           | _ -> Some `Double_quoted
         in
-        Stream.scalar (scalar ?style ~quoted_implicit:true s) t
-    | `Float s -> Stream.scalar (scalar (Printf.sprintf "%.16g" s)) t
+        scalar (make_scalar ?style ~quoted_implicit:true s) t
+    | `Float s -> scalar (make_scalar (Printf.sprintf "%.16g" s)) t
     (* NOTE: Printf format on the line above taken from the jsonm library *)
-    | `Bool s -> Stream.scalar (scalar (string_of_bool s)) t
+    | `Bool s -> scalar (make_scalar (string_of_bool s)) t
     | `A l ->
         sequence_start ?style:layout_style t >>= fun () ->
         let rec fn = function
@@ -114,7 +114,7 @@ let to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style (v : value) =
   iter v >>= fun () ->
   document_end t >>= fun () ->
   stream_end t >>= fun () ->
-  let r = Stream.emitter_buf t in
+  let r = emitter_buf t in
   Ok r
 
 let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
@@ -123,11 +123,12 @@ let to_string_exn ?len ?encoding ?scalar_style ?layout_style s =
   | Error (`Msg m) -> raise (Invalid_argument m)
 
 let yaml_to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style v =
+  let open Stream in
   emitter ?len () >>= fun t ->
   stream_start t encoding >>= fun () ->
   document_start t >>= fun () ->
   let rec iter = function
-    | `Scalar s -> Stream.scalar s t
+    | `Scalar s -> scalar s t
     | `Alias anchor -> alias t anchor
     | `A { s_anchor = anchor; s_tag = tag; s_implicit = implicit; s_members } ->
         sequence_start ?anchor ?tag ~implicit ?style:layout_style t
@@ -150,10 +151,11 @@ let yaml_to_string ?len ?(encoding = `Utf8) ?scalar_style ?layout_style v =
   iter v >>= fun () ->
   document_end t >>= fun () ->
   stream_end t >>= fun () ->
-  let r = Stream.emitter_buf t in
+  let r = emitter_buf t in
   Ok r
 
 let yaml_of_string s =
+  let open Stream in
   let open Event in
   parser s >>= fun t ->
   let next () = do_parse t >>= fun (e, pos) -> Ok (e, pos) in
@@ -201,7 +203,7 @@ let yaml_of_string s =
                 next () >>= parse_map ((k, v) :: acc)
           in
           next () >>= parse_v
-      | Stream_end -> Ok (`Scalar (scalar ""))
+      | Stream_end -> Ok (`Scalar (make_scalar ""))
       | e -> Error (`Msg "Not document start"))
   | _ -> Error (`Msg "Not stream start")
 
