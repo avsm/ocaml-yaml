@@ -32,7 +32,7 @@ depends: [
   "mdx" {with-test & >= "2.1.0"}
   "alcotest" {>="1.5.0" & with-test}
   "crowbar" {with-test}
-  "junit_alcotest" {with-test}
+  "junit_alcotest" {>= "2.0.2" & with-test}
   "ezjsonm" {with-test}
 ]
 build: [
