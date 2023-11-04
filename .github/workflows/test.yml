@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [macos-latest, ubuntu-latest]
-        ocaml-compiler: [ '5.1.0', '4.14.1', '4.08.0']
+        ocaml-compiler: [ '5.1.0', '4.14.1', '4.13.0']
     steps:
     - uses: actions/checkout@master
     - uses: ocaml/setup-ocaml@v2
