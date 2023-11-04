@@ -6,6 +6,9 @@
 * Add missing `?len` argument to `yaml_of_string` to specify
   buffer size (#74 @hhugo)
 
+* Remove remaining references to Rresult in tests and
+  documentation (#62 @sim642)
+
 ## v3.1.0 (27/03/2022)
 
 * Support MSVC with .obj and .lib extensions, and defining
